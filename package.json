@@ -1,0 +1,20 @@
+{
+  "name": "njs101x_assignment_thangncfx16840",
+  "version": "1.0.0",
+  "description": "NJS101x_Assignment_thangncfx16840",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/victhangnguyen/NJS101x_Assignment_thangncfx16840.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/victhangnguyen/NJS101x_Assignment_thangncfx16840/issues"
+  },
+  "homepage": "https://github.com/victhangnguyen/NJS101x_Assignment_thangncfx16840#readme"
+}
