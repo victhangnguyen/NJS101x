@@ -12,6 +12,11 @@ class Logging {
       chalk.yellow(`[${new Date().toLocaleString()}] [WARN]`),
       typeof args === 'string' ? chalk.yellowBright(args) : args
     );
+  public static success = (args: any) =>
+    console.log(
+      chalk.green(`[${new Date().toLocaleString()}] [SUCCESS]`),
+      typeof args === 'string' ? chalk.greenBright(args) : args
+    );
   public static error = (args: any) =>
     console.log(
       chalk.red(`[${new Date().toLocaleString()}] [ERROR]`),

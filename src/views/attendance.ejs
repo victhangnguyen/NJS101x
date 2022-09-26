@@ -1,16 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
+<%- include('./includes/header.ejs') %>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-  <title>
-    <%= pageTitle %>
-  </title>
-  <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.">
-  <link rel="stylesheet" href="/assets/css/main.css" />
-  <link rel="stylesheet" href="/assets/css/<%= css %>.css" />
-</head>
+<body>
+  <%- include('./includes/navigation.ejs') %>
+  <div class="container">
+    <div class="row py-1 px-md-5 py-md-3 px-sm-0 py-sm-2">
+      <div class="col-sm-0 col-md-2"></div>
+      <div class="col-sm-12 col-md-8">
+        <form action="/attendance?type=start" method="post">
+          <h1 class="mb-3">Điểm danh công việc</h1>
+          <div class="mb-3">
+            <label for="input-full-name" class="form-label">Họ và tên</label>
+            <input type="text" id="input-full-name" class="form-control" placeholder="Họ và tên" disabled="true" value="<%= user.name %>">
+          </div>
+          <div class="mb-3">
+            <label for="select-workplace" class="form-label">Nơi đăng ký làm việc:</label>
+            <select class="form-control" id="select-workplace" name="workplace">
+              <option value="home">Nhà</option>
+              <option value="company" selected="selected">Công ty</option>
+              <option value="customer">Khách hàng</option>
+            </select>
+            <button type="submit" class="btn btn-success">Điểm danh</button>
+          </div>
+        </form>
+      </div>
+      <div class="col-sm-0 col-md-6">
+
+      </div>
+    </div>
+    <div class="row py-1 px-md-5 py-md-3 px-sm-0 py-sm-2">
+      <div class="col-sm-0 col-md-2"></div>
+      <div class="col-sm-12 col-md-8">
+        <form action="/attendance" method="post">
+          <button class="btn btn-danger">Đăng ký Nghỉ phép</button>
+        </form>
+      </div>
+      <div class="col-sm-0 col-md-6">
+
+      </div>
+    </div>
+
+  </div>
+</body>
+
+<%- include('./includes/footer.ejs') %>
