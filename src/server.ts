@@ -6,6 +6,9 @@ import { config } from './config/config';
 //! imp library
 import Logging from './library/Logging';
 
+//! imp routes
+import userRoutes from './routes/user';
+
 const app = express();
 
 //! connect with MongoDB Database
@@ -20,13 +23,16 @@ mongoose
   });
 
 const startServer = () => {
-  
+  //! declare Template Engine
+  app.set('view engine', 'ejs');
+  app.set('views', 'src/views');
+
   //! apply middlewares
-  app.use(express.json());
+  // app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
   //! routes
-  // app.use('');
+  app.use('/', userRoutes); //! default
 
   //! error handling
   app.use((req, res, next) => {
