@@ -33,7 +33,7 @@ mongoose
     //! init Authenticated User
     User.findOne({})
       .then((userDoc) => {
-        console.log('__Debugger__server__userDoc: ', userDoc);
+        // console.log('__Debugger__server__userDoc: ', userDoc);
         //! create new User if one is null
         if (!userDoc) {
           const user = new User({
@@ -44,6 +44,10 @@ mongoose
             department: 'Information Technology',
             annualLeave: 5,
             image: '/assests/images/thangncfx16840.png',
+            status: {
+              workplace: 'Chưa xác định',
+              isWorking: false,
+            },
           });
           user.save();
         }

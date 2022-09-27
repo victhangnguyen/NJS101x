@@ -3,9 +3,11 @@
 <body>
   <%- include('./includes/navigation.ejs') %>
   <div class="container">
+    <% if ( !user.status.isWorking ) { %>
     <div class="row py-1 px-md-5 py-md-3 px-sm-0 py-sm-2">
       <div class="col-sm-0 col-md-2"></div>
       <div class="col-sm-12 col-md-8">
+        <!-- start form -->
         <form action="/attendance?type=start" method="post">
           <h1 class="mb-3">Điểm danh công việc</h1>
           <div class="mb-3">
@@ -19,25 +21,49 @@
               <option value="company" selected="selected">Công ty</option>
               <option value="customer">Khách hàng</option>
             </select>
-            <button type="submit" class="btn btn-success">Điểm danh</button>
           </div>
+          <div class="mb-3"><button type="submit" class="btn btn-success">Điểm danh</button></div>
         </form>
+        <!-- end form -->
       </div>
-      <div class="col-sm-0 col-md-6">
-
-      </div>
+      <div class="col-sm-0 col-md-2"></div>
     </div>
+
     <div class="row py-1 px-md-5 py-md-3 px-sm-0 py-sm-2">
       <div class="col-sm-0 col-md-2"></div>
       <div class="col-sm-12 col-md-8">
         <form action="/attendance" method="post">
-          <button class="btn btn-danger">Đăng ký Nghỉ phép</button>
+          <button class="btn btn-primary">Đăng ký Nghỉ phép</button>
         </form>
       </div>
-      <div class="col-sm-0 col-md-6">
-
-      </div>
+      <div class="col-sm-0 col-md-6"></div>
     </div>
+    <% } else { %>
+    <div class="row py-1 px-md-5 py-md-3 px-sm-0 py-sm-2">
+      <div class="col-sm-0 col-md-2"></div>
+      <div class="col-sm-12 col-md-8">
+        <!-- start form -->
+
+        <h1 class="mb-3">Kết thúc công việc</h1>
+        <div class="mb-3">
+          <label for="input-full-name" class="form-label">Họ và tên:</label>
+          <input type="text" id="input-full-name" class="form-control" placeholder="Họ và tên" disabled="true" value="<%= user.name %>">
+        </div>
+        <div class="mb-3">
+          <label for="input-status-work" class="form-label">Trạng thái:</label>
+          <input type="text" id="input-status-work" class="form-control" placeholder="Nơi làm việc" disabled="true" value="<% if ( user.status.isWorking ) { %>Đang làm việc<% } else { %>Công việc tạm dừng<% } %>">
+        </div>
+        <div class="mb-3">
+          <label for="input-workplace" class="form-label">Nơi làm việc:</label>
+          <input type="text" id="input-workplace" class="form-control" placeholder="Nơi làm việc" disabled="true" value="<% if ( user.status.workplace === 'home' ) { %>Nhà<% } else if (user.status.workplace === 'company') { %>Công ty<% } else { %>Khách hàng<% } %>">
+        </div>
+        <form action="/attendance?type=end" method="post">
+          <div class="mb-3"><button type="submit" class="btn btn-danger">Kết thúc làm</button></div>
+        </form>
+        <!-- end form -->
+      </div>
+      <div class="col-sm-0 col-md-2"></div>
+    </div> <% } %>
 
   </div>
 </body>

@@ -1,56 +1,64 @@
 import mongoose from 'mongoose';
-
+//! imp utils
+import utils from '../utils';
+export interface IRecord {
+  timeIn?: Date;
+  timeOut?: Date;
+  timeWorking?: string;
+  workplace: string;
+}
 export interface IAttendance {
-  
+  userId: mongoose.Types.ObjectId;
+  date: string;
+  timeRecords: Array<IRecord>;
+  timeSum: string;
 }
 //! interface Methods
-export interface IAttendanceMethods {}
+export interface IAttendanceMethods {
+  calcRecord(): any;
+}
 
 //! Methods and Override Methods
 //! <T, TQueryHelpers = {}, TMethodsAndOverrides = {}, TVirtuals = {}, TSchema = any>
-export interface AttendanceModel extends mongoose.Model<IAttendance, {}, IAttendanceMethods> {}
+export interface AttendanceModel
+  extends mongoose.Model<IAttendance, {}, IAttendanceMethods> {}
 
 //! <EnforcedDocType = any, M = Model<EnforcedDocType, any, any, any>, TInstanceMethods = {}>
-const attendanceSchema = new mongoose.Schema<IAttendance, AttendanceModel, IAttendanceMethods>({
-  name: {
-    type: String,
-    required: true,
-  },
-  dob: {
-    type: Date,
-    required: true,
-  },
-  salaryScale: {
-    type: Number,
-    required: true,
-  },
-  startDate: {
-    type: Date,
-    required: true,
-  },
-  department: {
-    type: String,
-    required: true,
-  },
-  annualLeave: {
-    type: Number,
-    required: true,
-  },
-  image: {
-    type: String,
-    required: true,
-  },
-  status: {
-    isWorking: {
-      type: Boolean,
-      required: true,
+const attendanceSchema = new mongoose.Schema<
+  IAttendance,
+  AttendanceModel,
+  IAttendanceMethods
+>({
+  userId: { type: mongoose.Schema.Types.ObjectId, required: true },
+  date: { type: String, required: true },
+  timeSum: { type: String },
+  timeRecords: [
+    {
+      timeIn: { type: Date },
+      timeOut: { type: Date },
+      timeWorking: { type: String },
+      workplace: { type: String },
     },
-    workplace: {
-      type: String,
-      required: true,
-    },
-  },
+  ],
 });
+
+attendanceSchema.methods.calcRecord = function () {
+  const timeRecords = [...this.timeRecords];
+  let timeSum = 0;
+
+  const calculatedTimeRecords = timeRecords.map((record) => {
+    let timeWorking = Math.abs(record.timeOut - record.timeIn);
+    timeSum += timeWorking;
+    // console.log('__Debugger__calcRecord__timeWorking: ', timeWorking);
+    return {
+      ...record,
+      timeWorking: utils.convertMsToTime(timeWorking),
+    };
+  });
+  this.timeSum = utils.convertMsToTime(timeSum);
+  this.timeRecords = calculatedTimeRecords;
+  return this.save();
+};
 
 const Attendance = mongoose.model('Attendance', attendanceSchema);
 

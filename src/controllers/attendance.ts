@@ -1,5 +1,6 @@
 //! imp models
-import User, { IUser } from '../models/user';
+import User, { IUserDocument } from '../models/user';
+import Attendance, { AttendanceModel, IAttendance } from '../models/attendance';
 
 import { RequestHandler } from 'express';
 
@@ -13,27 +14,49 @@ export const getAttendance: RequestHandler = (req, res, next) => {
 export const postAttendance: RequestHandler = (req, res, next) => {
   const workplace = (req.body as { workplace: string }).workplace;
   const type = (req.query as { type: string }).type;
+  const currentDate = new Date().toLocaleDateString('en-GB', {
+    month: '2-digit',
+    day: '2-digit',
+    year: 'numeric',
+  });
+
   // console.log('__Debugger__type: ', type)
-
-  if (type === 'start') {
-    const currentStatus = {
-      isWorking: true,
-      workplace: workplace,
-    };
-    req.user.status = currentStatus;
-
-    req.user
-      .save()
-      .then((userDoc: IUser) => {
-        console.log('__Debugger__postAttendance__userDoc: ', userDoc);
-        res.render('home', { pageTitle: 'hello', user: userDoc }); //! getHome()
-      })
-      .catch((err: Error) => {
-        console.log(err);
-      });
-  } else {
-    //! type === 'end'
-  }
-
-  req.user;
+  //! __warning
+  req.user
+    .setStatus(type, workplace)
+    .then((userDoc: any) => {
+      return userDoc
+        .addAttendance(type, currentDate)
+        .then((attendDoc: any) => {
+          return attendDoc;
+        })
+        .catch((err: Error) => {
+          console.log(err);
+        });
+    })
+    .then((attendDoc: any) => {
+      if (type === 'start') {
+        res.render('home.ejs', {
+          pageTitle: 'Attendance | ' + req.user.name,
+          user: req.user,
+        });
+      } else {
+        //! Tính toán Attendance
+        attendDoc
+          .calcRecord()
+          .then((attendDoc: any) => {
+            res.render('attendance-details.ejs', {
+              pageTitle: 'Attendance | ' + req.user.name,
+              attendDoc: attendDoc,
+              // user: req.user,
+            });
+          })
+          .catch((err: Error) => {
+            console.log(err);
+          });
+      }
+    })
+    .catch((err: Error) => {
+      console.log(err);
+    });
 };
