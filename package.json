@@ -7,9 +7,9 @@
     "start": "node dist/server.js",
     "dev:tsc": "npx tsc -w",
     "dev:nodemon": "nodemon --config nodemon.json src/server.ts",
+    "dev:sass": "sass -w src/scss/main.scss public/css/main.css",
     "rmdir": "node -e \"var fs = require('fs'); try{process.argv.slice(1).map((fpath) => fs.rmdirSync(fpath, { recursive: true }))}catch(err){console.log(`Dist not found`)}; process.exit(0);\"",
-    "copyfiles": "npm run rmdir dist/views && copyfiles -u 1 src/**/*.ejs dist/",
-    "sass": "sass -w src/scss/main.scss public/css/main.css"
+    "copyfiles": "npm run rmdir dist/views && copyfiles -u 1 src/**/*.ejs dist/"
   },
   "repository": {
     "type": "git",

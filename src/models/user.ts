@@ -102,12 +102,13 @@ userSchema.methods.addAttendance = function (type: string, date: string) {
   });
 
   return Attendance.findOne({ userId: this._id, date: date }).then(
-    (attendDoc) => {
+    (attendDoc : any) => {
       // console.log('__Debugger__model__user__attendDoc: ', attendDoc);
       switch (type) {
         case 'start':
           const newRecord: IRecord = {
             timeIn: new Date(),
+            timeOut: undefined,
             workplace: this.status.workplace,
           };
 
@@ -128,8 +129,10 @@ userSchema.methods.addAttendance = function (type: string, date: string) {
 
         case 'end':
           const currentRecord =
-            attendDoc?.timeRecords[attendDoc?.timeRecords.length - 1];
+            attendDoc.timeRecords[attendDoc?.timeRecords.length - 1];
           currentRecord!.timeOut = new Date();
+
+          attendDoc.timeRecords[attendDoc?.timeRecords.length - 1] = currentDate
           break;
 
         default:

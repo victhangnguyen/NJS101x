@@ -312,4 +312,43 @@ html {
   box-sizing: border-box;
 }
 
+@media screen and (min-width: 992px) {
+  .navbar {
+    position: absolute;
+    width: 25%;
+    height: 100vh;
+    align-items: flex-start;
+    justify-content: start;
+  }
+  .navbar .container-fluid,
+.navbar .container {
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: inherit;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .navbar .nav-item {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .navbar-expand-lg .navbar-collapse {
+    flex-wrap: nowrap;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  .navbar-expand-lg .navbar-nav {
+    flex-direction: column;
+  }
+  .navbar-expand-lg .navbar-nav .nav-link {
+    font-weight: bold;
+  }
+  .navbar-brand {
+    margin-left: 0.5rem;
+    font-size: 1.5em;
+    font-weight: bold;
+  }
+}
+
 /*# sourceMappingURL=main.css.map */

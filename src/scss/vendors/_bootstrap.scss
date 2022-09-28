@@ -1,0 +1,56 @@
+//! use a @media so that these changes app only to the Large Screen
+
+//! <div class="container-fluid">
+//! _navbar.scss
+@media screen and (min-width: 992px) {
+  .navbar {
+    position: absolute; //!__myself
+    width: 25%; //! Giảm về gốc trái 25% kích thước so với màn hình
+    height: 100vh; //! Giản 100% chiều đứng màn hình
+    align-items: flex-start; //! Đẩy container-fluid lên top
+    justify-content: start;
+
+    .container-fluid,
+    .container {
+      max-width: 800px;
+      
+      display: flex;
+      flex-direction: column; //! new
+      flex-wrap: inherit;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    //! .navbar .nav-item
+    .nav-item {
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+  }
+  //! <div class="collapse navbar-collapse" id="navbarContent">
+  //! _navbar.scss
+  .navbar-expand-lg {
+    .navbar-collapse {
+      flex-wrap: nowrap;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    //! <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+    .navbar-nav {
+      // flex-direction: row;
+      flex-direction: column;
+      .nav-link {
+        font-weight: bold;
+      }
+    }
+  }
+
+  // <a class="navbar-brand" href="/">Ứng dụng quản lý nhân viên</a>
+  //! _layout.scss
+  .navbar-brand {
+    margin-left: 0.5rem;
+    font-size: 1.5em;
+    font-weight: bold;
+  }
+}
