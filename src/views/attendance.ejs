@@ -2,12 +2,12 @@
 
 <body>
   <%- include('./includes/navigation.ejs') %>
-  <div class="container">
-    <% if ( !user.status.isWorking ) { %>
-    <div class="row py-1 px-md-5 py-md-3 px-sm-0 py-sm-2">
-      <div class="col-sm-0 col-md-2"></div>
-      <div class="col-sm-12 col-md-8">
-        <!-- start form -->
+
+  <div class="main-container">
+    <div class="sidebar"></div>
+    <div class="main">
+      <% if ( !user.status.isWorking ) { %>
+      <div class="form-controller">
         <form action="/attendance?type=start" method="post">
           <h1 class="mb-3">Điểm danh công việc</h1>
           <div class="mb-3">
@@ -24,26 +24,12 @@
           </div>
           <div class="mb-3"><button type="submit" class="btn btn-success">Điểm danh</button></div>
         </form>
-        <!-- end form -->
-      </div>
-      <div class="col-sm-0 col-md-2"></div>
-    </div>
-
-    <div class="row py-1 px-md-5 py-md-3 px-sm-0 py-sm-2">
-      <div class="col-sm-0 col-md-2"></div>
-      <div class="col-sm-12 col-md-8">
         <form action="/attendance" method="post">
           <button class="btn btn-primary">Đăng ký Nghỉ phép</button>
         </form>
       </div>
-      <div class="col-sm-0 col-md-6"></div>
-    </div>
-    <% } else { %>
-    <div class="row py-1 px-md-5 py-md-3 px-sm-0 py-sm-2">
-      <div class="col-sm-0 col-md-2"></div>
-      <div class="col-sm-12 col-md-8">
-        <!-- start form -->
-
+      <% } else { %>
+      <div class="form-controller">
         <h1 class="mb-3">Kết thúc công việc</h1>
         <div class="mb-3">
           <label for="input-full-name" class="form-label">Họ và tên:</label>
@@ -60,12 +46,10 @@
         <form action="/attendance?type=end" method="post">
           <div class="mb-3"><button type="submit" class="btn btn-danger">Kết thúc làm</button></div>
         </form>
-        <!-- end form -->
       </div>
-      <div class="col-sm-0 col-md-2"></div>
-    </div> <% } %>
+      <% } %>
 
-  </div>
+      <%- include('./includes/footer.ejs') %>
+    </div> <!-- main -->
+  </div> <!-- main-container -->
 </body>
-
-<%- include('./includes/footer.ejs') %>

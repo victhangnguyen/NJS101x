@@ -42,6 +42,7 @@ export const postAttendance: RequestHandler = (req, res, next) => {
         });
       } else {
         //! Tính toán Attendance
+        console.log('__Debugger__attendance.ts__attendDoc: ', attendDoc);
         attendDoc
           .calcRecord()
           .then((attendDoc: any) => {

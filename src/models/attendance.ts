@@ -20,15 +20,10 @@ export interface IAttendanceMethods {
 
 //! Methods and Override Methods
 //! <T, TQueryHelpers = {}, TMethodsAndOverrides = {}, TVirtuals = {}, TSchema = any>
-export interface AttendanceModel
-  extends mongoose.Model<IAttendance, {}, IAttendanceMethods> {}
+export interface AttendanceModel extends mongoose.Model<IAttendance, {}, IAttendanceMethods> {}
 
 //! <EnforcedDocType = any, M = Model<EnforcedDocType, any, any, any>, TInstanceMethods = {}>
-const attendanceSchema = new mongoose.Schema<
-  IAttendance,
-  AttendanceModel,
-  IAttendanceMethods
->({
+const attendanceSchema = new mongoose.Schema<IAttendance, AttendanceModel, IAttendanceMethods>({
   userId: { type: mongoose.Schema.Types.ObjectId, required: true },
   date: { type: String, required: true },
   timeSum: { type: String },
@@ -43,10 +38,10 @@ const attendanceSchema = new mongoose.Schema<
 });
 
 attendanceSchema.methods.calcRecord = function () {
-  const timeRecords = [...this.timeRecords];
+  const currentTimeRecords = [...this.timeRecords];
   let timeSum = 0;
 
-  const calculatedTimeRecords = timeRecords.map((record) => {
+  const calculatedTimeRecords = currentTimeRecords.map((record) => {
     let timeWorking = Math.abs(record.timeOut - record.timeIn);
     timeSum += timeWorking;
     // console.log('__Debugger__calcRecord__timeWorking: ', timeWorking);

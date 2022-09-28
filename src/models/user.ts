@@ -101,46 +101,46 @@ userSchema.methods.addAttendance = function (type: string, date: string) {
     year: 'numeric',
   });
 
-  return Attendance.findOne({ userId: this._id, date: date }).then(
-    (attendDoc : any) => {
-      // console.log('__Debugger__model__user__attendDoc: ', attendDoc);
-      switch (type) {
-        case 'start':
-          const newRecord: IRecord = {
-            timeIn: new Date(),
-            timeOut: undefined,
-            workplace: this.status.workplace,
-          };
+  return Attendance.findOne({ userId: this._id, date: date }).then((attendDoc: any) => {
+    // console.log('__Debugger__model__user__attendDoc: ', attendDoc);
+    switch (type) {
+      case 'start':
+        const newRecord: IRecord = {
+          timeIn: new Date(),
+          timeOut: undefined,
+          workplace: this.status.workplace,
+        };
 
-          if (!attendDoc) {
-            //! create new AttendDoc
-            const newAttendance = new Attendance({
-              userId: this._id,
-              date: currentDate,
-              timeRecords: [newRecord],
-            });
+        if (!attendDoc) {
+          //! create new AttendDoc
+          const newAttendance = new Attendance({
+            userId: this._id,
+            date: currentDate,
+            timeRecords: [newRecord],
+          });
 
-            return newAttendance.save();
-          } else {
-            attendDoc.timeRecords.push(newRecord);
-            // return attendDoc.save();
-            break;
-          }
-
-        case 'end':
-          const currentRecord =
-            attendDoc.timeRecords[attendDoc?.timeRecords.length - 1];
-          currentRecord!.timeOut = new Date();
-
-          attendDoc.timeRecords[attendDoc?.timeRecords.length - 1] = currentDate
+          return newAttendance.save();
+        } else {
+          attendDoc.timeRecords.push(newRecord);
+          // return attendDoc.save();
           break;
+        }
 
-        default:
-          break;
-      }
-      return attendDoc!.save();
+      case 'end':
+        const currentRecord = attendDoc.timeRecords[attendDoc?.timeRecords.length - 1];
+
+        currentRecord!.timeOut = new Date();
+
+        attendDoc.timeRecords[attendDoc?.timeRecords.length - 1] = currentRecord;
+
+        break;
+
+      default:
+        break;
     }
-  );
+    
+    return attendDoc.save();
+  });
 };
 
 const User = mongoose.model('User', userSchema);
