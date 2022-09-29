@@ -24,7 +24,7 @@ export interface IUserMethods {
   // addAttendance(type: string, workplace: string): mongoose.Document<IUser>;
   addAttendance(type: string, date: string): any;
   //! setStatus return this (user Instance)
-  setStatus(type: string, workplace: string): this;
+  setStatus(type: string, workplace: string): any;
 }
 
 export interface IUserDocument extends IUser, IUserMethods {} //! ???
@@ -138,7 +138,7 @@ userSchema.methods.addAttendance = function (type: string, date: string) {
       default:
         break;
     }
-    
+
     return attendDoc.save();
   });
 };

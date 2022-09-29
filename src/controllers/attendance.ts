@@ -49,7 +49,7 @@ export const postAttendance: RequestHandler = (req, res, next) => {
             res.render('attendance-details.ejs', {
               pageTitle: 'Attendance | ' + req.user.name,
               attendDoc: attendDoc,
-              // user: req.user,
+              user: req.user,
             });
           })
           .catch((err: Error) => {

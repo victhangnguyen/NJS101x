@@ -3,11 +3,11 @@
 <body>
   <%- include('./includes/navigation.ejs') %>
 
-  <div class="main-container">
+  <div class="layout">
     <div class="sidebar"></div>
     <div class="main">
       <% if ( !user.status.isWorking ) { %>
-      <div class="form-controller">
+      <div class="form-control-main">
         <form action="/attendance?type=start" method="post">
           <h1 class="mb-3">Điểm danh công việc</h1>
           <div class="mb-3">
@@ -29,7 +29,7 @@
         </form>
       </div>
       <% } else { %>
-      <div class="form-controller">
+      <div class="form-control-main">
         <h1 class="mb-3">Kết thúc công việc</h1>
         <div class="mb-3">
           <label for="input-full-name" class="form-label">Họ và tên:</label>
@@ -51,5 +51,5 @@
 
       <%- include('./includes/footer.ejs') %>
     </div> <!-- main -->
-  </div> <!-- main-container -->
+  </div> <!-- layout -->
 </body>

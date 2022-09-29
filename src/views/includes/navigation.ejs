@@ -13,20 +13,17 @@
           <a class="nav-link active" aria-current="page" href="/attendance">Điểm danh bắt đầu/kết thúc làm</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="/attendance">Xem/sửa thông tin cá nhân</a>
+          <a class="nav-link active" aria-current="page" href="/profile/<%= user._id %>">Xem/sửa thông tin cá nhân</a>
         </li>
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" href="/attendance">Tra cứu thông tin giờ làm </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="/attendance">Thông tin Covid cá nhân</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="/attendance">Thông tin Covid cá nhân</a>
+          <a class="nav-link active" aria-current="page" href="/covidstatus">Thông tin Covid cá nhân</a>
         </li>
 
       </ul>
-      <form class="d-flex" role="search">
+      <form class="d-flex mt-3" role="search">
         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
         <button class="btn btn-outline-success" type="submit">Search</button>
       </form>

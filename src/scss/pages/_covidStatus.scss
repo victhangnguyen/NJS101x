@@ -1,0 +1,27 @@
+.covid-status-form {
+  padding: 1rem 2rem;
+}
+@media screen and (min-width: 576px) {
+  .container-main {
+    padding: 2rem 8rem;
+    .form-button {
+      display: flex;
+      justify-content: center;
+
+      button {
+        width: 20rem;
+      }
+    }
+  }
+}
+@media screen and (min-width: 768px) {
+  .covid-status-form {
+    padding: 2rem 6rem;
+  }
+}
+@media screen and (min-width: 992px) {
+}
+@media screen and (min-width: 1200px) {
+}
+@media screen and (min-width: 1400px) {
+}

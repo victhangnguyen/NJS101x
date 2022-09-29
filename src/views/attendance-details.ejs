@@ -2,12 +2,12 @@
 
 <body>
   <%- include('./includes/navigation.ejs') %>
-  <div class="container">
 
-    <div class="row py-1 px-md-5 py-md-3 px-sm-0 py-sm-2">
-      <div class="col-sm-0 col-md-1"></div>
-      <div class="col-sm-12 col-md-10">
-        <!-- title -->
+  <div class="layout">
+    <div class="sidebar"></div>
+    <div class="main">
+      <!-- main start -->
+      <div class="form-table-main">
         <div class="app-title mb-3 text-center">
           <h5>Bảng thống kê công việc - ngày <%= attendDoc.date %></h5>
         </div>
@@ -40,11 +40,8 @@
             </tr>
           </tbody>
         </table>
-        <!-- end form -->
       </div>
-      <div class="col-sm-0 col-md-1"></div>
-    </div>
-  </div>
+      <%- include('./includes/footer.ejs') %>
+    </div> <!-- main end -->
+  </div> <!-- layout -->
 </body>
-
-<%- include('./includes/footer.ejs') %>

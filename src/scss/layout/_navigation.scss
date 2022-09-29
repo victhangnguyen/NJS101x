@@ -4,7 +4,7 @@
 //! _navbar.scss
 @media screen and (min-width: 992px) {
   .navbar {
-    position: absolute; //!__myself
+    position: absolute; //!__my
     width: 25%; //! Giảm về gốc trái 25% kích thước so với màn hình
     height: 100vh; //! Giản 100% chiều đứng màn hình
     align-items: flex-start; //! Đẩy container-fluid lên top
@@ -37,6 +37,7 @@
 
     //! <ul class="navbar-nav me-auto mb-2 mb-lg-0">
     .navbar-nav {
+      margin-top: 2rem; //!__my 
       // flex-direction: row;
       flex-direction: column;
       .nav-link {
@@ -55,7 +56,7 @@
 }
 
 @media screen and (min-width: 992px) {
-  .main-container {
+  .layout {
     display: flex;
     flex-direction: row;
     .sidebar {
@@ -76,8 +77,4 @@
 .footer {
   margin: 0;
   margin-top: 2rem;
-}
-
-.form-controller {
-  padding: 1rem 2rem;
 }

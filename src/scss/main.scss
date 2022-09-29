@@ -1,4 +1,12 @@
-@import 'layout/layout.scss';
+//! init ui app
 @import 'base/base';
+//! pages
+@import 'pages/attendance';
+@import 'pages/profile';
+@import 'pages/covidStatus';
+//! layout
+@import 'layout/layout.scss';
 @import 'layout/navigation';
 @import 'vendors/bootstrap';
+//! utils
+@import 'sass-utils/datePicker';
