@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 
 //! imp models
 import Attendance, { IAttendance, IRecord } from './attendance';
+import CovidStatus, { ICovidStatus } from './covidStatus';
 
 export interface IUser {
   _id?: mongoose.Types.ObjectId;
@@ -25,6 +26,9 @@ export interface IUserMethods {
   addAttendance(type: string, date: string): any;
   //! setStatus return this (user Instance)
   setStatus(type: string, workplace: string): any;
+  registerBodyTemp(temperature: number): any;
+  registerVacine(name: string, date: Date): any;
+  registerPositive(date: Date): any;
 }
 
 export interface IUserDocument extends IUser, IUserMethods {} //! ???
@@ -92,6 +96,19 @@ userSchema.methods.setStatus = function (type: string, workplace: string) {
   }
   return this.save();
   // return this;
+};
+
+userSchema.methods.registerBodyTemp = function (temperature: number) {
+  CovidStatus.findOne({ userId: this._id })
+    //   covidStatusDoc: (mongoose.Document<unknown, any, ICovidStatus> & ICovidStatus & {
+    //     _id: mongoose.Types.ObjectId;
+    // } & ICovidStatusMethods) | null
+    .then((covidStatusDoc) => {
+      console.log('__Debugger__covidStatusDoc: ', covidStatusDoc);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 userSchema.methods.addAttendance = function (type: string, date: string) {
