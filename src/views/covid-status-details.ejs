@@ -1,0 +1,86 @@
+<%- include('./includes/header.ejs') %>
+
+<body>
+  <%- include('./includes/navigation.ejs') %>
+
+  <div class="layout">
+    <div class="sidebar"></div>
+    <div class="main">
+      <!-- main start -->
+      <div class="container-main">
+        <div class="container-fuild">
+          <div class="row">
+            <!-- BodyTemperatures Information Table -->
+            <div class="col-12 col-sm-6">
+              <h5 class="text-center">Thông tin đăng ký thân nhiệt cơ thể</h5>
+              <table class="table table-bordered border-success border border-2 text-center">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Nhiệt độ cơ thể</th>
+                    <th scope="col">Giờ</th>
+                    <th scope="col">Ngày đăng ký</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% covidStatus.bodyTemperatures.forEach((cs, index) => { %>
+                  <tr>
+                    <th scope="row"><%= index + 1 %></th>
+                    <td class="col-5"><%= cs.temp %>°C</td>
+                    <td class="col-2"><%= cs.date.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit' })%></td>
+                    <td class="col-5"><%= cs.date.toLocaleDateString('vi-VN', {year: 'numeric', month: 'long', day: 'numeric'})%></td>
+                  </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+            <!-- Vaccination Information Table -->
+            <div class="col-12 col-sm-6">
+              <h5 class="text-center">Thông tin đăng ký tiêm vaccine</h5>
+              <table class="table table-bordered border-success border border-2 text-center">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Tên vaccine</th>
+                    <th scope="col`">Ngày tiêm vaccine</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% covidStatus.vaccines.forEach((vaccine, index) => { %>
+                  <tr>
+                    <th scope="row"><%= index + 1 %></th>
+                    <td class="col-5"><%= vaccine.name %></td>
+                    <td class="col-5"><%= vaccine.date.toLocaleDateString('vi-VN', {year: 'numeric', month: 'long', day: 'numeric'})%></td>
+                  </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+            <!-- Positive Information Table -->
+            <div class="col-12 col-sm-6 ">
+              <h5 class="text-center">Thông tin đăng ký tiêm vaccine</h5>
+              <table class="table table-bordered border-success border border-2 text-center">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col`">Ngày phát hiện dương tính</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% covidStatus.positive.forEach((p, index) => { %>
+                  <tr>
+                    <th scope="row"><%= index + 1 %></th>
+                    <td class="col-10"><%= p.date.toLocaleDateString('vi-VN', {year: 'numeric', month: 'long', day: 'numeric'}) %></td>
+                  </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div> <!-- container-main -->
+      <!-- table -->
+      <%- include('./includes/footer.ejs') %>
+    </div> <!-- main end -->
+  </div> <!-- layout -->
+</body>

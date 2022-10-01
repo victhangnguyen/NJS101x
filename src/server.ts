@@ -7,7 +7,7 @@ import { config } from './config/config';
 //! imp library
 import Logging from './library/Logging';
 
-//! imp routes
+//! imp routesk
 import userRoutes from './routes/user';
 
 //! imp controllers

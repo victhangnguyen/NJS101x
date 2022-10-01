@@ -400,12 +400,15 @@ Button
 }
 
 .covid-status-form {
-  padding: 1rem 2rem;
+  padding: 1rem 0.5rem;
 }
 
 @media screen and (min-width: 576px) {
+  .covid-status-form {
+    padding: 1.5rem 4rem;
+  }
   .container-main {
-    padding: 2rem 8rem;
+    padding: 1.5rem 8rem;
   }
   .container-main .form-button {
     display: flex;
@@ -417,7 +420,7 @@ Button
 }
 @media screen and (min-width: 768px) {
   .covid-status-form {
-    padding: 2rem 6rem;
+    padding: 1.5rem 6rem;
   }
 }
 .layout .container-main {

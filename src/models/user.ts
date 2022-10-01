@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 
 //! imp models
-import Attendance, { IAttendance, IRecord } from './attendance';
-import CovidStatus, { ICovidStatus } from './covidStatus';
+import Attendance, { IAttendance, IRecord, IAttendanceMethods } from './attendance';
+import CovidStatus, { ICovidStatus, ICovidStatusMethods } from './covidStatus';
 
 export interface IUser {
   _id?: mongoose.Types.ObjectId;
@@ -23,15 +23,16 @@ export interface IUser {
 //! interface Methods - instance
 export interface IUserMethods {
   // addAttendance(type: string, workplace: string): mongoose.Document<IUser>;
-  addAttendance(type: string, date: string): any;
+  addAttendance(type: string, date: string): Promise<mongoose.HydratedDocument<IAttendance, IAttendanceMethods>>;
   //! setStatus return this (user Instance)
-  setStatus(type: string, workplace: string): any;
-  registerBodyTemp(temperature: number): any;
-  registerVacine(name: string, date: Date): any;
-  registerPositive(date: Date): any;
+  setStatus(type: string, workplace: string): Promise<mongoose.HydratedDocument<IUser, IUser>>;
+  addCovidStatus(
+    type: string,
+    temp: number | undefined,
+    name: string | undefined,
+    date: Date | undefined
+  ): Promise<mongoose.HydratedDocument<ICovidStatus, ICovidStatusMethods>>;
 }
-
-export interface IUserDocument extends IUser, IUserMethods {} //! ???
 
 //! Methods and Override Methods
 //! <T, TQueryHelpers = {}, TMethodsAndOverrides = {}, TVirtuals = {}, TSchema = any>
@@ -98,13 +99,45 @@ userSchema.methods.setStatus = function (type: string, workplace: string) {
   // return this;
 };
 
-userSchema.methods.registerBodyTemp = function (temperature: number) {
-  CovidStatus.findOne({ userId: this._id })
-    //   covidStatusDoc: (mongoose.Document<unknown, any, ICovidStatus> & ICovidStatus & {
-    //     _id: mongoose.Types.ObjectId;
-    // } & ICovidStatusMethods) | null
+userSchema.methods.addCovidStatus = function (
+  type: string,
+  temp: number | undefined = undefined,
+  name: string | undefined = undefined,
+  date: Date | undefined = undefined
+) {
+  return CovidStatus.findOne({ userId: this._id })
     .then((covidStatusDoc) => {
-      console.log('__Debugger__covidStatusDoc: ', covidStatusDoc);
+      let update;
+      switch (type) {
+        case 'bodytemp':
+          const newBodyTemps = [...covidStatusDoc?.bodyTemperatures!];
+          newBodyTemps.push({
+            date: new Date(),
+            temp: temp!,
+          });
+          update = { bodyTemperatures: newBodyTemps };
+          break;
+
+        case 'vaccination':
+          const newVaccines = [...covidStatusDoc?.vaccines!];
+          newVaccines.push({
+            name: name!,
+            date: date!,
+          });
+          update = { vaccines: newVaccines };
+          break;
+
+        case 'positive':
+          const newPositive = [...covidStatusDoc?.positive!];
+          newPositive.push({ date: date! });
+          update = { positive: newPositive };
+          break;
+
+        default:
+          update = {};
+      }
+
+      return CovidStatus.findOneAndUpdate({ userId: this._id }, update, { new: true }) as any;
     })
     .catch((err) => {
       console.log(err);
@@ -130,13 +163,11 @@ userSchema.methods.addAttendance = function (type: string, date: string) {
 
         if (!attendDoc) {
           //! create new AttendDoc
-          const newAttendance = new Attendance({
+          return Attendance.create({
             userId: this._id,
             date: currentDate,
             timeRecords: [newRecord],
           });
-
-          return newAttendance.save();
         } else {
           attendDoc.timeRecords.push(newRecord);
           // return attendDoc.save();
@@ -160,6 +191,6 @@ userSchema.methods.addAttendance = function (type: string, date: string) {
   });
 };
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model<IUser, UserModel>('User', userSchema);
 
 export default User;

@@ -25,7 +25,10 @@ router.post('/profile/:userId', userController.postProfile);
 //! COVID-STATUS
 //@ /covidstatus => GET
 router.get('/covidstatus', covidStatusController.getCovidStatus);
+//@ /covidstatus => GET
+router.get('/covidstatus/:covidStatusId', covidStatusController.getCovidStatusDetails);
 //@ /covidstatus => POST
 router.post('/covidstatus', covidStatusController.postCovidStatus);
+//@ /covidstatus => POSTs', covidStatusController.postCovidStatus);
 
 export default router;

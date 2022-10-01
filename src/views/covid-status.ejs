@@ -8,62 +8,113 @@
     <div class="main">
       <!-- main start -->
       <div class="container-main">
+        <!-- /covidstatus/:covidStatusId -->
+        <div class="covid-status-form">
+          <form action="/covidstatus/<%= covidStatus._id %>" method="get" class="form-control-main form-control border border-danger border-2 needs-validation">
+            <div class="row">
+              <div class="col-12 col-sm-8 col-md-7">
+                <p>Số lần Đăng ký thông tin thân nhiệt: <span class="font-weight-bold"><%= covidStatus.bodyTemperatures.length %></span></p>
+                <p>Số lần Đăng ký thông tin tiêm Vaccine: <span class="font-weight-bold"><%= covidStatus.vaccines.length %></span></p>
+                <p>Số lần Đăng ký thông tin thân nhiệt: <span class="font-weight-bold"><%= covidStatus.positive.length %></span></p>
+              </div>
+              <div class="col-12 col-sm-4 col-md-5">
+                <button class="btn btn-danger">Xem thông tin chi tiết</button>
+              </div>
+            </div>
+          </form>
+        </div>
         <!-- body temperature information -->
-        <form action="/covidstatus?type=bodytemp" method="post" class="covid-status-form">
-          <div class="form-control form-control-main border border-success border-3">
+        <div class="covid-status-form">
+          <form action="/covidstatus?type=bodytemp" method="post" class="form-control-main form-control border border-success border-2 needs-validation" novalidate>
             <h1 class="text-center mb-3">Đăng ký thông tin thân nhiệt</h1>
             <div class="row mb-3">
               <label for="input-body-temperature" class="col-sm-4 col-md-3 col-form-label">Nhiệt độ cơ thể:</label>
               <div class="col-sm-8 col-md-9 mb-3">
-                <input type="text" class="form-control" id="input-body-temperature" placeholder="Nhập nhiệt độ của cơ thể" name="bodyTemperature">
+                <input type="number" class="form-control" id="input-body-temperature" placeholder="Nhập nhiệt độ của cơ thể" name="bodyTemperature" required>
+                <div class="valid-feedback">
+                  Xin vui lòng bấm Đăng ký để xác nhận!
+                </div>
+                <div class="invalid-feedback">
+                  Xin vui lòng nhập Nhiệt độ cơ thể của bạn!
+                </div>
               </div>
               <div class="form-button">
                 <button type="submit" class="btn btn-success">Đăng ký</button>
               </div>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
         <!--Register for vaccination information -->
-        <form action="/covidstatus?type=vaccination" method="post" class="covid-status-form">
-          <div class="form-control form-control-main border border-success border-3">
+        <div class="covid-status-form">
+          <form action="/covidstatus?type=vaccination" method="post" class="form-control-main form-control border border-success border-2 needs-validation" novalidate>
             <h1 class="text-center mb-3">Đăng ký thông tin tiêm Vaccine</h1>
             <div class="row mb-3">
-              <h5>Tiêm mũi:</h5>
-              <div class="row form-group mb-3">
-                <label for="date" class="col-sm-4 col-md-3 col-form-label">Ngày tiêm vaccine:</label>
-                <div class="col-sm-8 col-md-9">
-                  <div class="input-group date" id="datepicker1">
-                    <input type="text" class="form-control" placeholder="01/01/2021">
-                    <span class="input-group-append">
-                      <span class="input-group-text bg-white d-block">
-                        <i class="fa fa-calendar"></i>
-                      </span>
+              <label class="col-sm-4 col-md-3 col-form-label">Mũi vaccine số: <%= covidStatus.vaccines.length + 1%></label>
+              <div class="col-sm-8 col-md-9">
+                <div class="valid-feedback">
+                  Xin vui lòng bấm Đăng ký để xác nhận!
+                </div>
+                <div class="invalid-feedback">
+                  Xin vui lòng nhập Tên vaccine!
+                </div>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label for="input-vaccine-name" class="col-sm-4 col-md-3 col-form-label">Tên vaccine:</label>
+              <div class="col-sm-8 col-md-9">
+                <input type="text" class="form-control" id="input-vaccine-name" placeholder="Nhập tên vaccine" name="name" required>
+                <div class="valid-feedback">
+                  Xin vui lòng bấm Đăng ký để xác nhận!
+                </div>
+                <div class="invalid-feedback">
+                  Xin vui lòng nhập Tên vaccine!
+                </div>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <label for="input-date-vaccine" class="col-sm-4 col-md-3 col-form-label">Ngày tiêm vaccine:</label>
+              <div class="col-sm-8 col-md-9">
+                <div class="input-group date" id="datepicker1">
+                  <input id="input-date-vaccine" type="text" class="form-control" placeholder="dd/mm/yyyy" name="date" required>
+                  <span class="input-group-append">
+                    <span class="input-group-text bg-white d-block">
+                      <i class="fa fa-calendar"></i>
                     </span>
+                  </span>
+                  <div class="valid-feedback">
+                    Xin vui lòng bấm Đăng ký để xác nhận!
+                  </div>
+                  <div class="invalid-feedback">
+                    Xin vui lòng nhập Ngày tiêm vaccine!
                   </div>
                 </div>
               </div>
-              <div class="form-button">
-                <button type="submit" class="btn btn-success">Đăng ký</button>
-              </div>
             </div>
-          </div>
-        </form>
+            <div class="form-button">
+              <button type="submit" class="btn btn-success">Đăng ký</button>
+            </div>
+          </form>
+        </div>
 
-        <!--Register for vaccination information -->
-        <form action="/covidstatus?type=positive" method="post" class="covid-status-form">
-          <div class="form-control form-control-main border border-success border-3">
+        <!--Register for Positive -->
+        <div class="covid-status-form">
+          <form action="/covidstatus?type=positive" method="post" class="form-control-main form-control border border-success border-2 needs-validation" novalidate>
             <h1 class="text-center mb-3">Đăng ký thông tin dương tính với covid</h1>
             <div class="row mb-3">
-              <div class="row form-group mb-3">
-                <label for="date" class="col-sm-4 col-md-3 col-form-label">Ngày phát hiện dương tính:</label>
-                <div class="col-sm-8 col-md-9">
-                  <div class="input-group date" id="datepicker2">
-                    <input type="text" class="form-control" placeholder="01/01/2021">
-                    <span class="input-group-append">
-                      <span class="input-group-text bg-white d-block">
-                        <i class="fa fa-calendar"></i>
-                      </span>
+              <label for="input-date-positive" class="col-sm-4 col-md-3 col-form-label">Ngày phát hiện dương tính:</label>
+              <div class="col-sm-8 col-md-9">
+                <div class="input-group date" id="datepicker2">
+                  <input id="input-date-positive" type="text" class="form-control" placeholder="dd/mm/yyyy" name="date" required>
+                  <span class="input-group-append">
+                    <span class="input-group-text bg-white d-block">
+                      <i class="fa fa-calendar"></i>
                     </span>
+                  </span>
+                  <div class="valid-feedback">
+                    Xin vui lòng bấm Đăng ký để xác nhận!
+                  </div>
+                  <div class="invalid-feedback">
+                    Xin vui lòng nhập Ngày phát hiện dương tính!
                   </div>
                 </div>
               </div>
@@ -71,9 +122,10 @@
                 <button type="submit" class="btn btn-success">Đăng ký</button>
               </div>
             </div>
-          </div>
-        </form>
-      </div>
+          </form>
+        </div>
+
+      </div> <!-- container-main -->
       <!-- table -->
       <%- include('./includes/footer.ejs') %>
     </div> <!-- main end -->

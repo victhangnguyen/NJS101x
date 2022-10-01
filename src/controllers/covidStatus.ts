@@ -8,38 +8,68 @@ import Logging from '../library/Logging';
 import CovidStatus, { ICovidStatus } from '../models/covidStatus';
 
 export const getCovidStatus: RequestHandler = (req, res, next) => {
-  CovidStatus.initByUserId(req.user._id)
+  CovidStatus.findOne({ userId: req.user._id })
     .then((covidStatusDoc) => {
-      res.render('covid-status.ejs', { pageTitle: 'Thông tin Covid cá nhân', user: req.user });
+      // console.log('__Debugger__covidStatusDoc: ', covidStatusDoc);
+      if (!covidStatusDoc) {
+        return CovidStatus.create({
+          userId: req.user._id,
+          bodyTemperatures: [],
+          vaccines: [],
+          positive: [],
+        }).catch((err) => {
+          console.log(err);
+        });
+      }
+
+      return covidStatusDoc;
+    })
+    .then((covidStatusDoc) => {
+      // console.log('__Debugger__getCovidStatus__covidStatusDoc: ', covidStatusDoc);
+      res.render('covid-status.ejs', {
+        pageTitle: 'Thông tin Covid cá nhân',
+        user: req.user,
+        covidStatus: covidStatusDoc,
+      });
     })
     .catch((err) => {
       console.log(err);
     });
 };
 
-//! after CovidStatus initialized.
+//! after CovidStatus created.
 export const postCovidStatus: RequestHandler = (req, res, next) => {
-  const type = req.query.type;
-  // console.log('__Debugger__postCovidStatus__type: ', type)
+  const type: string = (req.query as { type: string }).type;
+  const temp: number | undefined = (req.body as { bodyTemperature: string }).bodyTemperature
+    ? Number(req.body.bodyTemperature)
+    : undefined;
+  const name: string | undefined = (req.body as { name: string }).name;
+  const date: Date | undefined = (req.body as { date: string }).date ? new Date(req.body.date) : undefined;
+  // const date = new Date(req.body.date);
+  console.log('__Debugger__postCovidStatus1__postCovidStatus__type: ', type, 'temp: ', temp, 'date: ', date);
+  req.user
+    .addCovidStatus(type, temp, name, date)
+    .then((covidStatusDoc: ICovidStatus) => {
+      console.log('__Debugger__postCovidStatus2__covidStatusDoc: ', covidStatusDoc.positive);
+      res.redirect(`/covidstatus/${covidStatusDoc._id}`);
+    })
+    .catch((err: Error) => {
+      console.log(err);
+    });
+};
 
-  //! branching the type
-  switch (type) {
-    //! BODY-TEMP
-    case 'bodytemp':
-      // console.log('__Debugger__ctrls/postCovidStatus__bodyTemp');
-
-      break;
-    //! VACCINATION
-    case 'vaccination':
-      // console.log('__Debugger__ctrls/postCovidStatus__vaccination');
-      break;
-    //! POSITIVE
-    case 'positive':
-      // console.log('__Debugger__ctrls/postCovidStatus__positive');
-
-      break;
-
-    default:
-      break;
-  }
+export const getCovidStatusDetails: RequestHandler = (req, res, next) => {
+  const userId = req.params.userId;
+  CovidStatus.findOne({ _userId: userId })
+    .then((covidStatusDoc) => {
+      // console.log('__Debugger__getCovidStatusDetails__covidStatusDoc: ', covidStatusDoc);
+      res.render('covid-status-details.ejs', {
+        pageTitle: 'Chi tiết Thông tin Covid cá nhân',
+        user: req.user,
+        covidStatus: covidStatusDoc,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };

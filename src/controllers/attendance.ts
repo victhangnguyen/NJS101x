@@ -1,5 +1,5 @@
 //! imp models
-import User, { IUserDocument } from '../models/user';
+import User from '../models/user';
 import Attendance, { AttendanceModel, IAttendance } from '../models/attendance';
 
 import { RequestHandler } from 'express';
