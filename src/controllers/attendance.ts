@@ -41,7 +41,7 @@ export const postAttendance: RequestHandler = (req, res, next) => {
           user: req.user,
         });
       } else {
-        //! Tính toán Attendance
+        //! After have timeOut, we calculate Record that Attendance
         console.log('__Debugger__attendance.ts__attendDoc: ', attendDoc);
         attendDoc
           .calcRecord()

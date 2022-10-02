@@ -5,11 +5,45 @@
 
   <div class="layout">
     <div class="sidebar"></div>
-    <div class="main">
-      <!-- main begin -->
-      .form-control
+    <div class="container-main">
+      <div class="container-fuild">
+        <div class="row wrap-form-control">
+          <form class="d-flex">
+            <input class="form-control me-2" type="search" placeholder="Tìm kiếm thông tin" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Tìm</button>
+          </form>
+        </div>
+        <div class="row">
+          <!-- BodyTemperatures Information Table -->
+          <div class="col-12">
+            <h5 class="text-center fw-bold">Tra cứu thông tin giờ làm - lương</h5>
+            <table class="table table-bordered border-success border border-2 text-center">
+              <thead class="table-success border-success">
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Ngày</th>
+                  <th scope="col">Nơi làm việc</th>
+                  <th scope="col">Giờ bắt đầu</th>
+                  <th scope="col">Giờ kết thúc</th>
+                  <th scope="col">Thời gian làm việc</th>
+                </tr>
+              </thead>
+              <tbody>
 
-      <%- include('./includes/footer.ejs') %>
-    </div> <!-- main end -->
+                <tr>
+                  <th scope="row">1</th>
+                  <td class="col-3">1</td>
+                  <td class="col-2">1</td>
+                  <td class="col-2">1</td>
+                  <td class="col-2">1</td>
+                  <td class="col-3">1</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div> <!-- container-main -->
   </div> <!-- layout -->
+  <%- include('./includes/footer.ejs') %>
 </body>

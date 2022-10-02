@@ -42,7 +42,7 @@ attendanceSchema.methods.calcRecord = function () {
   let timeSum = 0;
 
   const calculatedTimeRecords = currentTimeRecords.map((record) => {
-    let timeWorking = Math.abs(record.timeOut - record.timeIn);
+    let timeWorking = Math.abs(record.timeOut - record.timeIn); //! miniseconds
     timeSum += timeWorking;
     // console.log('__Debugger__calcRecord__timeWorking: ', timeWorking);
     return {

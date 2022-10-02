@@ -170,9 +170,8 @@ userSchema.methods.addAttendance = function (type: string, date: string) {
           });
         } else {
           attendDoc.timeRecords.push(newRecord);
-          // return attendDoc.save();
-          break;
         }
+        break;
 
       case 'end':
         const currentRecord = attendDoc.timeRecords[attendDoc?.timeRecords.length - 1];

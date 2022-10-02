@@ -33,37 +33,32 @@ svg {
   vertical-align: top;
 }
 
-.logo {
+.navbar .logo {
   width: 35px;
   height: 35px;
   display: inline-block;
   margin-right: 20px;
 }
-
-.logo > img {
+.navbar .logo > img {
   width: 100%;
 }
-
-.navbar {
+.navbar .navbar {
   background-color: var(--color-dark);
   padding: 0.5rem;
   border-bottom: 5px solid var(--color-main);
 }
-
-.navbar-brand {
+.navbar .navbar-brand {
   display: flex;
   padding: 0;
   justify-content: center;
   align-items: center;
 }
-
-.nav-link {
+.navbar .nav-link {
   display: inline-block;
   padding: 0;
   margin: 0.5rem 0.5rem;
 }
-
-.nav-link.active {
+.navbar .nav-link.active {
   border-bottom: 2px solid var(--color-main);
 }
 
@@ -170,6 +165,18 @@ Button
 .btn .btn-success {
   background-color: var(--color-main) !important;
   color: var(--color-dark) !important;
+}
+.btn.btn-long-25per {
+  width: 25%;
+}
+.btn.btn-long-50per {
+  width: 50%;
+}
+.btn.btn-long-75per {
+  width: 75%;
+}
+.btn.btn-long-100per {
+  width: 100%;
 }
 
 /* page not found */
@@ -312,30 +319,6 @@ Button
   transition: all 300ms ease-out;
 }
 
-.layout .container-main h1 {
-  font-size: 1.5rem;
-}
-@media screen and (min-width: 576px) {
-  .layout .container-main h1 {
-    font-size: 1.5rem;
-  }
-}
-@media screen and (min-width: 768px) {
-  .layout .container-main h1 {
-    font-size: 1.75rem;
-  }
-}
-@media screen and (min-width: 992px) {
-  .layout .container-main h1 {
-    font-size: 1.95rem;
-  }
-}
-@media screen and (min-width: 1200px) {
-  .layout .container-main h1 {
-    font-size: 2.05rem;
-  }
-}
-
 .form-control-main {
   padding: 2rem 4rem;
 }
@@ -374,15 +357,6 @@ Button
     padding: 4rem 8rem;
   }
 }
-.profile-form-control {
-  padding: 2rem 4rem;
-}
-
-@media screen and (min-width: 992px) {
-  .profile-form-control {
-    padding: 4rem 16rem;
-  }
-}
 .avatar-form-control {
   display: flex;
   flex-direction: column;
@@ -391,39 +365,16 @@ Button
 }
 .avatar-form-control .avatar-image {
   overflow: hidden;
-  margin-bottom: 2rem;
 }
 .avatar-form-control .avatar-image img {
   object-fit: cover;
-  height: 200px;
+  max-height: 200px;
   width: 200px;
 }
 
-.covid-status-form {
-  padding: 1rem 0.5rem;
-}
-
-@media screen and (min-width: 576px) {
-  .covid-status-form {
-    padding: 1.5rem 4rem;
-  }
-  .container-main {
-    padding: 1.5rem 8rem;
-  }
-  .container-main .form-button {
-    display: flex;
-    justify-content: center;
-  }
-  .container-main .form-button button {
-    width: 20rem;
-  }
-}
-@media screen and (min-width: 768px) {
-  .covid-status-form {
-    padding: 1.5rem 6rem;
-  }
-}
 .layout .container-main {
+  min-height: 100vh;
+  width: 100%;
   padding: 0.5rem 1rem;
 }
 @media screen and (min-width: 576px) {
@@ -438,6 +389,38 @@ Button
 }
 .layout .form-control-main {
   padding: 1.5rem;
+}
+.wrap-form-control {
+  padding: 1rem 0.5rem;
+}
+
+@media screen and (min-width: 768px) {
+  .wrap-form-control {
+    padding: 1.5rem 6rem;
+  }
+}
+.layout .container-main h1 {
+  font-size: 1.5rem;
+}
+@media screen and (min-width: 576px) {
+  .layout .container-main h1 {
+    font-size: 1.5rem;
+  }
+}
+@media screen and (min-width: 768px) {
+  .layout .container-main h1 {
+    font-size: 1.75rem;
+  }
+}
+@media screen and (min-width: 992px) {
+  .layout .container-main h1 {
+    font-size: 1.95rem;
+  }
+}
+@media screen and (min-width: 1200px) {
+  .layout .container-main h1 {
+    font-size: 2.05rem;
+  }
 }
 
 @media screen and (min-width: 992px) {
@@ -493,7 +476,6 @@ Button
 }
 .footer {
   margin: 0;
-  margin-top: 2rem;
 }
 
 .datepicker {
@@ -1020,6 +1002,11 @@ Button
   border: 1px solid #ccc;
   margin-left: -5px;
   margin-right: -5px;
+}
+
+.day.disabled-date {
+  background-color: red !important;
+  color: white !important;
 }
 
 /*# sourceMappingURL=main.css.map */

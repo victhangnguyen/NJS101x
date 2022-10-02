@@ -10,7 +10,7 @@ import CovidStatus, { ICovidStatus } from '../models/covidStatus';
 export const getCovidStatus: RequestHandler = (req, res, next) => {
   CovidStatus.findOne({ userId: req.user._id })
     .then((covidStatusDoc) => {
-      // console.log('__Debugger__covidStatusDoc: ', covidStatusDoc);
+      //! create New Covid Status Doc
       if (!covidStatusDoc) {
         return CovidStatus.create({
           userId: req.user._id,

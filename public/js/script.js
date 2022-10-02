@@ -2,9 +2,7 @@
 
 $(function () {
   $('#datepicker1').datepicker({
-    // todayBtn: 'linked',
     autoclose: true,
-    // format: 'dd/mm/yyyy',
     todayHighlight: true,
   });
 });
@@ -13,12 +11,10 @@ $(function () {
   $('#datepicker1').datepicker('setDate', new Date());
 });
 
-
+//! datepicker2
 $(function () {
   $('#datepicker2').datepicker({
-    // todayBtn: 'linked',
     autoclose: true,
-    // format: 'dd/mm/yyyy',
     todayHighlight: true,
   });
 });
@@ -26,6 +22,22 @@ $(function () {
 $(function () {
   $('#datepicker2').datepicker('setDate', new Date());
 });
+
+//! datepicker3
+$(function () {
+  const datesDisabled = $('input#input-dates-disabled').val().split(',');
+
+  $('#datepicker3').datepicker({
+    multidate: true,
+    multidateSeparator: ' - ',
+    // autoclose: true,
+    todayHighlight: true,
+    datesDisabled: datesDisabled,
+  });
+});
+// $(function () {
+//   $('#datepicker3').datepicker('setDate', new Date());
+// });
 
 //! Bootstrap Validation
 // Example starter JavaScript for disabling form submissions if there are invalid fields

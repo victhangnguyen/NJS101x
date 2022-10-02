@@ -468,3 +468,11 @@
   margin-left: -5px;
   margin-right: -5px;
 }
+
+//!
+.day {
+  &.disabled-date {
+    background-color: red !important;
+    color: white !important;
+  }
+}

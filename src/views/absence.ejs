@@ -4,12 +4,122 @@
   <%- include('./includes/navigation.ejs') %>
 
   <div class="layout">
+    <!-- layout -->
     <div class="sidebar"></div>
-    <div class="main">
-      <!-- main begin -->
-      .form-control
+    <div class="container-main">
+      <!-- container-main -->
+      <div class="container-fuild">
+        <!-- container-fuild -->
+        <div class="d-flex align-items-start">
+          <div class="nav flex-column nav-pills me-3 col-2" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+            <button class="nav-link active" id="v-pills-day-tab" data-bs-toggle="pill" data-bs-target="#v-pills-day" type="button" role="tab" aria-controls="v-pills-day" aria-selected="true">Tính theo Ngày</button>
+            <button class="nav-link" id="v-pills-hours-tab" data-bs-toggle="pill" data-bs-target="#v-pills-hours" type="button" role="tab" aria-controls="v-pills-hours" aria-selected="false">Tính theo Giờ</button>
+          </div>
+          <div class="tab-content" id="v-pills-tabContent">
+            <div class="tab-pane fade show active" id="v-pills-day" role="tabpanel" aria-labelledby="v-pills-day-tab">
+              <!-- tab-pane__Day -->
+              <form action="/covidstatus?type=vaccination" method="post" class="form-control-main form-control border border-danger border-2 needs-validation" novalidate>
+                <h1 class="text-center">Đăng ký nghỉ phép theo ngày</h1>
+                <h5 class="text-center mb-5">(Số ngày nghỉ còn lại: )</h5>
+                <div class="row mb-4">
+                  <label for="input-date-vaccine" class="col-sm-3 col-md-3 col-form-label fw-bold">Chọn ngày nghỉ:</label>
+                  <div class="col-sm-9 col-md-9 mb-2">
+                    <div class="input-group date" data-date-format="dd/mm/yyyy" id="datepicker3">
+                      <input id="input-date-vaccine" type="text" class="form-control" placeholder="Chọn được nhiều ngày" name="date" autocomplete="off" required>
+                      <span class="input-group-append">
+                        <span class="input-group-text bg-white d-block ">
+                          <i class="fa fa-calendar"></i>
+                        </span>
+                      </span>
+                      <div class="valid-feedback">
+                        Thông tin hợp lệ!
+                      </div>
+                      <div class="invalid-feedback">
+                        Hãy chọn những ngày bạn muốn nghỉ!
+                      </div>
+                    </div>
+                  </div>
+                  <input type="hidden" id="input-dates-disabled" name="datesDisabled" value="<%= datesDisabled %>">
+                  <!-- Reason -->
+                  <label for="input-vaccine-name" class="col-sm-3 col-md-3 col-form-label fw-bold">Lý do:</label>
+                  <div class="col-sm-9 col-md-9 mb-2">
+                    <input type="text" class="form-control" id="input-vaccine-name" placeholder="Nhập lý do nghỉ" name="name" required>
+                    <div class="valid-feedback">
+                      Thông tin hợp lệ!
+                    </div>
+                    <div class="invalid-feedback">
+                      Xin vui lòng nhập Lý do nghỉ!
+                    </div>
+                  </div>
 
-      <%- include('./includes/footer.ejs') %>
-    </div> <!-- main end -->
-  </div> <!-- layout -->
+                </div>
+                <div class="mt-3 d-flex justify-content-center">
+                  <button type="submit" class="btn btn-danger btn-long-50per">Đăng ký</button>
+                </div>
+              </form>
+              <!-- /tab-pane__Day -->
+            </div>
+            <div class="tab-pane fade" id="v-pills-hours" role="tabpanel" aria-labelledby="v-pills-hours-tab">
+              <!-- tab-pane__Hours -->
+              <form action="/covidstatus?type=vaccination" method="post" class="form-control-main form-control border border-danger border-2 needs-validation" novalidate>
+                <h1 class="text-center">Đăng ký nghỉ phép theo giờ</h1>
+                <h5 class="text-center mb-5">(Số ngày giờ còn lại: )</h5>
+                <div class="row mb-4">
+                  <label for="input-date-vaccine" class="col-sm-3 col-md-3 col-form-label fw-bold">Chọn ngày nghỉ:</label>
+                  <div class="col-sm-9 col-md-9 mb-2">
+                    <div class="input-group date" data-date-format="dd/mm/yyyy" id="datepicker3">
+                      <input id="input-date-vaccine" type="text" class="form-control" placeholder="dd/mm/yyyy" name="date" autocomplete="off" required>
+                      <span class="input-group-append">
+                        <span class="input-group-text bg-white d-block ">
+                          <i class="fa fa-calendar"></i>
+                        </span>
+                      </span>
+                      <div class="valid-feedback">
+                        Thông tin hợp lệ!
+                      </div>
+                      <div class="invalid-feedback">
+                        Xin vui lòng chọn ngày nghỉ!
+                      </div>
+                    </div>
+                  </div>
+                  <!-- data hidden -->
+                  <input type="hidden" id="input-dates-disabled" name="datesDisabled" value="<%= datesDisabled %>">
+                  <!-- Hours -->
+                  <label for="input-hours-number" class="col-sm-3 col-md-3 col-form-label fw-bold">Số giờ:</label>
+                  <div class="col-sm-9 col-md-9 mb-2">
+                    <input type="number" class="form-control" id="input-hours-number" placeholder="Nhập số giờ nghỉ" name="hours" required>
+                    <div class="valid-feedback">
+                      Thông tin hợp lệ!
+                    </div>
+                    <div class="invalid-feedback">
+                      Xin vui lòng nhập Số giờ nghỉ!
+                    </div>
+                  </div>
+                  <!-- Reason -->
+                  <label for="input-vaccine-name" class="col-sm-3 col-md-3 col-form-label fw-bold">Lý do:</label>
+                  <div class="col-sm-9 col-md-9 mb-2">
+                    <input type="text" class="form-control" id="input-vaccine-name" placeholder="Nhập lý do nghỉ" name="name" required>
+                    <div class="valid-feedback">
+                      Thông tin hợp lệ!
+                    </div>
+                    <div class="invalid-feedback">
+                      Xin vui lòng nhập Lý do nghỉ!
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-3 d-flex justify-content-center">
+                  <button type="submit" class="btn btn-danger btn-long-50per">Đăng ký</button>
+                </div>
+              </form>
+              <!-- /tab-pane__Hours -->
+            </div>
+          </div>
+        </div>
+
+
+
+      </div> <!-- /container-fuild -->
+    </div> <!-- /container-main -->
+  </div> <!-- /layout -->
+  <%- include('./includes/footer.ejs') %>
 </body>

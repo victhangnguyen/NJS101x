@@ -37,6 +37,14 @@ html {
   font-display: swap;
 }
 
+// @font-face {
+//   font-family: 'SVN-Poppins-Bold';
+//   src: url('../assets/fonts/SVN-Poppins-Bold.ttf') format('truetype');
+//   font-weight: bold;
+//   font-style: normal;
+//   font-display: swap;
+// }
+
 * {
   font-family: 'SVN-Poppins', Segoe UI, Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -45,40 +53,44 @@ img,
 svg {
   vertical-align: top;
 }
-
-.logo {
-  width: 35px;
-  height: 35px;
-  display: inline-block;
-  margin-right: 20px;
-}
-
-.logo > img {
-  width: 100%;
-}
-
+//! __navbar
 .navbar {
-  background-color: var(--color-dark);
-  padding: 0.5rem;
-  border-bottom: 5px solid var(--color-main);
+  
+  .logo {
+    width: 35px;
+    height: 35px;
+    display: inline-block;
+    margin-right: 20px;
+  }
+
+  .logo > img {
+    width: 100%;
+  }
+
+  .navbar {
+    background-color: var(--color-dark);
+    padding: 0.5rem;
+    border-bottom: 5px solid var(--color-main);
+  }
+
+  .navbar-brand {
+    display: flex;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .nav-link {
+    display: inline-block;
+    padding: 0;
+    margin: 0.5rem 0.5rem;
+  }
+
+  .nav-link.active {
+    border-bottom: 2px solid var(--color-main);
+  }
 }
 
-.navbar-brand {
-  display: flex;
-  padding: 0;
-  justify-content: center;
-  align-items: center;
-}
-
-.nav-link {
-  display: inline-block;
-  padding: 0;
-  margin: 0.5rem 0.5rem;
-}
-
-.nav-link.active {
-  border-bottom: 2px solid var(--color-main);
-}
 
 .card a {
   text-decoration: none;
@@ -185,8 +197,22 @@ Button
     background-color: var(--color-main) !important;
     color: var(--color-dark) !important;
   }
+
+  &.btn-long-25per {
+    width: 25%;
+  }
+  &.btn-long-50per {
+    width: 50%;
+  }
+  &.btn-long-75per {
+    width: 75%;
+  }
+  &.btn-long-100per {
+    width: 100%;
+  }
 }
 /* page not found */
+
 .page-not-found {
   background-color: var(--color-main-2);
   width: 100%;
@@ -311,33 +337,4 @@ Button
   opacity: 0.01;
   transform: translateX(100%);
   transition: all 300ms ease-out;
-}
-
-//! __FONT__
-.layout {
-  .container-main {
-    h1 {
-      font-size: 1.5rem;
-    }
-    @media screen and (min-width: 576px) {
-      h1 {
-        font-size: 1.5rem;
-      }
-    }
-    @media screen and (min-width: 768px) {
-      h1 {
-        font-size: 1.75rem;
-      }
-    }
-    @media screen and (min-width: 992px) {
-      h1 {
-        font-size: 1.95rem;
-      }
-    }
-    @media screen and (min-width: 1200px) {
-      h1 {
-        font-size: 2.05rem;
-      }
-    }
-  }
 }
