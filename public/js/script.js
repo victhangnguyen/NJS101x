@@ -1,33 +1,22 @@
-'use strict';
-
 $(function () {
-  $('#datepicker1').datepicker({
+  'use strict';
+  //! datepicker1-covidstatus-vaccine
+  $('#datepicker1-covidstatus-vaccine').datepicker({
     autoclose: true,
     todayHighlight: true,
   });
-});
+  $('#datepicker1-covidstatus-vaccine').datepicker('setDate', new Date());
 
-$(function () {
-  $('#datepicker1').datepicker('setDate', new Date());
-});
-
-//! datepicker2
-$(function () {
-  $('#datepicker2').datepicker({
+  //! datepicker2-covidstatus-positive
+  $('#datepicker2-covidstatus-positive').datepicker({
     autoclose: true,
     todayHighlight: true,
   });
-});
+  $('#datepicker2-covidstatus-positive').datepicker('setDate', new Date());
 
-$(function () {
-  $('#datepicker2').datepicker('setDate', new Date());
-});
-
-//! datepicker3
-$(function () {
+  //! datepicker3-absence-date
   const datesDisabled = $('input#input-dates-disabled').val().split(',');
-
-  $('#datepicker3').datepicker({
+  $('#datepicker3-absence-date').datepicker({
     multidate: true,
     multidateSeparator: ' - ',
     // autoclose: true,
@@ -35,9 +24,6 @@ $(function () {
     datesDisabled: datesDisabled,
   });
 });
-// $(function () {
-//   $('#datepicker3').datepicker('setDate', new Date());
-// });
 
 //! Bootstrap Validation
 // Example starter JavaScript for disabling form submissions if there are invalid fields

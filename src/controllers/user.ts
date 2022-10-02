@@ -24,13 +24,13 @@ export const checkAuth: RequestHandler = (req, res, next) => {
       // console.log('__Debugger__userDoc: ', userDoc);
       //! Login successfull!
       if (userDoc) {
-        Logging.success('ĐĂNG NHẬP THÀNH CÔNG');
+        Logging.success('Logged in successfully by userId: ' + userDoc._id);
         req.user = userDoc;
         next();
       }
       //! Login failed!
       else {
-        Logging.error('ĐĂNG NHẬP KHÔNG THÀNH CÔNG');
+        Logging.error('Logged in failed!');
       }
     })
     .catch((err) => {

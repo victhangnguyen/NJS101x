@@ -1,5 +1,8 @@
-import { convertMsToTime } from './covertTime';
+import { convertMsToTime } from './convertTime';
+import { ddmmyyyyToMMDDYYYY } from './convertDate';
+
 
 export default {
-  convertMsToTime
+  convertMsToTime,
+  ddmmyyyyToMMDDYYYY
 }

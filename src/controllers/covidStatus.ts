@@ -1,5 +1,7 @@
 import { RequestHandler } from 'express';
 import mongoose from 'mongoose';
+//! imp utils
+import utils from '../utils';
 
 //! imp library
 import Logging from '../library/Logging';
@@ -17,9 +19,14 @@ export const getCovidStatus: RequestHandler = (req, res, next) => {
           bodyTemperatures: [],
           vaccines: [],
           positive: [],
-        }).catch((err) => {
-          console.log(err);
-        });
+        })
+          .then((covidStatusDoc) => {
+            Logging.success('Create New CovidStatus by userId: ' + req.user._id)
+            return covidStatusDoc;
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       }
 
       return covidStatusDoc;
@@ -44,8 +51,11 @@ export const postCovidStatus: RequestHandler = (req, res, next) => {
     ? Number(req.body.bodyTemperature)
     : undefined;
   const name: string | undefined = (req.body as { name: string }).name;
-  const date: Date | undefined = (req.body as { date: string }).date ? new Date(req.body.date) : undefined;
-  // const date = new Date(req.body.date);
+  const date: Date | undefined = (req.body as { date: string }).date
+    ? new Date(utils.ddmmyyyyToMMDDYYYY(req.body.date))
+    : undefined;
+
+  console.log('req.body.date: ', req.body.date);
   console.log('__Debugger__postCovidStatus1__postCovidStatus__type: ', type, 'temp: ', temp, 'date: ', date);
   req.user
     .addCovidStatus(type, temp, name, date)

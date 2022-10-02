@@ -73,7 +73,7 @@ const startServer = () => {
   app.use(express.static(publicDir));
 
   //! apply middlewares
-  // app.use(express.json());
+  app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
   //! check Authentication
