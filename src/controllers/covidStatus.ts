@@ -52,7 +52,7 @@ export const postCovidStatus: RequestHandler = (req, res, next) => {
     : undefined;
   const name: string | undefined = (req.body as { name: string }).name;
   const date: Date | undefined = (req.body as { date: string }).date
-    ? new Date(utils.ddmmyyyyToMMDDYYYY(req.body.date))
+    ? new Date(utils.convertDateVNtoUS(req.body.date))
     : undefined;
 
   console.log('req.body.date: ', req.body.date);

@@ -1,8 +1,9 @@
 import { convertMsToTime } from './convertTime';
-import { ddmmyyyyToMMDDYYYY } from './convertDate';
-
+import { convertDateVNtoUS } from './convertDate';
+import toDateArray from './toDateArray';
 
 export default {
   convertMsToTime,
-  ddmmyyyyToMMDDYYYY
-}
+  convertDateVNtoUS,
+  toDateArray,
+};

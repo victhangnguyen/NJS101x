@@ -17,15 +17,16 @@
           </div>
           <div class="tab-content" id="v-pills-tabContent">
             <div class="tab-pane fade show active" id="v-pills-day" role="tabpanel" aria-labelledby="v-pills-day-tab">
-              <!-- tab-pane__Day -->
-              <form action="/covidstatus?type=vaccination" method="post" class="form-control-main form-control border border-danger border-2 needs-validation" novalidate>
+              <!-- TAB-PANE__DAY -->
+              <form action="/absence?type=dates" method="post" class="form-control-main form-control border border-danger border-2 needs-validation" novalidate>
                 <h1 class="text-center">Đăng ký nghỉ phép theo ngày</h1>
-                <h5 class="text-center mb-5">(Số ngày nghỉ còn lại: )</h5>
+                <h5 class="text-center mb-5">(Số ngày nghỉ còn lại: <span class="text-danger fw-bold fs-4"><%= user.annualLeave %></span>)</h5>
                 <div class="row mb-4">
-                  <label for="input-date-vaccine" class="col-sm-3 col-md-3 col-form-label fw-bold">Chọn ngày nghỉ:</label>
+                  <label for="input-absence-day" class="col-sm-3 col-md-3 col-form-label fw-bold">Chọn ngày nghỉ:</label>
                   <div class="col-sm-9 col-md-9 mb-2">
-                    <div class="input-group date" data-date-format="dd/mm/yyyy" id="datepicker3-absence-date">
-                      <input id="input-date-vaccine" type="text" class="form-control" placeholder="Chọn được nhiều ngày" name="date" autocomplete="off" required>
+                    <div class="input-group date" data-date-format="dd/mm/yyyy" id="datepicker3-absence-day">
+                      <input id="input-absence-day" type="text" class="form-control" placeholder="Chọn được nhiều ngày" name="dates" autocomplete="off" required>
+                      <input type="hidden" id="input-dates-disabled" name="datesDisabled" value="<%= datesDisabled %>">
                       <span class="input-group-append">
                         <span class="input-group-text bg-white d-block ">
                           <i class="fa fa-calendar"></i>
@@ -39,11 +40,10 @@
                       </div>
                     </div>
                   </div>
-                  <input type="hidden" id="input-dates-disabled" name="datesDisabled" value="<%= datesDisabled %>">
                   <!-- Reason -->
-                  <label for="input-vaccine-name" class="col-sm-3 col-md-3 col-form-label fw-bold">Lý do:</label>
+                  <label for="input-absence-reason" class="col-sm-3 col-md-3 col-form-label fw-bold">Lý do:</label>
                   <div class="col-sm-9 col-md-9 mb-2">
-                    <input type="text" class="form-control" id="input-vaccine-name" placeholder="Nhập lý do nghỉ" name="name" required>
+                    <input type="text" class="form-control" id="input-absence-reason" placeholder="Nhập lý do nghỉ" name="reason" required>
                     <div class="valid-feedback">
                       Thông tin hợp lệ!
                     </div>
@@ -57,18 +57,20 @@
                   <button type="submit" class="btn btn-danger btn-long-50per">Đăng ký</button>
                 </div>
               </form>
-              <!-- /tab-pane__Day -->
+              <!-- /TAB-PANE__DAY -->
             </div>
             <div class="tab-pane fade" id="v-pills-hours" role="tabpanel" aria-labelledby="v-pills-hours-tab">
-              <!-- tab-pane__Hours -->
-              <form action="/covidstatus?type=vaccination" method="post" class="form-control-main form-control border border-danger border-2 needs-validation" novalidate>
+              <!-- TAB-PANE__HOURS -->
+              <form action="/absence?type=hours" method="post" class="form-control-main form-control border border-danger border-2 needs-validation" novalidate>
                 <h1 class="text-center">Đăng ký nghỉ phép theo giờ</h1>
                 <h5 class="text-center mb-5">(Số ngày giờ còn lại: )</h5>
                 <div class="row mb-4">
-                  <label for="input-date-vaccine" class="col-sm-3 col-md-3 col-form-label fw-bold">Chọn ngày nghỉ:</label>
+                  <label for="input-absence-hours" class="col-sm-3 col-md-3 col-form-label fw-bold">Chọn ngày nghỉ:</label>
                   <div class="col-sm-9 col-md-9 mb-2">
-                    <div class="input-group date" id="datepicker4-absence-hours">
-                      <input id="input-date-vaccine" type="text" class="form-control" placeholder="dd/mm/yyyy" name="date" autocomplete="off" required>
+                    <!-- Input datePicker -->
+                    <div class="input-group date" data-date-format="dd/mm/yyyy" id="datepicker4-absence-hours">
+                      <input id="input-absence-hours" type="text" class="form-control" placeholder="dd/mm/yyyy" name="date" autocomplete="off" required>
+                      <input type="hidden" id="input-hours-disabled" name="hoursDisabled" value="<%= hoursDisabled %>">
                       <span class="input-group-append">
                         <span class="input-group-text bg-white d-block ">
                           <i class="fa fa-calendar"></i>
@@ -82,12 +84,10 @@
                       </div>
                     </div>
                   </div>
-                  <!-- data hidden -->
-                  <input type="hidden" id="input-dates-disabled" name="datesDisabled" value="<%= datesDisabled %>">
-                  <!-- Hours -->
+                  <!-- Input Hours -->
                   <label for="input-hours-number" class="col-sm-3 col-md-3 col-form-label fw-bold">Số giờ:</label>
                   <div class="col-sm-9 col-md-9 mb-2">
-                    <input type="number" class="form-control" id="input-hours-number" placeholder="Nhập số giờ nghỉ" name="hours" required>
+                    <input type="number" step="1"  min="0" class="form-control" id="input-hours-number" placeholder="Nhập số giờ nghỉ" name="hours" required>
                     <div class="valid-feedback">
                       Thông tin hợp lệ!
                     </div>
@@ -96,9 +96,9 @@
                     </div>
                   </div>
                   <!-- Reason -->
-                  <label for="input-vaccine-name" class="col-sm-3 col-md-3 col-form-label fw-bold">Lý do:</label>
+                  <label for="input-reason" class="col-sm-3 col-md-3 col-form-label fw-bold">Lý do:</label>
                   <div class="col-sm-9 col-md-9 mb-2">
-                    <input type="text" class="form-control" id="input-vaccine-name" placeholder="Nhập lý do nghỉ" name="name" required>
+                    <input type="text" class="form-control" id="input-reason" placeholder="Nhập lý do nghỉ" name="reason" required>
                     <div class="valid-feedback">
                       Thông tin hợp lệ!
                     </div>
@@ -115,9 +115,6 @@
             </div>
           </div>
         </div>
-
-
-
       </div> <!-- /container-fuild -->
     </div> <!-- /container-main -->
   </div> <!-- /layout -->

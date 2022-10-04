@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 //! imp models
 import Attendance, { IAttendance, IRecord, IAttendanceMethods } from './attendance';
 import CovidStatus, { ICovidStatus, ICovidStatusMethods } from './covidStatus';
+import Absence, { IAbsence, IAbsenceMethods } from './absence';
+import Logging from '../library/Logging';
 
 export interface IUser {
   _id?: mongoose.Types.ObjectId;
@@ -25,13 +27,15 @@ export interface IUserMethods {
   // addAttendance(type: string, workplace: string): mongoose.Document<IUser>;
   addAttendance(type: string, date: string): Promise<mongoose.HydratedDocument<IAttendance, IAttendanceMethods>>;
   //! setStatus return this (user Instance)
-  setStatus(type: string, workplace: string): Promise<mongoose.HydratedDocument<IUser, IUser>>;
+  setStatus(type: string, workplace: string): Promise<mongoose.HydratedDocument<IUser, IUserMethods>>;
   addCovidStatus(
     type: string,
     temp: number | undefined,
     name: string | undefined,
     date: Date | undefined
   ): Promise<mongoose.HydratedDocument<ICovidStatus, ICovidStatusMethods>>;
+  addAbsences(type: string, date: Date | undefined, dates: Array<Date>, hours: number | undefined, reason: string): any;
+  // Promise<mongoose.HydratedDocument<IAbsence, IAbsenceMethods>>;
 }
 
 //! Methods and Override Methods
@@ -96,7 +100,6 @@ userSchema.methods.setStatus = function (type: string, workplace: string) {
       return this;
   }
   return this.save();
-  // return this;
 };
 
 userSchema.methods.addCovidStatus = function (
@@ -150,7 +153,6 @@ userSchema.methods.addAttendance = function (type: string, date: string) {
     day: '2-digit',
     year: 'numeric',
   });
-
   return Attendance.findOne({ userId: this._id, date: date }).then((attendDoc: any) => {
     // console.log('__Debugger__model__user__attendDoc: ', attendDoc);
     switch (type) {
@@ -188,6 +190,90 @@ userSchema.methods.addAttendance = function (type: string, date: string) {
 
     return attendDoc.save();
   });
+};
+
+userSchema.methods.addAbsences = function (
+  type: string,
+  date: Date | undefined,
+  dates: Array<Date>,
+  hours: number | undefined,
+  reason: string
+) {
+  const user = this;
+  return (
+    Absence.find({ _userId: this._id })
+      //! find all of Absence that Belongs to userId
+      .then((absenceDocs: Array<IAbsence>) => {
+        switch (type) {
+          case 'dates':
+            //! ADD MANY ABSENCES
+            const absDocArray: Array<Promise<IAbsence>> = dates.map((date) => {
+              let newAbsenceDoc;
+              if (absenceDocs.length > 0) {
+                const existingDate = absenceDocs.find((abs) => abs.date.toDateString() === date.toDateString());
+                console.log('existingDate: ', existingDate);
+                if (existingDate) {
+                  throw new Error(`${date} is registered`);
+                } else {
+                  newAbsenceDoc = new Absence({
+                    userId: this._id,
+                    date: date,
+                    hours: 8,
+                    reason: reason,
+                  });
+                  console.log('newAbsenceDoc: ', newAbsenceDoc);
+                }
+              } else {
+                //! create new Absence with date
+                console.log('__Debugger__models/user/addAsences new Absence');
+                Logging.success('Create a new Absence 2');
+                newAbsenceDoc = new Absence({
+                  userId: this._id,
+                  date: date,
+                  hours: 8,
+                  reason: reason,
+                });
+              }
+              return newAbsenceDoc?.save();
+            });
+
+            return Promise.all(absDocArray)
+              .then((absenceDocs) => {
+                // const update = { annualLeave: this.annualLeave - absenceDocs.length };
+                // console.log('__Debugger__userModels__addAbsences__update: ', update);
+                // return User.findByIdAndUpdate(this._id, update)
+                //   .then((userDoc) => {
+                //     return absenceDocs;
+                //   })
+                //   .catch((err) => {
+                //     console.log(err);
+                //   });
+                this.annualLeave = this.annualLeave - absenceDocs.length;
+                return this.save()
+                  .then((userDoc: IUser) => {
+                    return absenceDocs;
+                  })
+                  .catch((err: Error) => {
+                    console.log(err);
+                  });
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+            break;
+
+          case 'hours':
+            console.log('__Debugger__modelsUser__addAbsences__hours: ', hours);
+            break;
+
+          default:
+            break;
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+  );
 };
 
 const User = mongoose.model<IUser, UserModel>('User', userSchema);

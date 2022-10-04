@@ -1004,7 +1004,14 @@ Button
   margin-right: -5px;
 }
 
-.day.disabled-date {
+#datepicker3-absence-day .day.disabled-date {
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(red), to(red)) !important;
+  background-color: red !important;
+  color: white !important;
+}
+
+#datepicker4-absence-hours .day.disabled-date {
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(red), to(red)) !important;
   background-color: red !important;
   color: white !important;
 }

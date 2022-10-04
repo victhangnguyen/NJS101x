@@ -8,8 +8,8 @@
     <div class="container-main">
       <div class="container-fuild">
         <div class="row">
-          <!-- BodyTemperatures Information Table -->
           <div class="col-12 col-sm-6">
+            <!-- BodyTemperatures Information Table -->
             <h5 class="text-center fw-bold">Thông tin đăng ký thân nhiệt cơ thể</h5>
             <table class="table table-bordered border-success border border-2 text-center">
               <thead class="table-success border-success">
@@ -30,7 +30,26 @@
                 </tr>
                 <% }) %>
               </tbody>
-            </table>
+            </table> <!-- /BodyTemperatures Information Table -->
+
+            <!-- Positive Information Table -->
+            <h5 class="text-center fw-bold">Thông tin đăng ký tiêm vaccine</h5>
+            <table class="table table-bordered border-success border border-2 text-center">
+              <thead class="table-success border-success">
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col`">Ngày phát hiện dương tính</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% covidStatus.positive.forEach((p, index) => { %>
+                <tr>
+                  <th scope="row"><%= index + 1 %></th>
+                  <td class="col-10"><%= p.date.toLocaleDateString('vi-VN', {year: 'numeric', month: 'long', day: 'numeric'}) %></td>
+                </tr>
+                <% }) %>
+              </tbody>
+            </table> <!-- /Positive Information Table -->
           </div>
           <!-- Vaccination Information Table -->
           <div class="col-12 col-sm-6">
@@ -53,27 +72,8 @@
                 <% }) %>
               </tbody>
             </table>
-          </div>
-          <!-- Positive Information Table -->
-          <div class="col-12 col-sm-6 ">
-            <h5 class="text-center fw-bold">Thông tin đăng ký tiêm vaccine</h5>
-            <table class="table table-bordered border-success border border-2 text-center">
-              <thead class="table-success border-success">
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col`">Ngày phát hiện dương tính</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% covidStatus.positive.forEach((p, index) => { %>
-                <tr>
-                  <th scope="row"><%= index + 1 %></th>
-                  <td class="col-10"><%= p.date.toLocaleDateString('vi-VN', {year: 'numeric', month: 'long', day: 'numeric'}) %></td>
-                </tr>
-                <% }) %>
-              </tbody>
-            </table>
-          </div>
+          </div> <!-- /Vaccination Information Table -->
+
         </div>
       </div>
     </div> <!-- container-main -->
