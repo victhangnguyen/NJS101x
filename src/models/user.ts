@@ -1,5 +1,5 @@
+const MAXIMUM_WORKING_HOURS = 8;
 import mongoose from 'mongoose';
-
 //! imp models
 import Attendance, { IAttendance, IRecord, IAttendanceMethods } from './attendance';
 import CovidStatus, { ICovidStatus, ICovidStatusMethods } from './covidStatus';
@@ -34,7 +34,7 @@ export interface IUserMethods {
     name: string | undefined,
     date: Date | undefined
   ): Promise<mongoose.HydratedDocument<ICovidStatus, ICovidStatusMethods>>;
-  addAbsences(type: string, date: Date | undefined, dates: Array<Date>, hours: number | undefined, reason: string): any;
+  addAbsences(type: string, dates: Array<Date>, hours: number | undefined, reason: string): any;
   // Promise<mongoose.HydratedDocument<IAbsence, IAbsenceMethods>>;
 }
 
@@ -148,17 +148,13 @@ userSchema.methods.addCovidStatus = function (
 };
 
 userSchema.methods.addAttendance = function (type: string, date: string) {
-  const currentDate = new Date().toLocaleDateString('en-GB', {
-    month: '2-digit',
-    day: '2-digit',
-    year: 'numeric',
-  });
+  const currentDate = new Date();
   return Attendance.findOne({ userId: this._id, date: date }).then((attendDoc: any) => {
-    // console.log('__Debugger__model__user__attendDoc: ', attendDoc);
+    console.log('__Debugger__model__user__attendDoc: ', attendDoc);
     switch (type) {
       case 'start':
         const newRecord: IRecord = {
-          timeIn: new Date(),
+          timeIn: currentDate,
           timeOut: undefined,
           workplace: this.status.workplace,
         };
@@ -167,7 +163,7 @@ userSchema.methods.addAttendance = function (type: string, date: string) {
           //! create new AttendDoc
           return Attendance.create({
             userId: this._id,
-            date: currentDate,
+            date: currentDate.toLocaleDateString(),
             timeRecords: [newRecord],
           });
         } else {
@@ -176,11 +172,12 @@ userSchema.methods.addAttendance = function (type: string, date: string) {
         break;
 
       case 'end':
-        const currentRecord = attendDoc.timeRecords[attendDoc?.timeRecords.length - 1];
+        const lastedElementIndex = attendDoc?.timeRecords.length - 1;
+        const currentRecord = attendDoc.timeRecords[lastedElementIndex];
 
-        currentRecord!.timeOut = new Date();
+        currentRecord!.timeOut = currentDate;
 
-        attendDoc.timeRecords[attendDoc?.timeRecords.length - 1] = currentRecord;
+        attendDoc.timeRecords[lastedElementIndex] = currentRecord;
 
         break;
 
@@ -194,81 +191,92 @@ userSchema.methods.addAttendance = function (type: string, date: string) {
 
 userSchema.methods.addAbsences = function (
   type: string,
-  date: Date | undefined,
   dates: Array<Date>,
   hours: number | undefined,
   reason: string
 ) {
-  const user = this;
+  // console.log('__Debugger__models_User__dates: ', dates);
+  //! guard clause
+  switch (type) {
+    case 'dates':
+      if (dates.length > this.annualLeave) {
+        throw new Error('')
+      }
+      break;
+  
+    default:
+      break;
+  }
   return (
     Absence.find({ _userId: this._id })
       //! find all of Absence that Belongs to userId
       .then((absenceDocs: Array<IAbsence>) => {
-        switch (type) {
-          case 'dates':
-            //! ADD MANY ABSENCES
-            const absDocArray: Array<Promise<IAbsence>> = dates.map((date) => {
-              let newAbsenceDoc;
-              if (absenceDocs.length > 0) {
-                const existingDate = absenceDocs.find((abs) => abs.date.toDateString() === date.toDateString());
-                console.log('existingDate: ', existingDate);
-                if (existingDate) {
+        //! ADD MANY ABSENCES
+        const absDocArray = dates.map((date) => {
+          return Attendance.findOne({ date: date.toLocaleDateString() }).then((attendanceDoc) => {
+            console.log('__Debugger__models_User__addAbsences__attendanceDoc: ', attendanceDoc);
+            const existingAbsenceDoc = absenceDocs.find(
+              (abs: IAbsence) => abs.date.toDateString() === date.toDateString()
+            );
+            console.log('existingAbsenceDoc: ', existingAbsenceDoc);
+            if (existingAbsenceDoc) {
+              switch (type) {
+                case 'dates':
                   throw new Error(`${date} is registered`);
-                } else {
-                  newAbsenceDoc = new Absence({
-                    userId: this._id,
-                    date: date,
-                    hours: 8,
-                    reason: reason,
-                  });
-                  console.log('newAbsenceDoc: ', newAbsenceDoc);
-                }
-              } else {
-                //! create new Absence with date
-                console.log('__Debugger__models/user/addAsences new Absence');
-                Logging.success('Create a new Absence 2');
-                newAbsenceDoc = new Absence({
-                  userId: this._id,
-                  date: date,
-                  hours: 8,
-                  reason: reason,
-                });
+                  break;
+
+                case 'hours':
+                  const curTimeWorkingAttend = Math.floor(attendanceDoc?.timeSum! / (1000 * 60 * 60));
+                  console.log('__Debugger__models_User__curTimeWorkingAttend: ', curTimeWorkingAttend);
+                  console.log('__Debugger__models_User__existingAbsenceDoc.hours: ', existingAbsenceDoc.hours);
+
+                  if (curTimeWorkingAttend + existingAbsenceDoc.hours + hours! <= MAXIMUM_WORKING_HOURS) {
+                    existingAbsenceDoc.hours += hours!;
+                    existingAbsenceDoc.save();
+                  } else {
+                    throw new Error(
+                      `$ Ngày ${date} bạn đã làm được ${existingAbsenceDoc.hours} giờ. Bạn chỉ được thêm tối đa ${
+                        MAXIMUM_WORKING_HOURS - curTimeWorkingAttend - existingAbsenceDoc.hours
+                      } giờ nữa!`
+                    );
+                  }
+                  break;
+
+                default:
+                  break;
               }
-              return newAbsenceDoc?.save();
-            });
-
-            return Promise.all(absDocArray)
-              .then((absenceDocs) => {
-                // const update = { annualLeave: this.annualLeave - absenceDocs.length };
-                // console.log('__Debugger__userModels__addAbsences__update: ', update);
-                // return User.findByIdAndUpdate(this._id, update)
-                //   .then((userDoc) => {
-                //     return absenceDocs;
-                //   })
-                //   .catch((err) => {
-                //     console.log(err);
-                //   });
-                this.annualLeave = this.annualLeave - absenceDocs.length;
-                return this.save()
-                  .then((userDoc: IUser) => {
-                    return absenceDocs;
-                  })
-                  .catch((err: Error) => {
-                    console.log(err);
-                  });
+            } else {
+              return Absence.create({
+                userId: this._id,
+                date: date,
+                hours: type === 'dates' ? MAXIMUM_WORKING_HOURS : hours,
+                reason: reason,
               })
-              .catch((err) => {
-                console.log(err);
-              });
-            break;
+                .then((absenceDoc) => {
+                  return absenceDoc;
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+            }
+          });
+        });
 
-          case 'hours':
-            console.log('__Debugger__modelsUser__addAbsences__hours: ', hours);
-            break;
+        return Promise.all(absDocArray)
+          .then((absenceDocs) => {
+            // console.log('__Debugger__models_User__addAbseces__Promise_resolve__absenceDocs: ', absenceDocs);
+            this.annualLeave = this.annualLeave - absenceDocs.length;
+            return this.save().then((userDoc: IUser) => {
+              return absenceDocs;
+            });
+          })
 
-          default:
-            break;
-        }
+          .catch((err: Error) => {
+            console.log(err);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       })
       .catch((err) => {
         console.log(err);

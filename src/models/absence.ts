@@ -5,6 +5,7 @@ export interface IAbsence {
   date: Date;
   hours: number;
   reason: string;
+  save(): any;
 }
 
 export interface IAbsenceMethods {}

@@ -22,11 +22,14 @@ export const getAbsence: RequestHandler = (req, res, next) => {
         .map((abs) => abs.date.toLocaleDateString('vi-VN', { year: 'numeric', month: 'numeric', day: 'numeric' }));
       // console.log('__Debugger__ctrls_absence__getAbsence__hoursDisabled: ', hoursDisabled);
 
+      const multidate = req.user.annualLeave;
+
       res.render('absence.ejs', {
         pageTitle: `Đăng ký nghỉ phép | ${req.user.name}`,
         user: req.user,
         datesDisabled,
         hoursDisabled,
+        multidate
       });
     })
     .catch((err) => {
@@ -37,15 +40,16 @@ export const getAbsence: RequestHandler = (req, res, next) => {
 //@ /absence => POST
 export const postAbsence: RequestHandler = (req, res, next) => {
   const type = req.query.type;
-  const { date, hours, reason } = req.body;
+  const hours = Number(req.body.hours);
+  const reason = (req.body as { reason: string }).reason;
   const dates = utils.toDateArray(req.body.dates, ' - ');
 
   console.log('req.query.type: ', type);
-  console.log('req.body.date: ', date, ' - hours: ', hours, ' - dates: ', dates, ' - reason: ', reason);
+  // console.log('req.body.hours: ', hours, ' - dates: ', dates, ' - reason: ', reason);
 
   //! Add one or many Absence
   req.user
-    .addAbsences(type, date, dates, hours, reason)
+    .addAbsences(type, dates, hours, reason)
     .then((absenceDoc: IAbsence) => {
       console.log('__Debugger__ctrlsAbsence__postAbsence__absenceDoc: ', absenceDoc);
 

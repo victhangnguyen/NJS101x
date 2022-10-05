@@ -14,11 +14,7 @@ export const getAttendance: RequestHandler = (req, res, next) => {
 export const postAttendance: RequestHandler = (req, res, next) => {
   const workplace = (req.body as { workplace: string }).workplace;
   const type = (req.query as { type: string }).type;
-  const currentDate = new Date().toLocaleDateString('en-GB', {
-    month: '2-digit',
-    day: '2-digit',
-    year: 'numeric',
-  });
+  const currentDate = new Date().toLocaleDateString();
 
   // console.log('__Debugger__type: ', type)
   //! __warning

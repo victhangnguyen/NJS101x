@@ -18,15 +18,17 @@
           <div class="tab-content" id="v-pills-tabContent">
             <div class="tab-pane fade show active" id="v-pills-day" role="tabpanel" aria-labelledby="v-pills-day-tab">
               <!-- TAB-PANE__DAY -->
-              <form action="/absence?type=dates" method="post" class="form-control-main form-control border border-danger border-2 needs-validation" novalidate>
+              <form action="<% if ( multidate >= 1 ) { %>/absence?type=dates<% } else { %>/<% } %>" method="<% if ( multidate >= 1 ) { %>post<% } else { %>get<% } %>" class="form-control-main form-control border border-danger border-2 needs-validation" novalidate>
                 <h1 class="text-center">Đăng ký nghỉ phép theo ngày</h1>
                 <h5 class="text-center mb-5">(Số ngày nghỉ còn lại: <span class="text-danger fw-bold fs-4"><%= user.annualLeave %></span>)</h5>
                 <div class="row mb-4">
-                  <label for="input-absence-day" class="col-sm-3 col-md-3 col-form-label fw-bold">Chọn ngày nghỉ:</label>
+                  <% if ( multidate >= 1 ) { %>
+                  <label for="input-absence-dates" class="col-sm-3 col-md-3 col-form-label fw-bold">Chọn ngày nghỉ:</label>
                   <div class="col-sm-9 col-md-9 mb-2">
                     <div class="input-group date" data-date-format="dd/mm/yyyy" id="datepicker3-absence-day">
-                      <input id="input-absence-day" type="text" class="form-control" placeholder="Chọn được nhiều ngày" name="dates" autocomplete="off" required>
+                      <input id="input-absence-dates" type="text" class="form-control" placeholder="Chọn được nhiều ngày" name="dates" autocomplete="off" required>
                       <input type="hidden" id="input-dates-disabled" name="datesDisabled" value="<%= datesDisabled %>">
+                      <input type="hidden" id="input-dates-multidate" name="datesDisabled" value="<%= multidate %>">
                       <span class="input-group-append">
                         <span class="input-group-text bg-white d-block ">
                           <i class="fa fa-calendar"></i>
@@ -51,10 +53,16 @@
                       Xin vui lòng nhập Lý do nghỉ!
                     </div>
                   </div>
-
-                </div>
-                <div class="mt-3 d-flex justify-content-center">
-                  <button type="submit" class="btn btn-danger btn-long-50per">Đăng ký</button>
+                  <% } else { %>
+                  <div style="height:10rem;" class="d-flex flex-column justify-content-center align-items-center">
+                    <h3>Số ngày nghỉ theo ngày đã hết!</h3>
+                    <h3>Hãy thử đăng ký theo giờ.</h3>
+                    <h3>Xin hay quay lại.</h3>
+                  </div>
+                  <% } %>
+                  <div class="mt-3 d-flex justify-content-center">
+                    <button type="submit" class="btn btn-danger btn-long-50per"><% if ( multidate >= 1 ) { %>Đăng ký<% } else { %>Quay lại<% } %></button>
+                  </div>
                 </div>
               </form>
               <!-- /TAB-PANE__DAY -->
@@ -69,7 +77,7 @@
                   <div class="col-sm-9 col-md-9 mb-2">
                     <!-- Input datePicker -->
                     <div class="input-group date" data-date-format="dd/mm/yyyy" id="datepicker4-absence-hours">
-                      <input id="input-absence-hours" type="text" class="form-control" placeholder="dd/mm/yyyy" name="date" autocomplete="off" required>
+                      <input id="input-absence-hours" type="text" class="form-control" placeholder="dd/mm/yyyy" name="dates" autocomplete="off" required>
                       <input type="hidden" id="input-hours-disabled" name="hoursDisabled" value="<%= hoursDisabled %>">
                       <span class="input-group-append">
                         <span class="input-group-text bg-white d-block ">
@@ -87,7 +95,7 @@
                   <!-- Input Hours -->
                   <label for="input-hours-number" class="col-sm-3 col-md-3 col-form-label fw-bold">Số giờ:</label>
                   <div class="col-sm-9 col-md-9 mb-2">
-                    <input type="number" step="1"  min="0" class="form-control" id="input-hours-number" placeholder="Nhập số giờ nghỉ" name="hours" required>
+                    <input type="number" step="1" min="0" class="form-control" id="input-hours-number" placeholder="Nhập số giờ nghỉ" name="hours" required>
                     <div class="valid-feedback">
                       Thông tin hợp lệ!
                     </div>

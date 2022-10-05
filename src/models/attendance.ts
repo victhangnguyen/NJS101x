@@ -11,7 +11,7 @@ export interface IAttendance {
   userId: mongoose.Types.ObjectId;
   date: string;
   timeRecords: Array<IRecord>;
-  timeSum: string;
+  timeSum: number;
 }
 //! interface Methods
 export interface IAttendanceMethods {
@@ -26,7 +26,7 @@ export interface AttendanceModel extends mongoose.Model<IAttendance, {}, IAttend
 const attendanceSchema = new mongoose.Schema<IAttendance, AttendanceModel, IAttendanceMethods>({
   userId: { type: mongoose.Schema.Types.ObjectId, required: true },
   date: { type: String, required: true },
-  timeSum: { type: String },
+  timeSum: { type: Number },
   timeRecords: [
     {
       timeIn: { type: Date },
@@ -50,7 +50,8 @@ attendanceSchema.methods.calcRecord = function () {
       timeWorking: utils.convertMsToTime(timeWorking),
     };
   });
-  this.timeSum = utils.convertMsToTime(timeSum);
+  // this.timeSum = utils.convertMsToTime(timeSum); __#debug
+  this.timeSum = timeSum;
   this.timeRecords = calculatedTimeRecords;
   return this.save();
 };
