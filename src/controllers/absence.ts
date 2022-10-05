@@ -29,7 +29,8 @@ export const getAbsence: RequestHandler = (req, res, next) => {
         user: req.user,
         datesDisabled,
         hoursDisabled,
-        multidate
+        multidate,
+        errorMessage: null,
       });
     })
     .catch((err) => {
@@ -44,18 +45,39 @@ export const postAbsence: RequestHandler = (req, res, next) => {
   const reason = (req.body as { reason: string }).reason;
   const dates = utils.toDateArray(req.body.dates, ' - ');
 
-  console.log('req.query.type: ', type);
-  // console.log('req.body.hours: ', hours, ' - dates: ', dates, ' - reason: ', reason);
-
   //! Add one or many Absence
   req.user
     .addAbsences(type, dates, hours, reason)
     .then((absenceDoc: IAbsence) => {
-      console.log('__Debugger__ctrlsAbsence__postAbsence__absenceDoc: ', absenceDoc);
-
       res.redirect('/absence');
     })
+    //! catch Error to show errorMessage
     .catch((err: Error) => {
-      console.log(err);
+      Absence.find({ userId: req.user._id })
+        .then((absencDocs) => {
+          //! datesDisabled is helped to user dont allow to choose the dates already
+          const datesDisabled = absencDocs.map((abs) =>
+            abs.date.toLocaleDateString('vi-VN', { year: 'numeric', month: 'numeric', day: 'numeric' })
+          );
+          const hoursDisabled = absencDocs
+            .filter((abs) => !(abs.hours < 8))
+            .map((abs) => abs.date.toLocaleDateString('vi-VN', { year: 'numeric', month: 'numeric', day: 'numeric' }));
+          // console.log('__Debugger__ctrls_absence__getAbsence__hoursDisabled: ', hoursDisabled);
+
+          const multidate = req.user.annualLeave;
+          const errorMessage = err.message;
+
+          res.render('absence.ejs', {
+            pageTitle: `Đăng ký nghỉ phép | ${req.user.name}`,
+            user: req.user,
+            datesDisabled,
+            hoursDisabled,
+            multidate,
+            errorMessage,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     });
 };

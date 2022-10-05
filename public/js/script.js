@@ -39,6 +39,9 @@ $(function () {
     todayHighlight: true,
     datesDisabled: hoursDisabled,
   });
+
+  // $('.alert').alert()
+
 });
 
 //! Bootstrap Validation

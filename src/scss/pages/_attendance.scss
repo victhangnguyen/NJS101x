@@ -1,24 +1,4 @@
-//! __responsive__attendance
-//! mobile first
-.form-control-main {
-  padding: 2rem 4rem;
-}
 
-@media screen and (min-width: 576px) {
-  .form-control-main {
-    padding: 2rem 12rem;
-  }
-}
-@media screen and (min-width: 768px) {
-  .form-control-main {
-    padding: 3rem 20rem;
-  }
-}
-@media screen and (min-width: 992px) {
-  .form-control-main {
-    padding: 4rem 16rem;
-  }
-}
 
 //! __responsieve__attendance?type=end
 //!mobile-first-defaut

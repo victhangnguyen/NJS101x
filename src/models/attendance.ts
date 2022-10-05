@@ -43,6 +43,7 @@ attendanceSchema.methods.calcRecord = function () {
 
   const calculatedTimeRecords = currentTimeRecords.map((record) => {
     let timeWorking = Math.abs(record.timeOut - record.timeIn); //! miniseconds
+    // console.log('__Debugger__models_Attendance__timeWorking: ', timeWorking);
     timeSum += timeWorking;
     // console.log('__Debugger__calcRecord__timeWorking: ', timeWorking);
     return {
@@ -51,6 +52,7 @@ attendanceSchema.methods.calcRecord = function () {
     };
   });
   // this.timeSum = utils.convertMsToTime(timeSum); __#debug
+  // console.log('__Debugger__models_Attendance__timeSum: ', timeSum); //! NaN
   this.timeSum = timeSum;
   this.timeRecords = calculatedTimeRecords;
   return this.save();

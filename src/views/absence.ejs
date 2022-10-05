@@ -1,6 +1,7 @@
 <%- include('./includes/header.ejs') %>
 
 <body>
+
   <%- include('./includes/navigation.ejs') %>
 
   <div class="layout">
@@ -10,17 +11,24 @@
       <!-- container-main -->
       <div class="container-fuild">
         <!-- container-fuild -->
+        <% if ( errorMessage ) { %>
+        <div class="alert alert-success" role="alert">
+          <h4 class="alert-heading">Lỗi đăng ký!</h4>
+          <hr>
+          <p class="mb-0"><%= errorMessage %></p>
+        </div>
+        <% } %>
         <div class="d-flex align-items-start">
           <div class="nav flex-column nav-pills me-3 col-2" id="v-pills-tab" role="tablist" aria-orientation="vertical">
             <button class="nav-link active" id="v-pills-day-tab" data-bs-toggle="pill" data-bs-target="#v-pills-day" type="button" role="tab" aria-controls="v-pills-day" aria-selected="true">Tính theo Ngày</button>
             <button class="nav-link" id="v-pills-hours-tab" data-bs-toggle="pill" data-bs-target="#v-pills-hours" type="button" role="tab" aria-controls="v-pills-hours" aria-selected="false">Tính theo Giờ</button>
           </div>
-          <div class="tab-content" id="v-pills-tabContent">
+          <div style="width: 100%;" class="tab-content" id="v-pills-tabContent">
             <div class="tab-pane fade show active" id="v-pills-day" role="tabpanel" aria-labelledby="v-pills-day-tab">
               <!-- TAB-PANE__DAY -->
               <form action="<% if ( multidate >= 1 ) { %>/absence?type=dates<% } else { %>/<% } %>" method="<% if ( multidate >= 1 ) { %>post<% } else { %>get<% } %>" class="form-control-main form-control border border-danger border-2 needs-validation" novalidate>
                 <h1 class="text-center">Đăng ký nghỉ phép theo ngày</h1>
-                <h5 class="text-center mb-5">(Số ngày nghỉ còn lại: <span class="text-danger fw-bold fs-4"><%= user.annualLeave %></span>)</h5>
+                <h5 class="text-center mb-5">(Số ngày nghỉ còn lại: <span class="text-danger fw-bold fs-4"><%= Math.floor(user.annualLeave) %> ngày</span>)</h5>
                 <div class="row mb-4">
                   <% if ( multidate >= 1 ) { %>
                   <label for="input-absence-dates" class="col-sm-3 col-md-3 col-form-label fw-bold">Chọn ngày nghỉ:</label>
@@ -54,7 +62,7 @@
                     </div>
                   </div>
                   <% } else { %>
-                  <div style="height:10rem;" class="d-flex flex-column justify-content-center align-items-center">
+                  <div style="height:10rem; width: 100%;" class="d-flex flex-column justify-content-center align-items-center">
                     <h3>Số ngày nghỉ theo ngày đã hết!</h3>
                     <h3>Hãy thử đăng ký theo giờ.</h3>
                     <h3>Xin hay quay lại.</h3>
@@ -71,7 +79,7 @@
               <!-- TAB-PANE__HOURS -->
               <form action="/absence?type=hours" method="post" class="form-control-main form-control border border-danger border-2 needs-validation" novalidate>
                 <h1 class="text-center">Đăng ký nghỉ phép theo giờ</h1>
-                <h5 class="text-center mb-5">(Số ngày giờ còn lại: )</h5>
+                <h5 class="text-center mb-5">(Số giờ nghỉ còn lại: <span class="text-danger fw-bold fs-4"><%= user.annualLeave*8 %> giờ</span>)</h5>
                 <div class="row mb-4">
                   <label for="input-absence-hours" class="col-sm-3 col-md-3 col-form-label fw-bold">Chọn ngày nghỉ:</label>
                   <div class="col-sm-9 col-md-9 mb-2">
@@ -95,7 +103,7 @@
                   <!-- Input Hours -->
                   <label for="input-hours-number" class="col-sm-3 col-md-3 col-form-label fw-bold">Số giờ:</label>
                   <div class="col-sm-9 col-md-9 mb-2">
-                    <input type="number" step="1" min="0" class="form-control" id="input-hours-number" placeholder="Nhập số giờ nghỉ" name="hours" required>
+                    <input type="number" step=".01" min="0" class="form-control" id="input-hours-number" placeholder="Nhập số giờ nghỉ" name="hours" required>
                     <div class="valid-feedback">
                       Thông tin hợp lệ!
                     </div>

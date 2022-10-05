@@ -1,5 +1,6 @@
 const MAXIMUM_WORKING_HOURS = 8;
 import mongoose from 'mongoose';
+import utils from '../utils';
 //! imp models
 import Attendance, { IAttendance, IRecord, IAttendanceMethods } from './attendance';
 import CovidStatus, { ICovidStatus, ICovidStatusMethods } from './covidStatus';
@@ -199,14 +200,19 @@ userSchema.methods.addAbsences = function (
   //! guard clause
   switch (type) {
     case 'dates':
-      if (dates.length > this.annualLeave) {
-        throw new Error('')
+      if (this.annualLeave < dates.length) {
+        throw new Error(`You have registered ${dates.length} dates over ${this.annualLeave} allowable dates`);
       }
-      break;
-  
+
+    case 'hours':
+      if (this.annualLeave === 0) {
+        throw new Error(`You cannot register this, due to annualLeave is ${this.annualLeave}`);
+      }
+
     default:
       break;
   }
+
   return (
     Absence.find({ _userId: this._id })
       //! find all of Absence that Belongs to userId
@@ -226,18 +232,25 @@ userSchema.methods.addAbsences = function (
                   break;
 
                 case 'hours':
-                  const curTimeWorkingAttend = Math.floor(attendanceDoc?.timeSum! / (1000 * 60 * 60));
+                  let curTimeWorkingAttend = 0;
+                  //! guard clause
+                  if (attendanceDoc) {
+                    curTimeWorkingAttend = utils.round(attendanceDoc?.timeSum! / (1000 * 60 * 60));
+                    console.log('attendanceDoc existing');
+                  }
                   console.log('__Debugger__models_User__curTimeWorkingAttend: ', curTimeWorkingAttend);
                   console.log('__Debugger__models_User__existingAbsenceDoc.hours: ', existingAbsenceDoc.hours);
 
                   if (curTimeWorkingAttend + existingAbsenceDoc.hours + hours! <= MAXIMUM_WORKING_HOURS) {
                     existingAbsenceDoc.hours += hours!;
-                    existingAbsenceDoc.save();
+                    return existingAbsenceDoc.save();
                   } else {
                     throw new Error(
-                      `$ Ngày ${date} bạn đã làm được ${existingAbsenceDoc.hours} giờ. Bạn chỉ được thêm tối đa ${
+                      `Ngày ${date} bạn đã làm ${curTimeWorkingAttend} giờ và đăng ký nghỉ phép ${
+                        existingAbsenceDoc.hours
+                      } giờ. Bạn chỉ được thêm tối đa ${utils.round(
                         MAXIMUM_WORKING_HOURS - curTimeWorkingAttend - existingAbsenceDoc.hours
-                      } giờ nữa!`
+                      )} giờ nữa!`
                     );
                   }
                   break;
@@ -264,22 +277,25 @@ userSchema.methods.addAbsences = function (
 
         return Promise.all(absDocArray)
           .then((absenceDocs) => {
-            // console.log('__Debugger__models_User__addAbseces__Promise_resolve__absenceDocs: ', absenceDocs);
-            this.annualLeave = this.annualLeave - absenceDocs.length;
-            return this.save().then((userDoc: IUser) => {
-              return absenceDocs;
-            });
+            console.log('__Debugger__models_User__addAbseces__Promise_resolve__absenceDocs: ', absenceDocs);
+            if (type === 'dates') {
+              this.annualLeave -= absenceDocs.length;
+              return this.save().then((userDoc: IUser) => {
+                return absenceDocs;
+              });
+            } else {
+              this.annualLeave = utils.round(this.annualLeave - hours! / MAXIMUM_WORKING_HOURS);
+              return this.save().then((userDoc: IUser) => {
+                return absenceDocs;
+              });
+            }
           })
-
           .catch((err: Error) => {
-            console.log(err);
-          })
-          .catch((err) => {
-            console.log(err);
+            throw new Error(err.message);
           });
       })
       .catch((err) => {
-        console.log(err);
+        throw new Error(err.message);
       })
   );
 };

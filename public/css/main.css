@@ -319,25 +319,6 @@ Button
   transition: all 300ms ease-out;
 }
 
-.form-control-main {
-  padding: 2rem 4rem;
-}
-
-@media screen and (min-width: 576px) {
-  .form-control-main {
-    padding: 2rem 12rem;
-  }
-}
-@media screen and (min-width: 768px) {
-  .form-control-main {
-    padding: 3rem 20rem;
-  }
-}
-@media screen and (min-width: 992px) {
-  .form-control-main {
-    padding: 4rem 16rem;
-  }
-}
 .form-table-main {
   padding: 2rem 1rem;
 }
@@ -389,6 +370,7 @@ Button
 }
 .layout .form-control-main {
   padding: 1.5rem;
+  width: 100%;
 }
 .wrap-form-control {
   padding: 1rem 0.5rem;

@@ -14,7 +14,7 @@ export const getAttendance: RequestHandler = (req, res, next) => {
 export const postAttendance: RequestHandler = (req, res, next) => {
   const workplace = (req.body as { workplace: string }).workplace;
   const type = (req.query as { type: string }).type;
-  const currentDate = new Date().toLocaleDateString();
+  const currentLocaleDateString = new Date().toLocaleDateString();
 
   // console.log('__Debugger__type: ', type)
   //! __warning
@@ -22,7 +22,7 @@ export const postAttendance: RequestHandler = (req, res, next) => {
     .setStatus(type, workplace)
     .then((userDoc: any) => {
       return userDoc
-        .addAttendance(type, currentDate)
+        .addAttendance(type, currentLocaleDateString)
         .then((attendDoc: any) => {
           return attendDoc;
         })
