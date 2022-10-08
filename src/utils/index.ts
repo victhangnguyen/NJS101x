@@ -1,10 +1,10 @@
-import { convertMsToTime } from './convertTime';
+import { convertSecondsToTimeString } from './convertSecondsToTimeString';
 import { convertDateVNtoUS } from './convertDate';
 import toDateArray from './toDateArray';
 import { round } from './round';
 
 export default {
-  convertMsToTime,
+  convertSecondsToTimeString,
   convertDateVNtoUS,
   toDateArray,
   round

@@ -29,15 +29,15 @@
             <tr>
               <th scope="row"><%= index + 1 %></th>
               <td><% if ( record.workplace === 'home' ) { %>Nhà<% } else if (record.workplace === 'company') { %>Công ty<% } else { %>Khách hàng<% } %></td>
-              <td><%= record.timeIn.toLocaleTimeString() %></td>
-              <td><%= record.timeOut.toLocaleTimeString() %></td>
-              <td><%= record.timeWorking %></td>
+              <td><%= record.timeIn.toLocaleTimeString('vi-VN', { hour: '2-digit', minute:'2-digit', second: '2-digit'}) %></td>
+              <td><%= record.timeOut.toLocaleTimeString('vi-VN', { hour: '2-digit', minute:'2-digit', second: '2-digit' }) %></td>
+              <td><%= helper.convertSecondsToTimeString(record.timeWorking) %></td>
             </tr>
             <% }) %>
             <tr>
               <th colspan="4">Tổng thời gian làm việc</th>
               <td>
-                <h3><%= attendDoc.timeSum %></h3>
+                <h3><%= helper.convertSecondsToTimeString(attendDoc.timeSum) %></h3>
               </td>
             </tr>
           </tbody>

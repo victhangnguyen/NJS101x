@@ -34,27 +34,25 @@
                 <% statistics.forEach(statistic=> { %>
                 <!-- main loop -->
                 <% if ( statistic.type==='attendance' ) { %>
+                  
                 <% statistic.timeRecords.forEach((record, index, array)=> { %>
                 <tr class="border border-1 border-success">
-                  <% if ( index===0 ) { %>
-                  <th rowspan="<%= array.length + 1 %>" scope="row">
+                  <% if ( index === 0 ) { %>
+                  <th rowspan="<%= array.length + 1 %>" scope="row" class="col-1">
                     <%= statistic.date %>
                   </th>
                   <% } %>
+                  <td class="col-2">
+                    <%= record.workplace==='company' ? 'Công ty' : record.workplace==='home' ? 'Tại nhà' : 'Khách hàng' %>
+                  </td>
+                  <td class="col-2">
+                    <%= record.timeIn.toLocaleTimeString('vi-VN', { hour: '2-digit' , minute:'2-digit', second: '2-digit' }) %>
+                  </td>
+                  <td class="col-2">
+                    <%= record.timeOut ? record.timeOut.toLocaleTimeString('vi-VN', { hour: '2-digit', minute:'2-digit', second: '2-digit' }) : '--' %>
+                  </td>
                   <td class="col-3">
-                    <%= record.workplace==='company' ? 'Công ty' : record.workplace==='home' ? 'Tại nhà'
-                                    : 'Khách hàng' %>
-                  </td>
-                  <td class="col-2">
-                    <%= record.timeIn.toLocaleTimeString('vi-VN', { hour: '2-digit' , minute:'2-digit' })
-                                    %>
-                  </td>
-                  <td class="col-2">
-                    <%= record.timeOut ? record.timeOut.toLocaleTimeString('vi-VN', { hour: '2-digit' ,
-                                    minute:'2-digit' }) : '--' %>
-                  </td>
-                  <td class="col-2">
-                    <%= record.timeWorking ? record.timeWorking : 'Chưa kết thúc' %>
+                    <%= record.timeWorking ? helper.convertSecondsToTimeString(record.timeWorking) : 'Chưa kết thúc' %>
                   </td>
                 </tr>
                 <!-- Tổng cộng -->
@@ -64,15 +62,18 @@
                 <tr class="fw-bold table-light border border-1 border-success">
                   <% if ( (statistic.timeSum / (3600 * 1000))> 8 ) { %>
                   <td colspan="2">
-                    Giờ làm thêm: <%= helper.convertMsToTime(statistic.timeSum - 8 * 3600 * 1000) %>
+                    Giờ làm thêm: <%= helper.convertSecondsToTimeString(statistic.timeSum - 8 * 3600 * 1000) %>
                   </td>
                   <% } else { %>
                   <td colspan="2">
-                    Giờ làm còn thiếu: <%= helper.convertMsToTime(-statistic.timeSum + 8 * 3600 * 1000) %>
+                    Tổng giờ làm + phép (nếu có): <%= helper.convertSecondsToTimeString(statistics.find((s) => (s.type === 'absence' && s.date === statistic.date)).hours * 3600 + statistic.timeSum) %>
+                  </td>
+                  <td>
+                    Giờ thiếu: <%= helper.convertSecondsToTimeString(-statistic.timeSum + 8 * 3600) %>
                   </td>
                   <% } %>
-                  <td colspan="2">
-                    Tổng giờ làm: <%= helper.convertMsToTime(statistic.timeSum) %>
+                  <td>
+                    Tổng giờ làm: <%= helper.convertSecondsToTimeString(statistic.timeSum) %>
                   </td>
                 </tr>
                 <% } else { %>

@@ -2,6 +2,9 @@
 import User from '../models/user';
 import Attendance, { AttendanceModel, IAttendance } from '../models/attendance';
 
+//! imp utils
+import utils from '../utils';
+
 import { RequestHandler } from 'express';
 
 //@ /attendance => GET
@@ -46,6 +49,7 @@ export const postAttendance: RequestHandler = (req, res, next) => {
               pageTitle: 'Attendance | ' + req.user.name,
               attendDoc: attendDoc,
               user: req.user,
+              helper: utils,
             });
           })
           .catch((err: Error) => {
