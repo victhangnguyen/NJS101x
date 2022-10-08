@@ -24,7 +24,7 @@ export interface AttendanceModel extends mongoose.Model<IAttendance, {}, IAttend
 
 //! <EnforcedDocType = any, M = Model<EnforcedDocType, any, any, any>, TInstanceMethods = {}>
 const attendanceSchema = new mongoose.Schema<IAttendance, AttendanceModel, IAttendanceMethods>({
-  userId: { type: mongoose.Schema.Types.ObjectId, required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   date: { type: String, required: true },
   timeSum: { type: Number },
   timeRecords: [

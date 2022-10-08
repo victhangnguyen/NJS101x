@@ -1,4 +1,5 @@
 <%- include('./includes/header.ejs') %>
+<!--  -->
 
 <body>
   <%- include('./includes/navigation.ejs') %>
@@ -9,18 +10,19 @@
       <div class="container-fuild">
         <div class="row wrap-form-control">
           <form class="d-flex">
-            <input class="form-control me-2" type="search" placeholder="Tìm kiếm thông tin" aria-label="Search">
+            <input class="form-control me-2" type="search" placeholder="Tìm kiếm thông tin" aria-label="Search" />
             <button class="btn btn-outline-success" type="submit">Tìm</button>
           </form>
         </div>
         <div class="row">
-          <!-- BodyTemperatures Information Table -->
+          <!-- Statistics -->
           <div class="col-12">
-            <h5 class="text-center fw-bold">Tra cứu thông tin giờ làm - lương</h5>
+            <h5 class="text-center fw-bold">
+              Tra cứu thông tin giờ làm - lương
+            </h5>
             <table class="table table-bordered border-success border border-2 text-center">
               <thead class="table-success border-success">
                 <tr>
-                  <th scope="col">#</th>
                   <th scope="col">Ngày</th>
                   <th scope="col">Nơi làm việc</th>
                   <th scope="col">Giờ bắt đầu</th>
@@ -29,21 +31,77 @@
                 </tr>
               </thead>
               <tbody>
-
-                <tr>
-                  <th scope="row">1</th>
-                  <td class="col-3">1</td>
-                  <td class="col-2">1</td>
-                  <td class="col-2">1</td>
-                  <td class="col-2">1</td>
-                  <td class="col-3">1</td>
+                <% statistics.forEach(statistic=> { %>
+                <!-- main loop -->
+                <% if ( statistic.type==='attendance' ) { %>
+                <% statistic.timeRecords.forEach((record, index, array)=> { %>
+                <tr class="border border-1 border-success">
+                  <% if ( index===0 ) { %>
+                  <th rowspan="<%= array.length + 1 %>" scope="row">
+                    <%= statistic.date %>
+                  </th>
+                  <% } %>
+                  <td class="col-3">
+                    <%= record.workplace==='company' ? 'Công ty' : record.workplace==='home' ? 'Tại nhà'
+                                    : 'Khách hàng' %>
+                  </td>
+                  <td class="col-2">
+                    <%= record.timeIn.toLocaleTimeString('vi-VN', { hour: '2-digit' , minute:'2-digit' })
+                                    %>
+                  </td>
+                  <td class="col-2">
+                    <%= record.timeOut ? record.timeOut.toLocaleTimeString('vi-VN', { hour: '2-digit' ,
+                                    minute:'2-digit' }) : '--' %>
+                  </td>
+                  <td class="col-2">
+                    <%= record.timeWorking ? record.timeWorking : 'Chưa kết thúc' %>
+                  </td>
                 </tr>
+                <!-- Tổng cộng -->
+                <% if ( index===array.length - 1) { %>
+                <!-- begin check have timeOut => timeWorking -->
+                <% if ( statistic.timeRecords[index].timeOut ) { %>
+                <tr class="fw-bold table-light border border-1 border-success">
+                  <% if ( (statistic.timeSum / (3600 * 1000))> 8 ) { %>
+                  <td colspan="2">
+                    Giờ làm thêm: <%= helper.convertMsToTime(statistic.timeSum - 8 * 3600 * 1000) %>
+                  </td>
+                  <% } else { %>
+                  <td colspan="2">
+                    Giờ làm còn thiếu: <%= helper.convertMsToTime(-statistic.timeSum + 8 * 3600 * 1000) %>
+                  </td>
+                  <% } %>
+                  <td colspan="2">
+                    Tổng giờ làm: <%= helper.convertMsToTime(statistic.timeSum) %>
+                  </td>
+                </tr>
+                <% } else { %>
+                <tr class="fw-bold table-light border border-1 border-success">
+                  <td colspan="4">Hiện tại đang làm việc</td>
+                </tr>
+                <% } %>
+                <!-- end check have timeOut => timeWorking -->
+                <% } %>
+                <% }) %>
+                <% } else if (statistic.type==='absence' ) { %>
+                <tr class="table-warning border border-1 border-success">
+                  <th scope="row">
+                    <%= statistic.date %>
+                  </th>
+                  <td colspan="4">Nghỉ phép: <%= statistic.hours %> giờ</td>
+                </tr>
+                <% } %>
+                <!-- /ifel -->
+                <% }) %>
+                <!-- /forEach -->
               </tbody>
             </table>
           </div>
         </div>
       </div>
-    </div> <!-- container-main -->
-  </div> <!-- layout -->
+    </div>
+    <!-- container-main -->
+  </div>
+  <!-- layout -->
   <%- include('./includes/footer.ejs') %>
 </body>

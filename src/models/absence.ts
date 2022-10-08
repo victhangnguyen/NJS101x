@@ -15,6 +15,7 @@ interface AbsenceModel extends mongoose.Model<IAbsence, {}, IAbsenceMethods> {}
 const absenceSchema = new mongoose.Schema<IAbsence, AbsenceModel, IAbsenceMethods>({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     required: true,
   },
   date: {

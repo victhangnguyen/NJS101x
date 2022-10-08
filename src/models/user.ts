@@ -2,7 +2,11 @@ const MAXIMUM_WORKING_HOURS = 8;
 import mongoose from 'mongoose';
 import utils from '../utils';
 //! imp models
-import Attendance, { IAttendance, IRecord, IAttendanceMethods } from './attendance';
+import Attendance, {
+  IAttendance,
+  IRecord,
+  IAttendanceMethods,
+} from './attendance';
 import CovidStatus, { ICovidStatus, ICovidStatusMethods } from './covidStatus';
 import Absence, { IAbsence, IAbsenceMethods } from './absence';
 import Logging from '../library/Logging';
@@ -26,17 +30,29 @@ export interface IUser {
 //! interface Methods - instance
 export interface IUserMethods {
   // addAttendance(type: string, workplace: string): mongoose.Document<IUser>;
-  addAttendance(type: string, date: string): Promise<mongoose.HydratedDocument<IAttendance, IAttendanceMethods>>;
+  addAttendance(
+    type: string,
+    date: string
+  ): Promise<mongoose.HydratedDocument<IAttendance, IAttendanceMethods>>;
   //! setStatus return this (user Instance)
-  setStatus(type: string, workplace: string): Promise<mongoose.HydratedDocument<IUser, IUserMethods>>;
+  setStatus(
+    type: string,
+    workplace: string
+  ): Promise<mongoose.HydratedDocument<IUser, IUserMethods>>;
   addCovidStatus(
     type: string,
     temp: number | undefined,
     name: string | undefined,
     date: Date | undefined
   ): Promise<mongoose.HydratedDocument<ICovidStatus, ICovidStatusMethods>>;
-  addAbsences(type: string, dates: Array<Date>, hours: number | undefined, reason: string): any;
+  addAbsences(
+    type: string,
+    dates: Array<Date>,
+    hours: number | undefined,
+    reason: string
+  ): any;
   // Promise<mongoose.HydratedDocument<IAbsence, IAbsenceMethods>>;
+  getStatistic(): any;
 }
 
 //! Methods and Override Methods
@@ -88,18 +104,12 @@ const userSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>({
 userSchema.methods.setStatus = function (type: string, workplace: string) {
   this.status.workplace = workplace ? workplace : 'Vị trí chưa xác định';
 
-  switch (type) {
-    case 'start':
-      this.status.isWorking = true;
-      break;
-
-    case 'end':
-      this.status.isWorking = false;
-      break;
-
-    default:
-      return this;
+  if (type === 'start') {
+    this.status.isWorking = true;
+  } else {
+    this.status.isWorking = false;
   }
+
   return this.save();
 };
 
@@ -141,7 +151,9 @@ userSchema.methods.addCovidStatus = function (
           update = {};
       }
 
-      return CovidStatus.findOneAndUpdate({ userId: this._id }, update, { new: true }) as any;
+      return CovidStatus.findOneAndUpdate({ userId: this._id }, update, {
+        new: true,
+      }) as any;
     })
     .catch((err) => {
       console.log(err);
@@ -150,10 +162,11 @@ userSchema.methods.addCovidStatus = function (
 
 userSchema.methods.addAttendance = function (type: string, date: string) {
   const currentDate = new Date();
-  return Attendance.findOne({ userId: this._id, date: date }).then((attendDoc: any) => {
-    console.log('__Debugger__model__user__attendDoc: ', attendDoc);
-    switch (type) {
-      case 'start':
+  return Attendance.findOne({ userId: this._id, date: date }).then(
+    (attendDoc: any) => {
+      // console.log('__Debugger__model__user__attendDoc: ', attendDoc);
+      //! add timeIn to Record
+      if (type === 'start') {
         const newRecord: IRecord = {
           timeIn: currentDate,
           timeOut: undefined,
@@ -170,24 +183,21 @@ userSchema.methods.addAttendance = function (type: string, date: string) {
         } else {
           attendDoc.timeRecords.push(newRecord);
         }
-        break;
-
-      case 'end':
+      }
+      //! add timeOut to Record
+      //! type === 'end'
+      else {
         const lastedElementIndex = attendDoc?.timeRecords.length - 1;
         const currentRecord = attendDoc.timeRecords[lastedElementIndex];
 
         currentRecord!.timeOut = currentDate;
 
         attendDoc.timeRecords[lastedElementIndex] = currentRecord;
+      }
 
-        break;
-
-      default:
-        break;
+      return attendDoc.save();
     }
-
-    return attendDoc.save();
-  });
+  );
 };
 
 userSchema.methods.addAbsences = function (
@@ -198,50 +208,62 @@ userSchema.methods.addAbsences = function (
 ) {
   // console.log('__Debugger__models_User__dates: ', dates);
   //! guard clause
-  switch (type) {
-    case 'dates':
-      if (this.annualLeave < dates.length) {
-        throw new Error(`You have registered ${dates.length} dates over ${this.annualLeave} allowable dates`);
-      }
-
-    case 'hours':
-      if (this.annualLeave === 0) {
-        throw new Error(`You cannot register this, due to annualLeave is ${this.annualLeave}`);
-      }
-
-    default:
-      break;
-  }
 
   return (
     Absence.find({ _userId: this._id })
       //! find all of Absence that Belongs to userId
       .then((absenceDocs: Array<IAbsence>) => {
+        if (hours! > MAXIMUM_WORKING_HOURS) {
+          throw new Error('Thời gian tối đa bạn được phép thêm là 8 giờ');
+        }
+        if (type === 'dates') {
+          if (this.annualLeave < dates.length) {
+            throw new Error(
+              `You have registered ${dates.length} dates over ${this.annualLeave} allowable dates`
+            );
+          }
+        } else {
+          if (this.annualLeave === 0) {
+            throw new Error(
+              `You cannot register this, due to annualLeave is ${this.annualLeave}`
+            );
+          }
+        }
         //! ADD MANY ABSENCES
         const absDocArray = dates.map((date) => {
-          return Attendance.findOne({ date: date.toLocaleDateString() }).then((attendanceDoc) => {
-            console.log('__Debugger__models_User__addAbsences__attendanceDoc: ', attendanceDoc);
-            const existingAbsenceDoc = absenceDocs.find(
-              (abs: IAbsence) => abs.date.toDateString() === date.toDateString()
-            );
-            console.log('existingAbsenceDoc: ', existingAbsenceDoc);
-            if (existingAbsenceDoc) {
-              switch (type) {
-                case 'dates':
+          return Attendance.findOne({ date: date.toLocaleDateString() }).then(
+            (attendanceDoc) => {
+              // console.log('__Debugger__models_User__addAbsences__attendanceDoc: ', attendanceDoc);
+              const existingAbsenceDoc = absenceDocs.find(
+                (abs: IAbsence) =>
+                  abs.date.toDateString() === date.toDateString()
+              );
+              console.log('existingAbsenceDoc: ', existingAbsenceDoc);
+              if (existingAbsenceDoc) {
+                if (type === 'dates') {
                   throw new Error(`${date} is registered`);
-                  break;
-
-                case 'hours':
+                } else {
                   let curTimeWorkingAttend = 0;
                   //! guard clause
                   if (attendanceDoc) {
-                    curTimeWorkingAttend = utils.round(attendanceDoc?.timeSum! / (1000 * 60 * 60));
+                    curTimeWorkingAttend = utils.round(
+                      attendanceDoc?.timeSum! / (1000 * 60 * 60)
+                    );
                     console.log('attendanceDoc existing');
                   }
-                  console.log('__Debugger__models_User__curTimeWorkingAttend: ', curTimeWorkingAttend);
-                  console.log('__Debugger__models_User__existingAbsenceDoc.hours: ', existingAbsenceDoc.hours);
+                  console.log(
+                    '__Debugger__models_User__curTimeWorkingAttend: ',
+                    curTimeWorkingAttend
+                  );
+                  console.log(
+                    '__Debugger__models_User__existingAbsenceDoc.hours: ',
+                    existingAbsenceDoc.hours
+                  );
 
-                  if (curTimeWorkingAttend + existingAbsenceDoc.hours + hours! <= MAXIMUM_WORKING_HOURS) {
+                  if (
+                    curTimeWorkingAttend + existingAbsenceDoc.hours + hours! <=
+                    MAXIMUM_WORKING_HOURS
+                  ) {
                     existingAbsenceDoc.hours += hours!;
                     return existingAbsenceDoc.save();
                   } else {
@@ -249,42 +271,46 @@ userSchema.methods.addAbsences = function (
                       `Ngày ${date} bạn đã làm ${curTimeWorkingAttend} giờ và đăng ký nghỉ phép ${
                         existingAbsenceDoc.hours
                       } giờ. Bạn chỉ được thêm tối đa ${utils.round(
-                        MAXIMUM_WORKING_HOURS - curTimeWorkingAttend - existingAbsenceDoc.hours
+                        MAXIMUM_WORKING_HOURS -
+                          curTimeWorkingAttend -
+                          existingAbsenceDoc.hours
                       )} giờ nữa!`
                     );
                   }
-                  break;
-
-                default:
-                  break;
-              }
-            } else {
-              return Absence.create({
-                userId: this._id,
-                date: date,
-                hours: type === 'dates' ? MAXIMUM_WORKING_HOURS : hours,
-                reason: reason,
-              })
-                .then((absenceDoc) => {
-                  return absenceDoc;
+                }
+              } else {
+                return Absence.create({
+                  userId: this._id,
+                  date: date,
+                  hours: type === 'dates' ? MAXIMUM_WORKING_HOURS : hours,
+                  reason: reason,
                 })
-                .catch((err) => {
-                  console.log(err);
-                });
+                  .then((absenceDoc) => {
+                    return absenceDoc;
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              }
             }
-          });
+          );
         });
 
         return Promise.all(absDocArray)
           .then((absenceDocs) => {
-            console.log('__Debugger__models_User__addAbseces__Promise_resolve__absenceDocs: ', absenceDocs);
+            console.log(
+              '__Debugger__models_User__addAbseces__Promise_resolve__absenceDocs: ',
+              absenceDocs
+            );
             if (type === 'dates') {
               this.annualLeave -= absenceDocs.length;
               return this.save().then((userDoc: IUser) => {
                 return absenceDocs;
               });
             } else {
-              this.annualLeave = utils.round(this.annualLeave - hours! / MAXIMUM_WORKING_HOURS);
+              this.annualLeave = utils.round(
+                this.annualLeave - hours! / MAXIMUM_WORKING_HOURS
+              );
               return this.save().then((userDoc: IUser) => {
                 return absenceDocs;
               });
@@ -298,6 +324,63 @@ userSchema.methods.addAbsences = function (
         throw new Error(err.message);
       })
   );
+};
+
+// statistics.push({
+//   preference: 0,
+//   type: 'attendance',
+//   date: attendance.date,
+//   timeRecords: attendance.timeRecords,
+//   timeSum: attendance.timeSum,
+// });
+
+// statistics.push({
+//   preference: 1,
+//   type: 'absence',
+//   date: absence.date.toLocaleDateString(),
+//   hours: absence.hours,
+//   reason: absence.reason,
+// });
+
+userSchema.methods.getStatistic = function () {
+  const statistics: any[] = [];
+
+  return Attendance.find({ userId: this._id })
+    .then((attendanceDocs) => {
+      attendanceDocs.forEach((attendance) => {
+        statistics.push({
+          preference: 0,
+          type: 'attendance',
+          date: attendance.date,
+          timeRecords: attendance.timeRecords,
+          timeSum: attendance.timeSum,
+        });
+      });
+
+      return Absence.find({ userId: this._id }).then((absenceDocs) => {
+        absenceDocs.forEach((absence) => {
+          statistics.push({
+            preference: 1,
+            type: 'absence',
+            date: absence.date.toLocaleDateString(),
+            hours: absence.hours,
+            reason: absence.reason,
+          });
+        });
+        statistics.sort((a, b) => {
+          return a.preference - b.preference;
+        });
+
+        statistics.sort((a, b) => {
+          return new Date(a.date).valueOf() - new Date(b.date).valueOf();
+        });
+
+        return statistics;
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 const User = mongoose.model<IUser, UserModel>('User', userSchema);

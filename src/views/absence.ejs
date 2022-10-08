@@ -30,13 +30,13 @@
                 <h1 class="text-center">Đăng ký nghỉ phép theo ngày</h1>
                 <h5 class="text-center mb-5">(Số ngày nghỉ còn lại: <span class="text-danger fw-bold fs-4"><%= Math.floor(user.annualLeave) %> ngày</span>)</h5>
                 <div class="row mb-4">
-                  <% if ( multidate >= 1 ) { %>
+                  <% if ( user.annualLeave >= 1 ) { %>
                   <label for="input-absence-dates" class="col-sm-3 col-md-3 col-form-label fw-bold">Chọn ngày nghỉ:</label>
                   <div class="col-sm-9 col-md-9 mb-2">
                     <div class="input-group date" data-date-format="dd/mm/yyyy" id="datepicker3-absence-day">
                       <input id="input-absence-dates" type="text" class="form-control" placeholder="Chọn được nhiều ngày" name="dates" autocomplete="off" required>
-                      <input type="hidden" id="input-dates-disabled" name="datesDisabled" value="<%= datesDisabled %>">
-                      <input type="hidden" id="input-dates-multidate" name="datesDisabled" value="<%= multidate %>">
+                      <input type="hidden" id="input-dates-disabled"  value="<%= datesDisabled %>">
+                      <input type="hidden" id="input-dates-multidate" value="<%= multidate %>">
                       <span class="input-group-append">
                         <span class="input-group-text bg-white d-block ">
                           <i class="fa fa-calendar"></i>

@@ -24,10 +24,15 @@ export interface ICovidStatus {
 
 export interface ICovidStatusMethods {}
 
-interface CovidStatusModel extends Model<ICovidStatus, {}, ICovidStatusMethods> {}
+interface CovidStatusModel
+  extends Model<ICovidStatus, {}, ICovidStatusMethods> {}
 
-const covidStatusSchema = new Schema<ICovidStatus, CovidStatusModel, ICovidStatusMethods>({
-  userId: mongoose.Types.ObjectId,
+const covidStatusSchema = new Schema<
+  ICovidStatus,
+  CovidStatusModel,
+  ICovidStatusMethods
+>({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   bodyTemperatures: [
     {
       date: Date,
@@ -47,6 +52,9 @@ const covidStatusSchema = new Schema<ICovidStatus, CovidStatusModel, ICovidStatu
   ],
 });
 
-const CovidStatus = model<ICovidStatus, CovidStatusModel>('CovidStatus', covidStatusSchema);
+const CovidStatus = model<ICovidStatus, CovidStatusModel>(
+  'CovidStatus',
+  covidStatusSchema
+);
 
 export default CovidStatus;
