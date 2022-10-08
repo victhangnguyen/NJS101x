@@ -12,6 +12,7 @@ const CURRENT_USER_ID = '633360dd2da654687783f6c2';
 export const getHome: RequestHandler = (req, res, next) => {
   const currentUser = req.user;
   res.render('home', {
+    path: '/',
     pageTitle: 'Ứng dụng quản lý | ' + currentUser.name,
     user: currentUser,
   });
@@ -45,7 +46,11 @@ export const getProfile: RequestHandler = (req, res, next) => {
   User.findById(userId)
     .then((userDoc) => {
       console.log('__Debugger__userDoc: ', userDoc);
-      res.render('profile.ejs', { pageTitle: 'Thông tin cá nhân | ' + userDoc!.name, user: userDoc });
+      res.render('profile.ejs', {
+        path: '/profile',
+        pageTitle: 'Thông tin cá nhân | ' + userDoc!.name,
+        user: userDoc,
+      });
     })
     .catch((err) => {
       console.log(err);
@@ -60,7 +65,7 @@ export const postProfile: RequestHandler = (req, res, next) => {
   req.user
     .save()
     .then((userDoc: IUser) => {
-      res.redirect(`/profile/${userDoc._id}`)
+      res.redirect(`/profile/${userDoc._id}`);
     })
     .catch((err: Error) => {
       console.log(err);

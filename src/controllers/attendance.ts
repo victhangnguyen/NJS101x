@@ -11,7 +11,11 @@ import { RequestHandler } from 'express';
 export const getAttendance: RequestHandler = (req, res, next) => {
   //! place that is checked authentication
   const currentUser = req.user;
-  res.render('attendance.ejs', { pageTitle: 'Điểm danh', user: currentUser });
+  res.render('attendance.ejs', {
+    path: '/attendance',
+    pageTitle: 'Điểm danh',
+    user: currentUser,
+  });
 };
 //@ /attendance => POST
 export const postAttendance: RequestHandler = (req, res, next) => {
@@ -36,6 +40,7 @@ export const postAttendance: RequestHandler = (req, res, next) => {
     .then((attendDoc: any) => {
       if (type === 'start') {
         res.render('home.ejs', {
+          path: '/',
           pageTitle: 'Attendance | ' + req.user.name,
           user: req.user,
         });
@@ -46,6 +51,7 @@ export const postAttendance: RequestHandler = (req, res, next) => {
           .calcRecord()
           .then((attendDoc: any) => {
             res.render('attendance-details.ejs', {
+              path: '/attendance',
               pageTitle: 'Attendance | ' + req.user.name,
               attendDoc: attendDoc,
               user: req.user,

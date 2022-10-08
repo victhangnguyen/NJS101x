@@ -34,6 +34,7 @@ export const getCovidStatus: RequestHandler = (req, res, next) => {
     .then((covidStatusDoc) => {
       // console.log('__Debugger__getCovidStatus__covidStatusDoc: ', covidStatusDoc);
       res.render('covid-status.ejs', {
+        path: '/covidstatus',
         pageTitle: 'Thông tin Covid cá nhân',
         user: req.user,
         covidStatus: covidStatusDoc,
@@ -74,6 +75,7 @@ export const getCovidStatusDetails: RequestHandler = (req, res, next) => {
     .then((covidStatusDoc) => {
       // console.log('__Debugger__getCovidStatusDetails__covidStatusDoc: ', covidStatusDoc);
       res.render('covid-status-details.ejs', {
+        path: '/covidstatus',
         pageTitle: 'Chi tiết Thông tin Covid cá nhân',
         user: req.user,
         covidStatus: covidStatusDoc,

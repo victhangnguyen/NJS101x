@@ -13,6 +13,7 @@ export const getStatistic: RequestHandler = (req, res, next) => {
       );
 
       res.render('statistic.ejs', {
+        path: '/statistic',
         pageTitle: 'Tra cứu thông tin giờ làm - lương',
         user: req.user,
         statistics,

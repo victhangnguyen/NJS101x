@@ -34,7 +34,7 @@
                 <% statistics.forEach(statistic=> { %>
                 <!-- main loop -->
                 <% if ( statistic.type==='attendance' ) { %>
-                  
+
                 <% statistic.timeRecords.forEach((record, index, array)=> { %>
                 <tr class="border border-1 border-success">
                   <% if ( index === 0 ) { %>
@@ -60,14 +60,14 @@
                 <!-- begin check have timeOut => timeWorking -->
                 <% if ( statistic.timeRecords[index].timeOut ) { %>
                 <tr class="fw-bold table-light border border-1 border-success">
-                  <% if ( (statistic.timeSum / (3600 * 1000))> 8 ) { %>
-                  <td colspan="2">
-                    Giờ làm thêm: <%= helper.convertSecondsToTimeString(statistic.timeSum - 8 * 3600 * 1000) %>
-                  </td>
-                  <% } else { %>
                   <td colspan="2">
                     Tổng giờ làm + phép (nếu có): <%= helper.convertSecondsToTimeString(statistics.find((s) => (s.type === 'absence' && s.date === statistic.date)).hours * 3600 + statistic.timeSum) %>
                   </td>
+                  <% if ( (statistic.timeSum / (3600 * 1000))> 8 ) { %>
+                  <td>
+                    Giờ làm thêm: <%= helper.convertSecondsToTimeString(statistic.timeSum - 8 * 3600 * 1000) %>
+                  </td>
+                  <% } else { %>
                   <td>
                     Giờ thiếu: <%= helper.convertSecondsToTimeString(-statistic.timeSum + 8 * 3600) %>
                   </td>

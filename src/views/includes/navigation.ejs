@@ -7,19 +7,19 @@
     <div class="collapse navbar-collapse" id="navbarContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="/">Home</a>
+          <a class="nav-link <%= path === '/' ? 'active' : '' %>" aria-current="page" href="/">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="/attendance">Điểm danh bắt đầu/kết thúc làm</a>
+          <a class="nav-link <%= path === '/attendance' ? 'active' : '' %>" aria-current="page" href="/attendance">Điểm danh bắt đầu/kết thúc làm</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="/profile/<%= user._id %>">Xem/sửa thông tin cá nhân</a>
+          <a class="nav-link <%= path === '/profile' ? 'active' : '' %>" aria-current="page" href="/profile/<%= user._id %>">Xem/sửa thông tin cá nhân</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="/statistic">Tra cứu thông tin giờ làm - lương</a>
+          <a class="nav-link <%= path === '/statistic' ? 'active' : '' %>" aria-current="page" href="/statistic">Tra cứu thông tin giờ làm - lương</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="/covidstatus/">Thông tin Covid cá nhân</a>
+          <a class="nav-link <%= path === '/covidstatus' ? 'active' : '' %>" aria-current="page" href="/covidstatus/">Thông tin Covid cá nhân</a>
         </li>
       </ul>
       <!-- <form class="d-flex mt-3" role="search">

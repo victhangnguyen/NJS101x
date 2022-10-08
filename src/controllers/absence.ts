@@ -14,17 +14,28 @@ export const getAbsence: RequestHandler = (req, res, next) => {
     .then((absencDocs) => {
       //! datesDisabled is helped to user dont allow to choose the dates already
       const datesDisabled = absencDocs.map((abs) =>
-        abs.date.toLocaleDateString('vi-VN', { year: 'numeric', month: 'numeric', day: 'numeric' })
+        abs.date.toLocaleDateString('vi-VN', {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric',
+        })
       );
       // console.log('__Debugger__ctrls_absence__getAbsence__datesDisabled: ', datesDisabled);
       const hoursDisabled = absencDocs
         .filter((abs) => !(abs.hours < 8))
-        .map((abs) => abs.date.toLocaleDateString('vi-VN', { year: 'numeric', month: 'numeric', day: 'numeric' }));
+        .map((abs) =>
+          abs.date.toLocaleDateString('vi-VN', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+          })
+        );
       // console.log('__Debugger__ctrls_absence__getAbsence__hoursDisabled: ', hoursDisabled);
 
       const multidate = req.user.annualLeave;
 
       res.render('absence.ejs', {
+        path: '/attendance',
         pageTitle: `Đăng ký nghỉ phép | ${req.user.name}`,
         user: req.user,
         datesDisabled,
@@ -49,7 +60,10 @@ export const postAbsence: RequestHandler = (req, res, next) => {
   req.user
     .addAbsences(type, dates, hours, reason)
     .then((absenceDoc: IAbsence) => {
-      console.log('__Debugger__ctrlsAbsences__postAbsence__absenceDo: ', absenceDoc);
+      console.log(
+        '__Debugger__ctrlsAbsences__postAbsence__absenceDo: ',
+        absenceDoc
+      );
       res.redirect('/absence');
     })
     //! catch Error to show errorMessage
@@ -58,17 +72,28 @@ export const postAbsence: RequestHandler = (req, res, next) => {
         .then((absencDocs) => {
           //! datesDisabled is helped to user dont allow to choose the dates already
           const datesDisabled = absencDocs.map((abs) =>
-            abs.date.toLocaleDateString('vi-VN', { year: 'numeric', month: 'numeric', day: 'numeric' })
+            abs.date.toLocaleDateString('vi-VN', {
+              year: 'numeric',
+              month: 'numeric',
+              day: 'numeric',
+            })
           );
           const hoursDisabled = absencDocs
             .filter((abs) => !(abs.hours < 8))
-            .map((abs) => abs.date.toLocaleDateString('vi-VN', { year: 'numeric', month: 'numeric', day: 'numeric' }));
+            .map((abs) =>
+              abs.date.toLocaleDateString('vi-VN', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+              })
+            );
           // console.log('__Debugger__ctrls_absence__getAbsence__hoursDisabled: ', hoursDisabled);
 
           const multidate = req.user.annualLeave;
           const errorMessage = err.message;
 
           res.render('absence.ejs', {
+            path: '/attendance',
             pageTitle: `Đăng ký nghỉ phép | ${req.user.name}`,
             user: req.user,
             datesDisabled,

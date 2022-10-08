@@ -2,37 +2,47 @@
 
 <body>
   <%- include('./includes/navigation.ejs') %>
-  <div class="container">
-    <div class="row">
-      <div class="col-12 col-sm-5">
-        <div className="card-avatar-container">
-          <div className="card-avatar">
-            <img src="/assets/images/thangncfx16840.png" alt="image-loading" />
-          </div>
-        </div>
-      </div>
-      <div class="col-12 col-sm-7">
-        <div class="mb-3 row">
-          <label for="input-name" class="col-3 col-sm-4 col-form-label">Họ và tên:</label>
-          <div class="col-9 col-sm-8">
-            <input type="text" readonly class="form-control-plaintext" id="input-name" value="<%= user.name %>">
-          </div>
-        </div>
-        <div class="mb-3 row">
-          <label for="input-status-work" class="col-3 col-sm-4 col-form-label">Trạng thái:</label>
-          <div class="col-9 col-sm-8">
-            <input type="text" readonly class="form-control-plaintext" id="input-status-work" value="<% if ( user.status.isWorking ) { %>Đang làm việc<% } else { %>Công việc tạm dừng<% } %>">
-          </div>
-        </div>
-        <div class="mb-3 row">
-          <label for="input-status-work" class="col-3 col-sm-4 col-form-label">Nơi làm việc:</label>
-          <div class="col-9 col-sm-8">
-            <input type="text" readonly class="form-control-plaintext" id="input-status-work" value="<% if ( user.status.workplace === 'home' ) { %>Nhà<% } else if (user.status.workplace === 'company') { %>Công ty<% } else { %>Khách hàng<% } %>">
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</body>
 
-<%- include('./includes/footer.ejs') %>
+  <div class="layout">
+    <div class="sidebar"></div>
+    <div class="container-main">
+      <div class="container-fuild">
+        <div class="wrap-form-control">
+          <!-- wrap-form-control -->
+          <div class="form-control-main form-control border border-2 border-success">
+            <div class="row">
+              <div class="col-12 col-sm-5">
+                <div className="card-avatar-container">
+                  <div className="card-avatar">
+                    <img src="/assets/images/thangncfx16840.png" alt="image-loading" />
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-7">
+                <div class="mb-3 row">
+                  <label for="input-name" class="col-3 col-sm-4 col-form-label fw-bold">Họ và tên:</label>
+                  <div class="col-9 col-sm-8">
+                    <input type="text" readonly class="form-control-plaintext" id="input-name" value="<%= user.name %>">
+                  </div>
+                </div>
+                <div class="mb-3 row">
+                  <label for="input-status-work" class="col-3 col-sm-4 col-form-label fw-bold">Trạng thái:</label>
+                  <div class="col-9 col-sm-8">
+                    <input type="text" readonly class="form-control-plaintext fw-bold text-danger" id="input-status-work" value="<% if ( user.status.isWorking ) { %>Đang làm việc<% } else { %>Công việc tạm dừng<% } %>">
+                  </div>
+                </div>
+                <div class="mb-3 row">
+                  <label for="input-status-work" class="col-3 col-sm-4 col-form-label fw-bold">Nơi làm việc:</label>
+                  <div class="col-9 col-sm-8">
+                    <input type="text" readonly class="form-control-plaintext" id="input-status-work" value="<% if ( user.status.workplace === 'home' ) { %>Nhà<% } else if (user.status.workplace === 'company') { %>Công ty<% } else { %>Khách hàng<% } %>">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div> <!-- wrap-form-control -->
+      </div>
+    </div> <!-- container-main -->
+  </div> <!-- layout -->
+  <%- include('./includes/footer.ejs') %>
+</body>
