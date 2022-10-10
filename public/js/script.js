@@ -30,7 +30,7 @@ $(function () {
   });
 
   const hoursDisabled = $('input#input-hours-disabled').val()?.split(',');
-  console.log(hoursDisabled);
+  // console.log(hoursDisabled);
   //! datepicker4-absence-hours
   $('#datepicker4-absence-hours').datepicker({
     clearBtn: true,

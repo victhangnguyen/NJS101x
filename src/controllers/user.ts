@@ -7,7 +7,7 @@ import Logging from '../library/Logging';
 //! imp models
 import User, { IUser } from '../models/user';
 
-const CURRENT_USER_ID = '633360dd2da654687783f6c2';
+const CURRENT_USER_ID = '6343eda88c983e6e05fb4e55';
 //@ default -> GET
 export const getHome: RequestHandler = (req, res, next) => {
   const currentUser = req.user;

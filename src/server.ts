@@ -43,7 +43,7 @@ mongoose
             startDate: new Date('2022-09-20'),
             department: 'Information Technology',
             annualLeave: 5,
-            image: '/assests/images/thangncfx16840.png',
+            image: 'https://upload.wikimedia.org/wikipedia/vi/b/b0/Avatar-Teaser-Poster.jpg',
             status: {
               workplace: 'Chưa xác định',
               isWorking: false,
@@ -87,9 +87,7 @@ const startServer = () => {
 
     Logging.error(error);
 
-    res.status(404).json({
-      message: error.message,
-    });
+    res.render('error404.ejs', { pageTitle: 'Error Page', user: req.user, error: error.message });
   });
 
   app.listen(config.server.port, () => {
