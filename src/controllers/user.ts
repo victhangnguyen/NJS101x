@@ -45,7 +45,7 @@ export const getProfile: RequestHandler = (req, res, next) => {
 
   User.findById(userId)
     .then((userDoc) => {
-      console.log('__Debugger__userDoc: ', userDoc);
+      // console.log('__Debugger__ctrls__user__getProfile__userDoc: ', userDoc);
       res.render('profile.ejs', {
         path: '/profile',
         pageTitle: 'Thông tin cá nhân | ' + userDoc!.name,

@@ -8,11 +8,21 @@
     <div class="sidebar"></div>
     <div class="container-main">
       <div class="container-fuild">
+        <div class="row wrap-form-control">
+          <form class="d-flex" action="/statisticsearch" method="get">
+            <input class="form-control me-2" type="search" name="search" placeholder="Tìm kiếm thông tin" />
+            <button class="btn btn-outline-success" type="submit">Tìm</button>
+          </form>
+          <h5>Hướng dẫn tra cứu lương:</h5>
+          <p>Toàn bộ tháng: *</p>
+          <p>Toàn bộ tháng 1: */01/*</p>
+          <p>Tra cứu ngày cụ thể: 01/01/2022</p>
+        </div>
         <div class="row">
           <!-- Statistics -->
           <div class="col-12">
             <h5 class="text-center fw-bold">
-              Danh sách giờ đã làm
+              Wildcard - Tra cứu thông tin giờ làm
             </h5>
             <table class="table table-bordered border-success border border-2 text-center">
               <thead class="table-success border-success">
@@ -83,14 +93,32 @@
                   <th scope="row">
                     <%= statistic.date %>
                   </th>
-                  <td colspan="4" class="fw-bold">Nghỉ phép: <%= statistic.hours >= 8 ? `1 ngày (${statistic.hours} giờ) ` : `${statistic.hours} giờ`%></td>
+                  <td colspan="4" class="fw-bold">Nghỉ phép: <%= statistic.hours %> giờ</td>
                 </tr>
                 <% } %>
                 <!-- /ifel -->
                 <% }) %>
                 <!-- /forEach -->
               </tbody>
-            </table>
+            </table> <!-- /table Statistics -->
+            <!-- Table Salary -->
+            <div class="row">
+              <div class="col-12 col-md-6">
+                <table class="table table-bordered border-success border border-2 text-center">
+                  <thead class="table-success border-success">
+                    <tr>
+                      <th scope="col">Tổng lương</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="fw-bold"><%= salary.toLocaleString('en') %> đồng</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>

@@ -32,8 +32,12 @@ router.post('/profile/:userId', userController.postProfile);
 //! STATISTIC
 //@ /statistic => GET
 router.get('/statistic', statisticController.getStatistic);
-//@ /statistic => POST
-router.post('/statistic', statisticController.postStatistic);
+
+//! STATISTIC-SEARCH
+//@ /statisticsearch => GET
+router.get('/statisticsearch', statisticController.getStatisticSearch);
+//@ /statisticsearch => POST
+// router.post('/statisticsearch', statisticController.postStatisticSearch);
 
 //! COVID-STATUS
 //@ /covidstatus => GET (Register Page)

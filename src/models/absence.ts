@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 export interface IAbsence {
   userId: mongoose.Types.ObjectId;
-  date: Date;
+  date: string;
   hours: number;
   reason: string;
   save(): any;
@@ -19,7 +19,7 @@ const absenceSchema = new mongoose.Schema<IAbsence, AbsenceModel, IAbsenceMethod
     required: true,
   },
   date: {
-    type: Date,
+    type: String,
     required: true,
   },
   hours: {

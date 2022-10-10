@@ -21,7 +21,12 @@ export const getAttendance: RequestHandler = (req, res, next) => {
 export const postAttendance: RequestHandler = (req, res, next) => {
   const workplace = (req.body as { workplace: string }).workplace;
   const type = (req.query as { type: string }).type;
-  const currentLocaleDateString = new Date().toLocaleDateString();
+  //! addAttendance need a date dd/mm/yyyy
+  const currentDateString = new Date().toLocaleDateString('vi-VN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
 
   // console.log('__Debugger__type: ', type)
   //! __warning
@@ -29,7 +34,7 @@ export const postAttendance: RequestHandler = (req, res, next) => {
     .setStatus(type, workplace)
     .then((userDoc: any) => {
       return userDoc
-        .addAttendance(type, currentLocaleDateString)
+        .addAttendance(type, currentDateString)
         .then((attendDoc: any) => {
           return attendDoc;
         })
@@ -46,7 +51,7 @@ export const postAttendance: RequestHandler = (req, res, next) => {
         });
       } else {
         //! After have timeOut, we calculate Record that Attendance
-        console.log('__Debugger__attendance.ts__attendDoc: ', attendDoc);
+        console.log('__Debugger__ctrls__attendance__postAttendance__attendDoc: ', attendDoc);
         attendDoc
           .calcRecord()
           .then((attendDoc: any) => {

@@ -57,11 +57,11 @@ export const postCovidStatus: RequestHandler = (req, res, next) => {
     : undefined;
 
   console.log('req.body.date: ', req.body.date);
-  console.log('__Debugger__postCovidStatus1__postCovidStatus__type: ', type, 'temp: ', temp, 'date: ', date);
+  // console.log('__Debugger__ctrls__covidStatus__postCovidStatus__type: ', type, 'temp: ', temp, 'date: ', date);
   req.user
     .addCovidStatus(type, temp, name, date)
     .then((covidStatusDoc: ICovidStatus) => {
-      console.log('__Debugger__postCovidStatus2__covidStatusDoc: ', covidStatusDoc.positive);
+      // console.log('__Debugger__postCovidStatus2__covidStatusDoc: ', covidStatusDoc.positive);
       res.redirect(`/covidstatus/${covidStatusDoc._id}`);
     })
     .catch((err: Error) => {

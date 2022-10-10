@@ -16,7 +16,10 @@
           <a class="nav-link <%= path === '/profile' ? 'active' : '' %>" aria-current="page" href="/profile/<%= user._id %>">Xem/sửa thông tin cá nhân</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <%= path === '/statistic' ? 'active' : '' %>" aria-current="page" href="/statistic">Tra cứu thông tin giờ làm - lương</a>
+          <a class="nav-link <%= path === '/statistic' ? 'active' : '' %>" aria-current="page" href="/statistic">Thông tin giờ làm</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%= path === '/statisticsearch' ? 'active' : '' %>" aria-current="page" href="/statisticsearch">Wildcard - Tra cứu giờ và lương</a>
         </li>
         <li class="nav-item">
           <a class="nav-link <%= path === '/covidstatus' ? 'active' : '' %>" aria-current="page" href="/covidstatus/">Thông tin Covid cá nhân</a>

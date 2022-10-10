@@ -13,23 +13,11 @@ export const getAbsence: RequestHandler = (req, res, next) => {
   Absence.find({ userId: req.user._id })
     .then((absencDocs) => {
       //! datesDisabled is helped to user dont allow to choose the dates already
-      const datesDisabled = absencDocs.map((abs) =>
-        abs.date.toLocaleDateString('vi-VN', {
-          year: 'numeric',
-          month: 'numeric',
-          day: 'numeric',
-        })
-      );
+      const datesDisabled = absencDocs.map((abs) => abs.date);
       // console.log('__Debugger__ctrls_absence__getAbsence__datesDisabled: ', datesDisabled);
       const hoursDisabled = absencDocs
         .filter((abs) => !(abs.hours < 8))
-        .map((abs) =>
-          abs.date.toLocaleDateString('vi-VN', {
-            year: 'numeric',
-            month: 'numeric',
-            day: 'numeric',
-          })
-        );
+        .map((abs) => abs.date);
       // console.log('__Debugger__ctrls_absence__getAbsence__hoursDisabled: ', hoursDisabled);
 
       const multidate = req.user.annualLeave;
@@ -71,22 +59,11 @@ export const postAbsence: RequestHandler = (req, res, next) => {
       Absence.find({ userId: req.user._id })
         .then((absencDocs) => {
           //! datesDisabled is helped to user dont allow to choose the dates already
-          const datesDisabled = absencDocs.map((abs) =>
-            abs.date.toLocaleDateString('vi-VN', {
-              year: 'numeric',
-              month: 'numeric',
-              day: 'numeric',
-            })
-          );
+          //! datepicker need VN Date
+          const datesDisabled = absencDocs.map((abs) => abs.date);
           const hoursDisabled = absencDocs
             .filter((abs) => !(abs.hours < 8))
-            .map((abs) =>
-              abs.date.toLocaleDateString('vi-VN', {
-                year: 'numeric',
-                month: 'numeric',
-                day: 'numeric',
-              })
-            );
+            .map((abs) => abs.date);
           // console.log('__Debugger__ctrls_absence__getAbsence__hoursDisabled: ', hoursDisabled);
 
           const multidate = req.user.annualLeave;

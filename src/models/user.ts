@@ -1,5 +1,5 @@
 const MAXIMUM_WORKING_HOURS = 8;
-import mongoose from 'mongoose';
+import mongoose, { AnyArray } from 'mongoose';
 import utils from '../utils';
 //! imp models
 import Attendance, {
@@ -124,6 +124,7 @@ userSchema.methods.addCovidStatus = function (
       let update;
       switch (type) {
         case 'bodytemp':
+          //! create New Body Temperature
           const newBodyTemps = [...covidStatusDoc?.bodyTemperatures!];
           newBodyTemps.push({
             date: new Date(),
@@ -133,6 +134,7 @@ userSchema.methods.addCovidStatus = function (
           break;
 
         case 'vaccination':
+          //! create new Vaccine Document
           const newVaccines = [...covidStatusDoc?.vaccines!];
           newVaccines.push({
             name: name!,
@@ -142,6 +144,7 @@ userSchema.methods.addCovidStatus = function (
           break;
 
         case 'positive':
+          //! crate new Positive Document
           const newPositive = [...covidStatusDoc?.positive!];
           newPositive.push({ date: date! });
           update = { positive: newPositive };
@@ -162,33 +165,44 @@ userSchema.methods.addCovidStatus = function (
 
 userSchema.methods.addAttendance = function (type: string, date: string) {
   const currentDate = new Date();
+  //! initialize the Date to midnight
+  // console.log('__Debugger__models_Users__addAttendance__date: ', date);
   return Attendance.findOne({ userId: this._id, date: date }).then(
     (attendDoc: any) => {
       // console.log('__Debugger__model__user__attendDoc: ', attendDoc);
       //! add timeIn to Record
       if (type === 'start') {
         const newRecord: IRecord = {
-          timeIn: currentDate,
+          timeIn: new Date(),
           timeOut: undefined,
           workplace: this.status.workplace,
         };
 
         if (!attendDoc) {
           //! create new AttendDoc
+          Logging.success('Initialize first Attendance');
           return Attendance.create({
             userId: this._id,
-            date: currentDate.toLocaleDateString(),
+            date: currentDate.toLocaleDateString('vi-VN', {
+              day: '2-digit',
+              month: '2-digit',
+              year: 'numeric',
+            }),
             timeRecords: [newRecord],
           });
         } else {
+          //! if Attendance exist, add new Record into timeRecord
           attendDoc.timeRecords.push(newRecord);
         }
       }
       //! add timeOut to Record
-      //! type === 'end'
+      //! if type === 'end', we update the Record that added timeIn
       else {
+        //! find Index of record that inside the timeRecords
         const lastedElementIndex = attendDoc?.timeRecords.length - 1;
+        console.log('lastedElementIndex: ', lastedElementIndex);
         const currentRecord = attendDoc.timeRecords[lastedElementIndex];
+        console.log('currentRecord: ', currentRecord);
 
         currentRecord!.timeOut = currentDate;
 
@@ -206,13 +220,13 @@ userSchema.methods.addAbsences = function (
   hours: number | undefined,
   reason: string
 ) {
-  // console.log('__Debugger__models_User__dates: ', dates);
-  //! guard clause
-
+  console.log('__Debugger__models_User__dates: ', dates);
+  //! dates: ISO date
   return (
     Absence.find({ _userId: this._id })
       //! find all of Absence that Belongs to userId
       .then((absenceDocs: Array<IAbsence>) => {
+        //! Throw Error if clause
         if (hours! > MAXIMUM_WORKING_HOURS) {
           throw new Error('Thời gian tối đa bạn được phép thêm là 8 giờ');
         }
@@ -231,12 +245,16 @@ userSchema.methods.addAbsences = function (
         }
         //! ADD MANY ABSENCES
         const absDocArray = dates.map((date) => {
-          return Attendance.findOne({ date: date.toLocaleDateString() }).then(
+          const dateStringVN = date.toLocaleDateString('vi-VN', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+          });
+          return Attendance.findOne({ date: dateStringVN }).then(
             (attendanceDoc) => {
               // console.log('__Debugger__models_User__addAbsences__attendanceDoc: ', attendanceDoc);
               const existingAbsenceDoc = absenceDocs.find(
-                (abs: IAbsence) =>
-                  abs.date.toDateString() === date.toDateString()
+                (absence: IAbsence) => absence.date === dateStringVN
               );
               console.log('existingAbsenceDoc: ', existingAbsenceDoc);
               if (existingAbsenceDoc) {
@@ -247,7 +265,7 @@ userSchema.methods.addAbsences = function (
                   //! guard clause
                   if (attendanceDoc) {
                     curTimeWorkingAttend = utils.round(
-                      attendanceDoc?.timeSum! / (1000 * 60 * 60)
+                      attendanceDoc?.totalTime! / (1000 * 60 * 60)
                     );
                     console.log('attendanceDoc existing');
                   }
@@ -279,9 +297,10 @@ userSchema.methods.addAbsences = function (
                   }
                 }
               } else {
+                //! crate new Absence if no absence
                 return Absence.create({
                   userId: this._id,
-                  date: date,
+                  date: dateStringVN,
                   hours: type === 'dates' ? MAXIMUM_WORKING_HOURS : hours,
                   reason: reason,
                 })
@@ -303,6 +322,7 @@ userSchema.methods.addAbsences = function (
               absenceDocs
             );
             if (type === 'dates') {
+              //! if type is dates, every days correspond with 8 hours
               this.annualLeave -= absenceDocs.length;
               return this.save().then((userDoc: IUser) => {
                 return absenceDocs;
@@ -326,22 +346,6 @@ userSchema.methods.addAbsences = function (
   );
 };
 
-// statistics.push({
-//   preference: 0,
-//   type: 'attendance',
-//   date: attendance.date,
-//   timeRecords: attendance.timeRecords,
-//   timeSum: attendance.timeSum,
-// });
-
-// statistics.push({
-//   preference: 1,
-//   type: 'absence',
-//   date: absence.date.toLocaleDateString(),
-//   hours: absence.hours,
-//   reason: absence.reason,
-// });
-
 userSchema.methods.getStatistic = function () {
   const statistics: any[] = [];
 
@@ -353,7 +357,7 @@ userSchema.methods.getStatistic = function () {
           type: 'attendance',
           date: attendance.date,
           timeRecords: attendance.timeRecords,
-          timeSum: attendance.timeSum,
+          totalTime: attendance.totalTime,
         });
       });
 
@@ -362,7 +366,7 @@ userSchema.methods.getStatistic = function () {
           statistics.push({
             preference: 1,
             type: 'absence',
-            date: absence.date.toLocaleDateString(),
+            date: absence.date,
             hours: absence.hours,
             reason: absence.reason,
           });
