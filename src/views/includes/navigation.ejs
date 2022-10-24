@@ -5,6 +5,8 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarContent">
+      <!-- Authentication -->
+      <% if ( isAuthenticated ) { %>
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
           <a class="nav-link <%= path === '/' ? 'active' : '' %>" aria-current="page" href="/">Home</a>
@@ -25,6 +27,24 @@
           <a class="nav-link <%= path === '/covidstatus' ? 'active' : '' %>" aria-current="page" href="/covidstatus/">Thông tin Covid cá nhân</a>
         </li>
       </ul>
+      <% } %>
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <% if ( !isAuthenticated ) { %>
+        <li class="nav-item">
+          <a class="nav-link <%= path === '/login' ? 'active' : '' %>" href="/login">Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%= path === '/signup' ? 'active' : '' %>" href="/signup">Signup</a>
+        </li>
+        <% } else { %>
+        <li class="nav-item">
+          <form action="/logout" method="post">
+            <button class="btn btn-danger" type="submit">Logout</button>
+          </form>
+        </li>
+        <% } %>
+      </ul>
+
       <!-- <form class="d-flex mt-3" role="search">
         <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
         <button class="btn btn-outline-success" type="submit">Search</button>

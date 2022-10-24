@@ -13,6 +13,9 @@ import Logging from '../library/Logging';
 
 export interface IUser {
   _id?: mongoose.Types.ObjectId;
+  username: string; //! asm 2
+  password: string; //! asm 2
+  role: string; //! asm 2
   name: string;
   dob: Date;
   salaryScale: number;
@@ -61,6 +64,18 @@ export interface UserModel extends mongoose.Model<IUser, {}, IUserMethods> {}
 
 //! <EnforcedDocType = any, M = Model<EnforcedDocType, any, any, any>, TInstanceMethods = {}>
 const userSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>({
+  username: {
+    type: String,
+    required: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  role: {
+    type: String,
+    required: true,
+  },
   name: {
     type: String,
     required: true,

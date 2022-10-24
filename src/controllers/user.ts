@@ -18,27 +18,6 @@ export const getHome: RequestHandler = (req, res, next) => {
   });
 };
 
-//@ default
-export const checkAuth: RequestHandler = (req, res, next) => {
-  User.findById(CURRENT_USER_ID)
-    .then((userDoc) => {
-      // console.log('__Debugger__userDoc: ', userDoc);
-      //! Login successfull!
-      if (userDoc) {
-        Logging.success('Logged in successfully by userId: ' + userDoc._id);
-        req.user = userDoc;
-        next();
-      }
-      //! Login failed!
-      else {
-        Logging.error('Logged in failed!');
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
-
 //@ /profile:userId => GET
 export const getProfile: RequestHandler = (req, res, next) => {
   const userId = req.params.userId;

@@ -1,6 +1,8 @@
 import express from 'express';
+//! imp mdw
+import { isAuth } from '../middlewares/is-auth';
 
-//! imp controllers
+//! imp ctrls
 import * as userController from '../controllers/user';
 import * as attendanceController from '../controllers/attendance';
 import * as covidStatusController from '../controllers/covidStatus';
@@ -10,42 +12,46 @@ import * as absenceController from '../controllers/absence';
 const router = express.Router();
 //! DEFAULT
 //@ / => GET: Home
-router.get('/', userController.getHome);
+router.get('/', isAuth, userController.getHome);
 
 //! ATTENDANCE
 //@ /attendance => GET
-router.get('/attendance', attendanceController.getAttendance);
+router.get('/attendance', isAuth, attendanceController.getAttendance);
 //@ /attendance => POST
-router.post('/attendance', attendanceController.postAttendance);
+router.post('/attendance', isAuth, attendanceController.postAttendance);
 
 //@ /absence => GET (Register page)
-router.get('/absence', absenceController.getAbsence);
+router.get('/absence', isAuth, absenceController.getAbsence);
 //@ /admin => POST
-router.post('/absence', absenceController.postAbsence);
+router.post('/absence', isAuth, absenceController.postAbsence);
 
 //! PROFILE
 //@ /profile => GET (Details)
-router.get('/profile/:userId', userController.getProfile);
+router.get('/profile/:userId', isAuth, userController.getProfile);
 //@ /profile => POST
-router.post('/profile/:userId', userController.postProfile);
+router.post('/profile/:userId', isAuth, userController.postProfile);
 
 //! STATISTIC
 //@ /statistic => GET
-router.get('/statistic', statisticController.getStatistic);
+router.get('/statistic', isAuth, statisticController.getStatistic);
 
 //! STATISTIC-SEARCH
 //@ /statisticsearch => GET
-router.get('/statisticsearch', statisticController.getStatisticSearch);
+router.get('/statisticsearch', isAuth, statisticController.getStatisticSearch);
 //@ /statisticsearch => POST
 // router.post('/statisticsearch', statisticController.postStatisticSearch);
 
 //! COVID-STATUS
 //@ /covidstatus => GET (Register Page)
-router.get('/covidstatus', covidStatusController.getCovidStatus);
+router.get('/covidstatus', isAuth, covidStatusController.getCovidStatus);
 //@ /covidstatus => GET (Details)
-router.get('/covidstatus/:covidStatusId', covidStatusController.getCovidStatusDetails);
+router.get(
+  '/covidstatus/:covidStatusId',
+  isAuth,
+  covidStatusController.getCovidStatusDetails
+);
 //@ /covidstatus => POST
-router.post('/covidstatus', covidStatusController.postCovidStatus);
+router.post('/covidstatus', isAuth, covidStatusController.postCovidStatus);
 //@ /covidstatus => POSTs', covidStatusController.postCovidStatus);
 
 export default router;

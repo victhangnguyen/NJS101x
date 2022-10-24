@@ -1,0 +1,73 @@
+<%- include('../includes/header.ejs') %>
+
+<body>
+  <%- include('../includes/navigation.ejs') %>
+
+  <div class="layout">
+    <div class="sidebar"></div>
+    <div class="container-main">
+      <div class="container-fuild">
+        <div class="wrap-form-control">
+          <!-- Content -->
+          <div class="container">
+            <div class="row">
+              <div class="col-lg-10 offset-lg-1">
+                <h3 class="mb-3"></h3>
+                <div class="bg-white shadow rounded">
+                  <div class="row">
+                    <div class="col-md-12 pe-0">
+                      <div class="form-left h-100 py-4 px-5">
+                        <form action="/login" method="post" class="row g-3" novalidate>
+                          <div class="col-12">
+                            <label>Username<span class="text-danger">*</span></label>
+                            <div class="input-group">
+                              <div class="input-group-text"><i class="bi bi-person-fill"></i></div>
+                              <input type="text" name="username" class="form-control <%= validationErrors.find(e => e.param === 'username') ? 'is-invalid' : 'is-valid' %>" placeholder="Enter Username" value="<%= oldInput.username %>">
+                            </div>
+                            <div class="feedback">
+                              <%= validationErrors.find(e => e.param === 'username')?.msg %>
+                            </div>
+                          </div>
+
+                          <div class="col-12">
+                            <label>Password<span class="text-danger">*</span></label>
+                            <div class="input-group">
+                              <div class="input-group-text"><i class="bi bi-lock-fill"></i></div>
+                              <input type="password" name="password" class="form-control <%= validationErrors.find(e => e.param === 'password' || e.param === 'username') ? 'is-invalid' : 'is-valid' %>" placeholder="Enter Password" value="<%= oldInput.password %>">
+                            </div>
+                            <div class="feedback">
+                              <%= validationErrors.find(e => e.param === 'password')?.msg %>
+                            </div>
+                          </div>
+
+                          <div class="col-sm-6">
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox" id="inlineFormCheck">
+                              <label class="form-check-label" for="inlineFormCheck">Remember me</label>
+                            </div>
+                          </div>
+
+                          <div class="col-sm-6">
+                            <a href="#" class="float-end text-primary">Forgot Password?</a>
+                          </div>
+
+                          <div class="col-12">
+                            <button type="submit" class="btn btn-primary px-4 float-end mt-4">login</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- Content -->
+        </div>
+      </div>
+    </div> <!-- container-main -->
+  </div> <!-- layout -->
+  <%- include('../includes/footer.ejs') %>
+</body>

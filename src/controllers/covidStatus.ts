@@ -21,7 +21,9 @@ export const getCovidStatus: RequestHandler = (req, res, next) => {
           positive: [],
         })
           .then((covidStatusDoc) => {
-            Logging.success('Create New CovidStatus by userId: ' + req.user._id)
+            Logging.success(
+              'Create New CovidStatus by userId: ' + req.user._id
+            );
             return covidStatusDoc;
           })
           .catch((err) => {
@@ -48,7 +50,8 @@ export const getCovidStatus: RequestHandler = (req, res, next) => {
 //! after CovidStatus created.
 export const postCovidStatus: RequestHandler = (req, res, next) => {
   const type: string = (req.query as { type: string }).type;
-  const temp: number | undefined = (req.body as { bodyTemperature: string }).bodyTemperature
+  const temp: number | undefined = (req.body as { bodyTemperature: string })
+    .bodyTemperature
     ? Number(req.body.bodyTemperature)
     : undefined;
   const name: string | undefined = (req.body as { name: string }).name;
@@ -62,7 +65,8 @@ export const postCovidStatus: RequestHandler = (req, res, next) => {
     .addCovidStatus(type, temp, name, date)
     .then((covidStatusDoc: ICovidStatus) => {
       // console.log('__Debugger__postCovidStatus2__covidStatusDoc: ', covidStatusDoc.positive);
-      res.redirect(`/covidstatus/${covidStatusDoc._id}`);
+      // res.redirect(`/covidstatus/${covidStatusDoc._id}`);
+      res.redirect('/covidstatus');
     })
     .catch((err: Error) => {
       console.log(err);
