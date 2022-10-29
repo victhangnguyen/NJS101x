@@ -9,15 +9,33 @@
     <div class="container-main">
       <div class="container-fuild">
         <div class="row wrap-form-control">
-          <form class="d-flex" action="/statisticsearch" method="get">
-            <input class="form-control me-2" type="search" name="search" placeholder="Tìm kiếm thông tin" />
-            <button class="btn btn-outline-success" type="submit">Tìm</button>
+          <form action="/statisticsearch" method="get">
+            <div class="d-flex">
+              <input class="form-control me-2" type="search" name="search" placeholder="Tìm kiếm thông tin" />
+              <button class="btn btn-outline-success" type="submit">Tìm</button>
+            </div>
+            <div class="row  my-2">
+              <div class="col-12 col-md-6">
+                <h5>Hướng dẫn tra cứu lương:</h5>
+                <p>Toàn bộ tháng: *</p>
+                <p>Toàn bộ tháng 1: */01/*</p>
+                <p>Tra cứu ngày cụ thể: 01/01/2022</p>
+              </div>
+              <div class="col-12 col-md-6">
+                <label for="pages">Chọn số dòng muốn hiển thị:</label>
+                <select id="pages" class="form-select form-select-sm my-2" aria-label=".form-select-sm example" name="lines">
+                  <option value="5">5</option>
+                  <option value="10" selected>10</option>
+                  <option value="20">20</option>
+                  <option value="40">40</option>
+                </select>
+              </div>
+            </div>
+            <%- include('./includes/pagination.ejs') %>
+
           </form>
-          <h5>Hướng dẫn tra cứu lương:</h5>
-          <p>Toàn bộ tháng: *</p>
-          <p>Toàn bộ tháng 1: */01/*</p>
-          <p>Tra cứu ngày cụ thể: 01/01/2022</p>
-        </div>
+        </div> <!-- /row -->
+
         <div class="row">
           <!-- Statistics -->
           <div class="col-12">
@@ -39,55 +57,7 @@
                 <!-- main loop -->
                 <% if ( statistic.type==='attendance' ) { %>
 
-                <% statistic.timeRecords.forEach((record, index, array)=> { %>
-                <tr class="border border-1 border-success">
-                  <% if ( index === 0 ) { %>
-                  <th rowspan="<%= array.length + 1 %>" scope="row" class="col-1">
-                    <%= statistic.date %>
-                  </th>
-                  <% } %>
-                  <td class="col-2">
-                    <%= record.workplace==='company' ? 'Công ty' : record.workplace==='home' ? 'Tại nhà' : 'Khách hàng' %>
-                  </td>
-                  <td class="col-2">
-                    <%= record.timeIn.toLocaleTimeString('vi-VN', { hour: '2-digit' , minute:'2-digit', second: '2-digit' }) %>
-                  </td>
-                  <td class="col-2">
-                    <%= record.timeOut ? record.timeOut.toLocaleTimeString('vi-VN', { hour: '2-digit', minute:'2-digit', second: '2-digit' }) : '--' %>
-                  </td>
-                  <td class="col-3">
-                    <%= record.timeWorking ? helper.convertSecondsToTimeString(record.timeWorking) : 'Chưa kết thúc' %>
-                  </td>
-                </tr>
-                <!-- Tổng cộng -->
-                <% if ( index===array.length - 1) { %>
-                <!-- begin check have timeOut => timeWorking -->
-                <% if ( statistic.timeRecords[index].timeOut ) { %>
-                <tr class="fw-bold table-warning border border-1 border-success">
-                  <td colspan="2">
-                    Tổng giờ làm + phép (nếu có): <%= helper.convertSecondsToTimeString((statistics.find((s) => (s.type === 'absence' && s.date === statistic.date))?.hours | 0) * 3600 + statistic.totalTime) %>
-                  </td>
-                  <% if ( (statistic.totalTime / (3600 * 1000))> 8 ) { %>
-                  <td>
-                    Giờ làm thêm: <%= helper.convertSecondsToTimeString(statistic.totalTime - 8 * 3600 * 1000) %>
-                  </td>
-                  <% } else { %>
-                  <td>
-                    Giờ thiếu: <%= helper.convertSecondsToTimeString(-statistic.totalTime + 8 * 3600) %>
-                  </td>
-                  <% } %>
-                  <td>
-                    Tổng giờ làm: <%= helper.convertSecondsToTimeString(statistic.totalTime) %>
-                  </td>
-                </tr>
-                <% } else { %>
-                <tr class="fw-bold table-warning border border-1 border-success">
-                  <td colspan="4">Hiện tại đang làm việc</td>
-                </tr>
-                <% } %>
-                <!-- end check have timeOut => timeWorking -->
-                <% } %>
-                <% }) %>
+
                 <% } else if (statistic.type==='absence' ) { %>
                 <tr class="table-warning border border-1 border-success">
                   <th scope="row">
@@ -118,12 +88,15 @@
                 </table>
               </div>
             </div>
-
+            <!-- end row -->
           </div>
+          <!-- end col-12 -->
         </div>
+        <!-- end row -->
       </div>
+      <!-- end container-fuild -->
     </div>
-    <!-- container-main -->
+    <!-- end container-main -->
   </div>
   <!-- layout -->
   <%- include('./includes/footer.ejs') %>

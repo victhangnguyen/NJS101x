@@ -389,12 +389,15 @@ userSchema.methods.getStatistic = function () {
   return Attendance.find({ userId: this._id })
     .then((attendanceDocs) => {
       attendanceDocs.forEach((attendance) => {
-        statistics.push({
-          preference: 0,
-          type: 'attendance',
-          date: attendance.date,
-          timeRecords: attendance.timeRecords,
-          totalTime: attendance.totalTime,
+        attendance.timeRecords.forEach((record) => {
+          statistics.push({
+            attendanceId: attendance._id,
+            preference: 0,
+            type: 'attendance',
+            lines: 1,
+            date: attendance.date,
+            timeRecord: record,
+          });
         });
       });
 
@@ -403,11 +406,13 @@ userSchema.methods.getStatistic = function () {
           statistics.push({
             preference: 1,
             type: 'absence',
+            lines: 2,
             date: absence.date,
             hours: absence.hours,
             reason: absence.reason,
           });
         });
+
         statistics.sort((a, b) => {
           return a.preference - b.preference;
         });
@@ -415,6 +420,8 @@ userSchema.methods.getStatistic = function () {
         statistics.sort((a, b) => {
           return new Date(a.date).valueOf() - new Date(b.date).valueOf();
         });
+
+        // console.log('__Debugger__models__user__getStatistic__statistics: ', statistics)
 
         return statistics;
       });

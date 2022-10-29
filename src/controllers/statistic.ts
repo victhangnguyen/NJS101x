@@ -2,43 +2,170 @@ import mongoose from 'mongoose';
 import { RequestHandler } from 'express';
 import utils from '../utils';
 
+//! models
+import User from '../models/user';
+import Attendance from '../models/attendance';
+
 //@ /statistic => GET
 export const getStatistic: RequestHandler = (req, res, next) => {
-  req.user
-    .getStatistic()
-    .then((statistics: any) => {
-      console.log(statistics);
-
-      res.render('statistic.ejs', {
-        path: '/statistic',
-        pageTitle: 'Tra cứu thông tin giờ làm - lương',
-        user: req.user,
-        statistics,
-        helper: utils,
-      });
+  User.findById(req.user._id)
+    .populate({
+      path: 'manage.staffs',
     })
-    .catch((err: Error) => {
+    .then((userDoc) => {
+      userDoc
+        ?.getStatistic()
+        .then((statistics: any) => {
+          // console.log(statistics);
+
+          res.render('statistic.ejs', {
+            path: '/statistic',
+            pageTitle: 'Tra cứu thông tin giờ làm - lương',
+            user: userDoc,
+            statistics,
+            helper: utils,
+          });
+        })
+        .catch((err: Error) => {
+          console.log(err);
+        });
+    })
+    .catch((err) => {
       console.log(err);
     });
 };
+
+export const getStatisticDetails: RequestHandler = (req, res, next) => {
+  const userId = req.params.userId;
+  // console.log('__Debugger__ctrls__statstic__req.user: ', userId);
+
+  User.findById(userId)
+    .then((userDoc) => {
+      userDoc
+        ?.getStatistic()
+        .then((statistics: any) => {
+          // console.log(statistics);
+
+          res.render('statisticDetails.ejs', {
+            path: '/statistic',
+            pageTitle: 'Tra cứu thông tin giờ làm - lương',
+            user: userDoc,
+            statistics,
+            helper: utils,
+          });
+        })
+        .catch((err: Error) => {
+          console.log(err);
+        });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
+  // User.findById(req.user._id)
+  //   .populate({
+  //     path: 'manage.staffs',
+  //   })
+  //   .then((userDoc) => {
+  //     userDoc
+  //       ?.getStatistic()
+  //       .then((statistics: any) => {
+  //         console.log(statistics);
+
+  //         res.render('statistic.ejs', {
+  //           path: '/statistic',
+  //           pageTitle: 'Tra cứu thông tin giờ làm - lương',
+  //           user: userDoc,
+  //           statistics,
+  //           helper: utils,
+  //         });
+  //       })
+  //       .catch((err: Error) => {
+  //         console.log(err);
+  //       });
+  //   })
+  //   .catch((err) => {
+  //     console.log(err);
+  //   });
+};
+
+export const postStatisticDelete: RequestHandler = (req, res, next) => {
+  const userI = req.params.userId;
+  const attendanceId = req.body.attendanceId;
+  console.log(
+    '__Debugger__ctrls__statistic__postStatisticDelete__attendanceId: ',
+    attendanceId
+  );
+
+  const recordTimeIn = new Date(req.body.recordTimeIn).toLocaleTimeString(
+    'vi-VN',
+    {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    }
+  );
+
+  Attendance.findById(attendanceId)
+    .then((attendanceDoc: any) => {
+      const currentTimeRecords = attendanceDoc?.timeRecords;
+
+      const newTimeRecords = currentTimeRecords?.filter((record: any) => {
+        const recordTimeInString = record.timeIn?.toLocaleTimeString('vi-VN', {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        });
+
+        return recordTimeInString !== recordTimeIn;
+      });
+
+      attendanceDoc.timeRecords = newTimeRecords;
+      attendanceDoc
+        .save()
+        .then((attendanceDoc: any) => {
+          //! render
+          res.redirect(`/statistic/`)
+
+          
+
+        })
+        .catch((err: Error) => {
+          console.log(err);
+        });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
 //@ /statisticsearch => GET
 export const getStatisticSearch: RequestHandler = (req, res, next) => {
   //! initial keyword: All
   const search = req.query.search
     ? (req.query as { search: string }).search
     : '*';
-
   console.log(
     '__Debugger__ctrls__statistic__getStatisticSearch__search: ',
     search
   );
+
+  const lines = +req.query.lines!;
+  console.log(
+    '__Debugger__ctrls__statistic__getStatisticSearch__lines: ',
+    lines
+  );
+
   req.user
     .getStatistic()
     .then((statistics: any) => {
-      const filteredStatistics: Array<any> = statistics.filter(
-        (statistic: any) => utils.matchRuleShort(statistic.date, search)
-      );
-      console.log('__Debugger__ctrls__statistic__getStatisticSearch__filteredStatistics: ', filteredStatistics)
+      const filteredStatistics: Array<any> = statistics
+        .filter((statistic: any) =>
+          utils.matchRuleShort(statistic.date, search)
+        )
+        .filter((statistic: any) => {});
+
+      // console.log('__Debugger__ctrls__statistic__getStatisticSearch__filteredStatistics: ', filteredStatistics)
 
       //! guard clause
       if (filteredStatistics.length > 0) {
@@ -55,10 +182,10 @@ export const getStatisticSearch: RequestHandler = (req, res, next) => {
             );
 
             if (existingAbsence) {
-              console.log(
-                '__Debugger__ctrls__Statistic__getStatisticSearch__existingAbsence: ',
-                existingAbsence
-              );
+              // console.log(
+              //   '__Debugger__ctrls__Statistic__getStatisticSearch__existingAbsence: ',
+              //   existingAbsence
+              // );
               //! Số giờ làm còn thiếu là khi chưa đủ 8h/ngày kể cả đã cộng annualLeave của ngày đó.
               if (statistic.salaryTime < 8) {
                 statistic.salaryTime =
@@ -71,23 +198,23 @@ export const getStatisticSearch: RequestHandler = (req, res, next) => {
             salaryTimeTotal += statistic.salaryTime;
           }
 
-          console.log(
-            '__Debugger__ctrls__Statistic__getStatisticSearch__attendance: ',
-            statistic
-          );
+          // console.log(
+          //   '__Debugger__ctrls__Statistic__getStatisticSearch__attendance: ',
+          //   statistic
+          // );
         });
 
         const salary = Math.floor(
           req.user.salaryScale * 3000000 + salaryTimeTotal * 200000
         );
-        console.log(
-          '__Debugger__ctrls__Statistic__getStatisticSearch__salaryTimeTotal: ',
-          salaryTimeTotal
-        );
-        console.log(
-          '__Debugger__ctrls__Statistic__getStatisticSearch__salary: ',
-          salary
-        );
+        // console.log(
+        //   '__Debugger__ctrls__Statistic__getStatisticSearch__salaryTimeTotal: ',
+        //   salaryTimeTotal
+        // );
+        // console.log(
+        //   '__Debugger__ctrls__Statistic__getStatisticSearch__salary: ',
+        //   salary
+        // );
 
         res.render('statistic-search.ejs', {
           path: '/statisticsearch',
@@ -114,4 +241,3 @@ export const getStatisticSearch: RequestHandler = (req, res, next) => {
       console.log(err);
     });
 };
-

@@ -8,33 +8,6 @@
     <div class="sidebar"></div>
     <div class="container-main">
       <div class="container-fuild">
-        <% if ( user.role === 'ADMIN' ) { %>
-        <div class="row">
-          <% user.manage.staffs.forEach((staff, index) => { %>
-          <div class="col-6 col-md-4 col-lg-4">
-            <div class="card">
-              <div class="card-header">
-                #<%= index + 1 %>
-              </div>
-              <div class="avatar">
-                <img src="/<%= staff.image %>" class="card-img-top avatar-img" alt="...">
-              </div>
-              <div class="card-body">
-                <h5 class="card-title fw-bold"><%= staff.name %></h5>
-                <p class="card-text fw-bold">department:
-                  <span class="fw-normal"><%= staff.department %></span>
-                </p>
-                <div class="d-flex justify-content-between">
-                  <!-- Seen Details -->
-                  <a href="/statistic/<%= staff._id %>" class="btn btn-primary">Xem chi tiết</a>
-                </div>
-              </div>
-            </div>
-          </div>
-          <% }) %>
-        </div>
-
-        <% } else { %>
         <div class="row">
           <!-- Statistics -->
           <div class="col-12">
@@ -49,27 +22,31 @@
                   <th scope="col">Giờ bắt đầu</th>
                   <th scope="col">Giờ kết thúc</th>
                   <th scope="col">Thời gian làm việc</th>
+                  <th scope="col">Hành vi</th>
                 </tr>
               </thead>
               <tbody>
                 <% statistics.length && statistics.forEach((statistic, index, array)=> { %>
                 <tr class="border border-1 border-success">
-                  <% if ( index === 0 ) { %>
-                  <th rowspan="<%= array.length + 1 %>" scope="row" class="col-1">
+                  <th scope="row" class="col-1">
                     <%= statistic.date %>
                   </th>
-                  <% } %>
                   <td class="col-2">
-                    1
+                    <%= statistic.timeRecord.workplace==='company' ? 'Công ty' : statistic.timeRecord.workplace==='home' ? 'Tại nhà' : 'Khách hàng' %> </td>
+                  <td class="col-2">
+                    <%= statistic.timeRecord.timeIn.toLocaleTimeString('vi-VN', { hour: '2-digit' , minute:'2-digit', second: '2-digit' }) %>
                   </td>
                   <td class="col-2">
-                    2
-                  </td>
+                    <%= statistic.timeRecord.timeOut ? statistic.timeRecord.timeOut.toLocaleTimeString('vi-VN', { hour: '2-digit', minute:'2-digit', second: '2-digit' }) : '--' %> </td>
                   <td class="col-2">
-                    3
+                    <%= statistic.timeRecord.timeWorking ? helper.convertSecondsToTimeString(statistic.timeRecord.timeWorking) : 'Chưa kết thúc' %>
                   </td>
                   <td class="col-3">
-                    4
+                    <form action="/statisticDelete" method="post">
+                      <input type="hidden" name="attendanceId" value="<%= statistic.attendanceId %>">
+                      <input type="hidden" name="recordTimeIn" value="<%= statistic.timeRecord.timeIn %>">
+                      <button type="submit" class="btn btn-danger">Xóa</button>
+                    </form>
                   </td>
                 </tr>
                 <% }) %>
@@ -79,7 +56,6 @@
           </div>
         </div>
         <!-- end row -->
-        <% } %>
       </div>
     </div>
     <!-- container-main -->
