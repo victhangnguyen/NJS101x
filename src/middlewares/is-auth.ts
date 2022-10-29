@@ -7,7 +7,12 @@ export const isAuth: RequestHandler = (req, res, next) => {
   next();
 };
 
-
-
+export const isAdmin: RequestHandler = (req, res, next) => {
+  if (req.session.isLoggedIn && req.user.role === 'ADMIN') {
+    next();
+  } else {
+    return res.redirect('/');
+  }
+};
 
 // export default isAuth;

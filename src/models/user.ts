@@ -28,6 +28,13 @@ export interface IUser {
     isWorking: boolean;
     workplace: string;
   };
+  healthStatus: {
+    covidStatusId: mongoose.Types.ObjectId;
+  };
+  manage: {
+    userId: mongoose.Types.ObjectId;
+    staffs: [];
+  };
   // addAttendance: (timeIn: Date, workplace: string) => IRecord;
 }
 //! interface Methods - instance
@@ -113,6 +120,21 @@ const userSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>({
       type: String,
       required: true,
     },
+  },
+  healthStatus: {
+    covidStatusId: { type: mongoose.Schema.Types.ObjectId, ref: 'CovidStatus' },
+  },
+  manage: {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    staffs: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
 });
 

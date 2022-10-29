@@ -1,4 +1,11 @@
+import path from 'path';
+import fs from 'fs';
+
 import { RequestHandler } from 'express';
+const util = require('node:util');
+
+import PDFDocument from 'pdfkit';
+
 import mongoose from 'mongoose';
 //! imp utils
 import utils from '../utils';
@@ -8,6 +15,7 @@ import Logging from '../library/Logging';
 
 //! imp models
 import CovidStatus, { ICovidStatus } from '../models/covidStatus';
+import User from '../models/user';
 
 export const getCovidStatus: RequestHandler = (req, res, next) => {
   CovidStatus.findOne({ userId: req.user._id })
@@ -21,26 +29,65 @@ export const getCovidStatus: RequestHandler = (req, res, next) => {
           positive: [],
         })
           .then((covidStatusDoc) => {
-            Logging.success(
-              'Create New CovidStatus by userId: ' + req.user._id
-            );
-            return covidStatusDoc;
+            if (covidStatusDoc)
+              User.findOne({ _id: req.user._id })
+                .then((userDoc) => {
+                  userDoc?.healthStatus &&
+                    (userDoc.healthStatus.covidStatusId =
+                      new mongoose.Types.ObjectId(covidStatusDoc._id));
+                  userDoc!.save().then((result: any) => {
+                    Logging.success(
+                      'Create New CovidStatus by userId: ' + req.user._id
+                    );
+                  });
+                })
+
+                .catch((err) => {
+                  console.log(err);
+                });
+            return covidStatusDoc; //!__debugger1
           })
           .catch((err) => {
             console.log(err);
           });
       }
 
+      //! if covidStatus existed
       return covidStatusDoc;
     })
     .then((covidStatusDoc) => {
-      // console.log('__Debugger__getCovidStatus__covidStatusDoc: ', covidStatusDoc);
-      res.render('covid-status.ejs', {
-        path: '/covidstatus',
-        pageTitle: 'Thông tin Covid cá nhân',
-        user: req.user,
-        covidStatus: covidStatusDoc,
-      });
+      //! ROLE: 'ADMIN'
+      if (req.user.role === 'ADMIN') {
+        User.findById(req.user._id)
+          .populate({
+            path: 'manage.staffs',
+            populate: {
+              path: 'healthStatus.covidStatusId',
+            },
+          })
+          .then((userDoc) => {
+            console.log(util.inspect(userDoc, { depth: 12 }));
+
+            return res.render('covid-status.ejs', {
+              path: '/covidstatus',
+              pageTitle: 'Thông tin Covid cá nhân',
+              user: userDoc,
+              covidStatus: covidStatusDoc,
+            });
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+      //! ROLE: 'STAFF'
+      else {
+        return res.render('covid-status.ejs', {
+          path: '/covidstatus',
+          pageTitle: 'Thông tin Covid cá nhân',
+          user: req.user,
+          covidStatus: covidStatusDoc,
+        });
+      }
     })
     .catch((err) => {
       console.log(err);
@@ -59,7 +106,7 @@ export const postCovidStatus: RequestHandler = (req, res, next) => {
     ? new Date(utils.convertDateVNtoUS(req.body.date))
     : undefined;
 
-  console.log('req.body.date: ', req.body.date);
+  // console.log('__Debugger__ctrls__covidStatus__postCovidStatus__req.body.date: ', req.body.date);
   // console.log('__Debugger__ctrls__covidStatus__postCovidStatus__type: ', type, 'temp: ', temp, 'date: ', date);
   req.user
     .addCovidStatus(type, temp, name, date)
@@ -74,11 +121,10 @@ export const postCovidStatus: RequestHandler = (req, res, next) => {
 };
 
 export const getCovidStatusDetails: RequestHandler = (req, res, next) => {
-  const userId = req.params.userId;
-  CovidStatus.findOne({ _userId: userId })
+  const covidStatusId = req.params.covidStatusId;
+  CovidStatus.findById(covidStatusId)
     .then((covidStatusDoc) => {
-      // console.log('__Debugger__getCovidStatusDetails__covidStatusDoc: ', covidStatusDoc);
-      res.render('covid-status-details.ejs', {
+      return res.render('covid-status-details.ejs', {
         path: '/covidstatus',
         pageTitle: 'Chi tiết Thông tin Covid cá nhân',
         user: req.user,
@@ -89,3 +135,114 @@ export const getCovidStatusDetails: RequestHandler = (req, res, next) => {
       console.log(err);
     });
 };
+
+export const getCovidStatusPDF: RequestHandler = (req, res, next) => {
+  const covidStatusId = req.params.covidStatusId;
+  //! Restricting file access
+  CovidStatus.findById(covidStatusId)
+    .then((covidStatusDoc) => {
+      console.log(
+        '__Debugger__ctrls__covidStatus__getCovidStatusPDF__covidStatusDoc: ',
+        covidStatusDoc
+      );
+      //! Guard Clause
+      if (!covidStatusDoc) {
+        return next(new Error('No Covid Report found!'));
+        // console.log(
+        //   '__Debugger__ctrls__covidStatus__getCovidStatusPDF | No covidStatusDoc'
+        // );
+      }
+
+      //! Guard Clause Unauthorized
+      if (
+        covidStatusDoc?.userId.toString() !== req.user._id.toString() &&
+        req.user.role !== 'ADMIN'
+      ) {
+        return next(new Error('Unauthorized'));
+        //   ('__Debugger__ctrls__covidStatus__getCovidStatusPDF | Unauthorized');
+      }
+      const covidReportName = 'covidreport-' + covidStatusId + '.pdf';
+      const covidReportPath = path.join(
+        'src',
+        'data',
+        'covidReports',
+        covidReportName
+      );
+      // Create a document
+      const pdfDoc = new PDFDocument();
+      res.setHeader('Content-Type', 'application/pdf');
+      //! This allow us to define How this content should be served to the Cliend (inline or attachment)
+      res.setHeader(
+        'Content-Disposition',
+        'inline; filename="' + covidReportName + '"'
+      );
+
+      // Pipe its output somewhere, like to a file or HTTP response
+      pdfDoc.pipe(fs.createWriteStream(covidReportPath));
+      pdfDoc.pipe(res);
+
+      pdfDoc.fontSize(26).text('Covid Status Report', { underline: true });
+      pdfDoc.text('=========================');
+      pdfDoc.fontSize(20).text('Body Temperatures Information Table');
+      pdfDoc
+        .fontSize(14)
+        .text(`STT     Body Temperatures       Time       Date`);
+      covidStatusDoc.bodyTemperatures.forEach((bt, index) => {
+        pdfDoc.fontSize(14).text(
+          `${index + 1}          ${
+            bt.temp
+          }                                  ${bt.date.toLocaleTimeString(
+            'vi-VN',
+            { hour: '2-digit', minute: '2-digit' }
+          )}       ${bt.date.toLocaleDateString('vi-VN', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })}`
+        );
+      });
+
+      pdfDoc.text('-------------------------------------------------------------------------------');
+      pdfDoc.fontSize(20).text('Vaccines Information Table');
+      pdfDoc
+        .fontSize(14)
+        .text(`STT     Vaccine Name               Date`);
+      covidStatusDoc.vaccines.forEach((vaccine, index) => {
+        pdfDoc.fontSize(14).text(
+          `${index + 1}          ${
+            vaccine.name
+          }                             ${vaccine.date.toLocaleDateString('vi-VN', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })}`
+        );
+      });
+
+      pdfDoc.text('-------------------------------------------------------------------------------');
+      pdfDoc.fontSize(20).text('Postive Information Table');
+      pdfDoc
+        .fontSize(14)
+        .text(`STT     Date`);
+        covidStatusDoc.positive.forEach((pos, index) => {
+          pdfDoc.fontSize(14).text(
+            `${index + 1}          ${pos.date.toLocaleDateString('vi-VN', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}`
+          );
+        });
+  
+        pdfDoc.text('-------------------------------------------------------------------------------');
+
+      // pdfDoc.fontSize(20).text(`Total Price: $${totalPrice}`);
+
+      pdfDoc.end();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+const express = require('express');

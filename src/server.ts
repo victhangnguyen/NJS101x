@@ -1,9 +1,14 @@
 import path from 'path';
-import mongoose, { mongo } from 'mongoose';
-import express from 'express';
+import mongoose from 'mongoose';
+import express, { ErrorRequestHandler, Request, Express } from 'express';
 import session from 'express-session';
 import flash from 'connect-flash';
 import bcrypt from 'bcryptjs';
+
+import multer, { FileFilterCallback } from 'multer';
+type DestinationCallback = (error: Error | null, destination: string) => void;
+type FileNameCallback = (error: Error | null, filename: string) => void;
+
 import { default as connectMongoDBSession } from 'connect-mongodb-session';
 
 //! configuration
@@ -34,6 +39,10 @@ declare module 'express-session' {
   }
 }
 
+export interface ErrnoException extends Error {
+  httpStatusCode?: number;
+}
+
 const app = express();
 
 //! connect with MongoDB Database
@@ -52,7 +61,7 @@ mongoose
             .then((hashedPassword) => {
               const user = new User({
                 name: 'Nguyễn Chí Thắng',
-                role: 'ADMIN',
+                role: 'STAFF',
                 username: 'victhangnguyen',
                 password: hashedPassword,
                 dob: new Date('1991-05-06'),
@@ -65,6 +74,11 @@ mongoose
                 status: {
                   workplace: 'Chưa xác định',
                   isWorking: false,
+                },
+                manage: {
+                  userId: new mongoose.Types.ObjectId(
+                    '6356f9e926c1ce9bd51ee787'
+                  ),
                 },
               });
               user.save();
@@ -93,9 +107,12 @@ const startServer = () => {
   app.set('view engine', 'ejs');
   app.set('views', 'src/views');
 
-  //! static middlewares
+  //! middlewares [STATIC]
   const publicDir = path.join(__dirname, '..', 'public');
   app.use(express.static(publicDir));
+
+  const imagesDir = path.join(__dirname, 'images');
+  app.use('/src/images', express.static(imagesDir));
 
   //! apply middlewares
   // app.use(express.json());
@@ -118,7 +135,7 @@ const startServer = () => {
     })
   );
 
-  //! mdw add Across Request
+  //! Middleware Across Request
   app.use((req, res, next) => {
     if (!req.session.user) {
       return next();
@@ -136,10 +153,9 @@ const startServer = () => {
       });
   });
 
-  //! mdw Locals
+  //! Middleware Locals
   app.use((req, res, next) => {
     res.locals.isAuthenticated = req.session.isLoggedIn;
-    res.locals.user = req.user ? req.user : null;
     // res.locals.csrfToken = req.csrfToken();
     next();
   });
@@ -153,7 +169,7 @@ const startServer = () => {
   app.use((req, res, next) => {
     const error = new Error('Page not found');
 
-    Logging.error(error);
+    // Logging.error(error);
 
     res.render('error404.ejs', {
       pageTitle: 'Error Page',
@@ -161,6 +177,19 @@ const startServer = () => {
       error: error.message,
     });
   });
+
+  app.use(((error, req, res, next) => {
+    // res.status(error.httpStatusCode).render(...);
+    Logging.error(error);
+    // res.redirect('/500');
+    res.status(500).render('500', {
+      pageTitle: 'Error!',
+      path: '/500',
+      isAuthenticated: req.session.isLoggedIn,
+      user: req.user,
+      error: error,
+    });
+  }) as ErrorRequestHandler);
 
   app.listen(config.server.port, () => {
     Logging.info(`Server is running in port: ${config.server.port}!`);

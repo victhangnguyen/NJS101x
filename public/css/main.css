@@ -62,11 +62,6 @@ svg {
   border-bottom: 2px solid var(--color-main);
 }
 
-.card a {
-  text-decoration: none;
-  color: var(--color-dark);
-}
-
 .card-title {
   pointer-events: fill !important;
 }
@@ -480,6 +475,22 @@ form .input-invalid {
   border: 1px red !important;
 }
 
+.container-main .avatar {
+  padding: 0.5rem;
+  display: flex;
+  justify-content: center;
+}
+.container-main .avatar .avatar-img {
+  object-fit: cover;
+  max-width: 15rem;
+  max-height: 15rem;
+}
+
+@media screen and (min-width: 992px) {
+  .container-main .avatar {
+    padding: 1rem;
+  }
+}
 .datepicker {
   padding: 4px;
   -webkit-border-radius: 4px;

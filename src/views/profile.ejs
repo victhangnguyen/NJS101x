@@ -14,14 +14,19 @@
               <div class="col-12 col-sm-6 col-md-5">
                 <div class="avatar-form-control">
                   <div class="avatar-image">
-                    <img src="<%= user.image %>" alt="<%= user.image %>">
+                    <img src="/<%= user.image %>" alt="<%= user.image %>">
                   </div>
                   <!-- button change image -->
                   <div class="avatar-button">
-                    <form action="/profile/<%= user._id %>" method="post">
-                      <div class="input-group my-3">
-                        <input type="text" class="form-control" aria-describedby="input-image" value="<%= user.image %>" name="image">
-                        <button class="btn btn-outline-success" type="submit" id="input-image">Thay đổi</button>
+                    <form action="/profile/<%= user._id %>" method="post" enctype="multipart/form-data">
+                      <div class="my-3 d-flex justify-content-center flex-column">
+                        <div class="mb-3">
+                          <input class="form-control" type="file" id="formFile" name="image">
+                        </div>
+                        <% if ( errorMessage ) { %>
+                        <div class="feedback"><%= errorMessage %></div>
+                        <% } %>
+                        <button class="btn btn-success" type="submit">Upload hình</button>
                       </div>
                     </form>
                   </div>

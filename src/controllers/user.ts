@@ -1,5 +1,7 @@
-import mongoose from 'mongoose';
 import { RequestHandler } from 'express';
+import { ErrnoException } from '../server';
+//! utils
+import { deleteFile } from '../utils/file';
 
 //! imp library
 import Logging from '../library/Logging';
@@ -7,13 +9,12 @@ import Logging from '../library/Logging';
 //! imp models
 import User, { IUser } from '../models/user';
 
-const CURRENT_USER_ID = '6343eda88c983e6e05fb4e55';
 //@ default -> GET
 export const getHome: RequestHandler = (req, res, next) => {
   const currentUser = req.user;
   res.render('home', {
     path: '/',
-    pageTitle: 'Ứng dụng quản lý | ' + currentUser.name,
+    pageTitle: 'Ứng dụng quản lý',
     user: currentUser,
   });
 };
@@ -29,24 +30,51 @@ export const getProfile: RequestHandler = (req, res, next) => {
         path: '/profile',
         pageTitle: 'Thông tin cá nhân | ' + userDoc!.name,
         user: userDoc,
+        errorMessage: null,
       });
     })
     .catch((err) => {
-      console.log(err);
+      const error: ErrnoException = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
 //@ /profile:userId => POST
-export const postProfile: RequestHandler = (req, res, next) => {
-  const image = req.body.image;
-  // console.log('__Debugger__user.ts__image: ', image)
-  req.user.image = image;
-  req.user
-    .save()
-    .then((userDoc: IUser) => {
-      res.redirect(`/profile/${userDoc._id}`);
+export const postEditProfile: RequestHandler = (req, res, next) => {
+  const image = req.file;
+  console.log('__Debugger__ctrls__user__image: ', image);
+
+  const userId = req.params.userId;
+
+  User.findById(userId)
+    .then((userDoc) => {
+      if (!image) {
+        return res.status(500).render('profile.ejs', {
+          pageTitle: 'Thông tin cá nhân',
+          path: '/profile',
+          errorMessage: 'Đính kèm thêm ảnh .',
+          user: req.user,
+        });
+      } else {
+        deleteFile(userDoc!.image);
+        userDoc!.image = image.path;
+
+        userDoc!
+          .save()
+          .then((userDoc: IUser) => {
+            res.redirect(`/profile/${userDoc._id}`);
+          })
+          .catch((err: any) => {
+            const error: ErrnoException = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+          });
+      }
     })
-    .catch((err: Error) => {
-      console.log(err);
+    .catch((err) => {
+      const error: ErrnoException = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };

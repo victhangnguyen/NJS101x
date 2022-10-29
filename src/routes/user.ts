@@ -1,6 +1,7 @@
 import express from 'express';
-//! imp mdw
-import { isAuth } from '../middlewares/is-auth';
+//! imp middlewares
+import { isAuth, isAdmin } from '../middlewares/is-auth';
+import upload from '../middlewares/mutler';
 
 //! imp ctrls
 import * as userController from '../controllers/user';
@@ -28,8 +29,13 @@ router.post('/absence', isAuth, absenceController.postAbsence);
 //! PROFILE
 //@ /profile => GET (Details)
 router.get('/profile/:userId', isAuth, userController.getProfile);
-//@ /profile => POST
-router.post('/profile/:userId', isAuth, userController.postProfile);
+//@ /profile => POST + add middleware Multer Upload
+router.post(
+  '/profile/:userId',
+  upload.single('image'),
+  isAuth,
+  userController.postEditProfile
+);
 
 //! STATISTIC
 //@ /statistic => GET
@@ -47,9 +53,15 @@ router.get('/covidstatus', isAuth, covidStatusController.getCovidStatus);
 //@ /covidstatus => GET (Details)
 router.get(
   '/covidstatus/:covidStatusId',
-  isAuth,
+  isAdmin,
   covidStatusController.getCovidStatusDetails
 );
+//@ /covidreport => GET
+router.get(
+  '/covidreport/:covidStatusId',
+  covidStatusController.getCovidStatusPDF
+);
+
 //@ /covidstatus => POST
 router.post('/covidstatus', isAuth, covidStatusController.postCovidStatus);
 //@ /covidstatus => POSTs', covidStatusController.postCovidStatus);

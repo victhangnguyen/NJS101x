@@ -8,6 +8,43 @@
     <div class="container-main">
       <!-- /covidstatus/:covidStatusId -->
       <div class="container-fluid">
+        <% if ( user.role === 'ADMIN' ) { %>
+        <div class="row">
+          <% user.manage.staffs.forEach((staff, index) => { %>
+          <div class="col-6 col-md-4 col-lg-4">
+            <div class="card">
+              <div class="card-header">
+                #<%= index + 1 %>
+              </div>
+              <div class="avatar">
+                <img src="<%= staff.image %>" class="card-img-top avatar-img" alt="...">
+              </div>
+              <div class="card-body">
+                <h5 class="card-title fw-bold"><%= staff.name %></h5>
+                <p class="card-text fw-bold">department:
+                  <span class="fw-normal"><%= staff.department %></span>
+                </p>
+                <div class="d-flex justify-content-between">
+                  <!-- Seen Details -->
+                  <% if ( staff.healthStatus.covidStatusId?._id ) { %>
+                  <a href="/covidstatus/<%= staff.healthStatus.covidStatusId?._id %>" class="btn btn-primary">Xem chi tiết</a>
+                  <% } else { %>
+                  <a class="btn btn-secondary">Xem chi tiết</a>
+                  <% } %>
+                  <!-- Button PDF -->
+                  <% if ( staff.healthStatus.covidStatusId?._id ) { %>
+                  <a href="/covidreport/<%= staff.healthStatus.covidStatusId?._id %>" class="btn btn-warning">Tải PDF</a>
+                  <% } else { %>
+                  <a class="btn btn-secondary">Tải PDF</a>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          </div>
+          <% }) %>
+        </div>
+
+        <% } else { %>
         <!-- <div class="wrap-form-control">
           <form action="/covidstatus/<%= covidStatus._id %>" method="get" class="form-control-main form-control border border-warning border-2 needs-validation">
             <div class="row">
@@ -22,6 +59,7 @@
             </div>
           </form>
         </div> -->
+
         <!-- body temperature information -->
         <div class="wrap-form-control">
           <form action="/covidstatus?type=bodytemp" method="post" class="form-control-main form-control border border-success border-2 needs-validation" novalidate>
@@ -118,8 +156,8 @@
             </div>
           </form>
         </div>
-      </div>
-
+        <% } %>
+      </div> <!-- container-fluid -->
     </div> <!-- container-main -->
   </div> <!-- layout -->
   <%- include('./includes/footer.ejs') %>

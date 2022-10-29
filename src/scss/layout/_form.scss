@@ -3,3 +3,34 @@ form {
     border: 1px red !important;
   }
 }
+
+//! Mobile Avatar
+.container-main {
+  .avatar {
+    padding: 0.5rem;
+    display: flex;
+    justify-content: center;
+    .avatar-img {
+      object-fit: cover;
+      max-width: 15rem;
+      max-height: 15rem;
+    }
+  }
+}
+
+//! mobile-first-defaut
+@media screen and (min-width: 576px) {
+}
+@media screen and (min-width: 768px) {
+}
+@media screen and (min-width: 992px) {
+  .container-main {
+    .avatar {
+      padding: 1rem;
+    }
+  }
+}
+@media screen and (min-width: 1200px) {
+}
+@media screen and (min-width: 1400px) {
+}
