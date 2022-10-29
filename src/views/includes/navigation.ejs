@@ -20,9 +20,9 @@
         <li class="nav-item">
           <a class="nav-link <%= path === '/statistic' ? 'active' : '' %>" aria-current="page" href="/statistic">Thông tin giờ làm</a>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a class="nav-link <%= path === '/statisticsearch' ? 'active' : '' %>" aria-current="page" href="/statisticsearch">Wildcard - Tra cứu giờ và lương</a>
-        </li>
+        </li> -->
         <li class="nav-item">
           <a class="nav-link <%= path === '/covidstatus' ? 'active' : '' %>" aria-current="page" href="/covidstatus/">Thông tin Covid cá nhân</a>
         </li>
@@ -33,9 +33,9 @@
         <li class="nav-item">
           <a class="nav-link <%= path === '/login' ? 'active' : '' %>" href="/login">Login</a>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a class="nav-link <%= path === '/signup' ? 'active' : '' %>" href="/signup">Signup</a>
-        </li>
+        </li> -->
         <% } else { %>
         <li class="nav-item">
           <form action="/logout" method="post">

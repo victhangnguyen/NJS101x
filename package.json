@@ -2,7 +2,7 @@
   "name": "njs101x_assignment_thangncfx16840",
   "version": "1.0.0",
   "description": "NJS101x_Assignment_thangncfx16840",
-  "main": "src/server.js",
+  "main": "dist/server.js",
   "scripts": {
     "start": "node dist/server.js",
     "dev:tsc": "npx tsc -w",

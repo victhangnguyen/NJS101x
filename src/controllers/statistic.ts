@@ -52,6 +52,7 @@ export const getStatisticDetails: RequestHandler = (req, res, next) => {
             user: userDoc,
             statistics,
             helper: utils,
+            staffId: userId,
           });
         })
         .catch((err: Error) => {
@@ -125,10 +126,7 @@ export const postStatisticDelete: RequestHandler = (req, res, next) => {
         .save()
         .then((attendanceDoc: any) => {
           //! render
-          res.redirect(`/statistic/`)
-
-          
-
+          res.redirect(`/statistic/`);
         })
         .catch((err: Error) => {
           console.log(err);
