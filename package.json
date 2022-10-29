@@ -5,6 +5,7 @@
   "main": "dist/server.js",
   "scripts": {
     "start": "node dist/server.js",
+    "postinstall": "tsc",
     "dev:tsc": "npx tsc -w",
     "dev:nodemon": "nodemon --config nodemon.json src/server.ts",
     "dev:sass": "sass -w src/scss/main.scss public/css/main.css",

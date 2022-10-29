@@ -1,0 +1,89 @@
+<%- include('./includes/header.ejs') %>
+<!--  -->
+
+<body>
+  <%- include('./includes/navigation.ejs') %>
+
+  <div class="layout">
+    <div class="sidebar"></div>
+    <div class="container-main">
+      <div class="container-fuild">
+        <% if ( user.role === 'ADMIN' ) { %>
+        <div class="row">
+          <% user.manage.staffs.forEach((staff, index) => { %>
+          <div class="col-6 col-md-4 col-lg-4">
+            <div class="card">
+              <div class="card-header">
+                #<%= index + 1 %>
+              </div>
+              <div class="avatar">
+                <img src="/<%= staff.image %>" class="card-img-top avatar-img" alt="...">
+              </div>
+              <div class="card-body">
+                <h5 class="card-title fw-bold"><%= staff.name %></h5>
+                <p class="card-text fw-bold">department:
+                  <span class="fw-normal"><%= staff.department %></span>
+                </p>
+                <div class="d-flex justify-content-between">
+                  <!-- Seen Details -->
+                  <a href="/statistic/<%= staff._id %>" class="btn btn-primary">Xem chi tiết</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <% }) %>
+        </div>
+
+        <% } else { %>
+        <div class="row">
+          <!-- Statistics -->
+          <div class="col-12">
+            <h5 class="text-center fw-bold">
+              Danh sách giờ đã làm
+            </h5>
+            <table class="table table-bordered border-success border border-2 text-center">
+              <thead class="table-success border-success">
+                <tr>
+                  <th scope="col">Ngày</th>
+                  <th scope="col">Nơi làm việc</th>
+                  <th scope="col">Giờ bắt đầu</th>
+                  <th scope="col">Giờ kết thúc</th>
+                  <th scope="col">Thời gian làm việc</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% statistics.length && statistics.forEach((statistic, index, array)=> { %>
+                <tr class="border border-1 border-success">
+                  <% if ( index === 0 ) { %>
+                  <th rowspan="<%= array.length + 1 %>" scope="row" class="col-1">
+                    <%= statistic.date %>
+                  </th>
+                  <% } %>
+                  <td class="col-2">
+                    1
+                  </td>
+                  <td class="col-2">
+                    2
+                  </td>
+                  <td class="col-2">
+                    3
+                  </td>
+                  <td class="col-3">
+                    4
+                  </td>
+                </tr>
+                <% }) %>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- end row -->
+        <% } %>
+      </div>
+    </div>
+    <!-- container-main -->
+  </div>
+  <!-- layout -->
+  <%- include('./includes/footer.ejs') %>
+</body>

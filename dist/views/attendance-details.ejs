@@ -1,0 +1,50 @@
+<%- include('./includes/header.ejs') %>
+
+<body>
+  <%- include('./includes/navigation.ejs') %>
+
+  <div class="layout">
+    <!-- layout -->
+    <div class="sidebar"></div>
+    <div class="container-main">
+      <!-- container-main -->
+      <div class="container-fuild">
+        <!-- container-fuild -->
+        <div class="mb-3 d-flex justify-content-center">
+          <h1>Bảng thống kê công việc - ngày <%= attendDoc.date %></h1>
+        </div>
+        <!-- Time Records table -->
+        <table class="table table-bordered border-success border border-2 text-center">
+          <thead class="table-success border-success">
+            <tr>
+              <th scope="col" class="col-1">STT</th>
+              <th scope="col" class="col-2">Nơi làm việc</th>
+              <th scope="col" class="col-3">Thời gian bắt đầu</th>
+              <th scope="col" class="col-3">Thời gian kết thúc</th>
+              <th scope="col" class="col-3">Thời gian làm việc</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% attendDoc.timeRecords.forEach((record, index) => { %>
+            <tr>
+              <th scope="row"><%= index + 1 %></th>
+              <td><% if ( record.workplace === 'home' ) { %>Nhà<% } else if (record.workplace === 'company') { %>Công ty<% } else { %>Khách hàng<% } %></td>
+              <td><%= record.timeIn.toLocaleTimeString('vi-VN', { hour: '2-digit', minute:'2-digit', second: '2-digit'}) %></td>
+              <td><%= record.timeOut.toLocaleTimeString('vi-VN', { hour: '2-digit', minute:'2-digit', second: '2-digit' }) %></td>
+              <td><%= helper.convertSecondsToTimeString(record.timeWorking) %></td>
+            </tr>
+            <% }) %>
+            <tr>
+              <th colspan="4">Tổng thời gian làm việc</th>
+              <td>
+                <h3><%= helper.convertSecondsToTimeString(attendDoc.totalTime) %></h3>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div> <!-- /container-fuild -->
+    </div> <!-- /container-main -->
+  </div> <!-- /layout -->
+  <%- include('./includes/footer.ejs') %>
+</body>

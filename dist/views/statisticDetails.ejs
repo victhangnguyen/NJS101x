@@ -1,0 +1,65 @@
+<%- include('./includes/header.ejs') %>
+<!--  -->
+
+<body>
+  <%- include('./includes/navigation.ejs') %>
+
+  <div class="layout">
+    <div class="sidebar"></div>
+    <div class="container-main">
+      <div class="container-fuild">
+        <div class="row">
+          <!-- Statistics -->
+          <div class="col-12">
+            <h5 class="text-center fw-bold">
+              Danh sách giờ đã làm
+            </h5>
+            <table class="table table-bordered border-success border border-2 text-center">
+              <thead class="table-success border-success">
+                <tr>
+                  <th scope="col">Ngày</th>
+                  <th scope="col">Nơi làm việc</th>
+                  <th scope="col">Giờ bắt đầu</th>
+                  <th scope="col">Giờ kết thúc</th>
+                  <th scope="col">Thời gian làm việc</th>
+                  <th scope="col">Hành vi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% statistics.length && statistics.forEach((statistic, index, array)=> { %>
+                <tr class="border border-1 border-success">
+                  <th scope="row" class="col-1">
+                    <%= statistic.date %>
+                  </th>
+                  <td class="col-2">
+                    <%= statistic.timeRecord.workplace==='company' ? 'Công ty' : statistic.timeRecord.workplace==='home' ? 'Tại nhà' : 'Khách hàng' %> </td>
+                  <td class="col-2">
+                    <%= statistic.timeRecord.timeIn.toLocaleTimeString('vi-VN', { hour: '2-digit' , minute:'2-digit', second: '2-digit' }) %>
+                  </td>
+                  <td class="col-2">
+                    <%= statistic.timeRecord.timeOut ? statistic.timeRecord.timeOut.toLocaleTimeString('vi-VN', { hour: '2-digit', minute:'2-digit', second: '2-digit' }) : '--' %> </td>
+                  <td class="col-2">
+                    <%= statistic.timeRecord.timeWorking ? helper.convertSecondsToTimeString(statistic.timeRecord.timeWorking) : 'Chưa kết thúc' %>
+                  </td>
+                  <td class="col-3">
+                    <form action="/statisticDelete" method="post">
+                      <input type="hidden" name="attendanceId" value="<%= statistic.attendanceId %>">
+                      <input type="hidden" name="recordTimeIn" value="<%= statistic.timeRecord.timeIn %>">
+                      <button type="submit" class="btn btn-danger">Xóa</button>
+                    </form>
+                  </td>
+                </tr>
+                <% }) %>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- end row -->
+      </div>
+    </div>
+    <!-- container-main -->
+  </div>
+  <!-- layout -->
+  <%- include('./includes/footer.ejs') %>
+</body>
