@@ -7,8 +7,8 @@ const MONGO_DATABASE = process.env.MONGO_DATABASE || '';
 // mongodb+srv://njs101x:<password>@cluster0.tf0txmk.mongodb.net/?retryWrites=true&w=majority
 // const MONGO_URL = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@cluster0.tf0txmk.mongodb.net/${MONGO_DATABASE}?retryWrites=true&w=majority`;
 const MONGO_URL = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@cluster0.tf0txmk.mongodb.net/${MONGO_DATABASE}`;
-const SERVER_PORT = process.env.SERVER_PORT
-  ? Number(process.env.SERVER_PORT)
+const PORT = process.env.PORT
+  ? Number(process.env.PORT)
   : 1337;
 
 export const config = {
@@ -18,6 +18,6 @@ export const config = {
     url: MONGO_URL,
   },
   server: {
-    port: SERVER_PORT,
+    port: PORT,
   },
 };
