@@ -8,6 +8,50 @@
     <div class="sidebar"></div>
     <div class="container-main">
       <div class="container-fuild">
+        <!-- Alerts -->
+        <% if ( errorMessage ) { %>
+        <div class="alert alert-danger" role="alert">
+          <h4 class="alert-heading">Có lỗi xảy ra!</h4>
+          <p><%= errorMessage %></p>
+        </div>
+        <% } %>
+
+        <div class="row">
+          <div class="col">
+            <h5 class="fw-bold">
+              Khóa theo tháng
+            </h5>
+            <table class="table table-bordered border-success border border-2 text-center">
+              <thead class="table-success border-success">
+                <tr>
+                  <% for(let i = 0; i < 12; i++) { %>
+                  <th scope="col">T<%= i + 1 %></th>
+                  <% } %>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border border-1 border-success">
+                  <% for(let i = 0; i < 12; i++) { %>
+                  <th>
+                    <form action="/statistic/<%= staff._id %>?action=confirm" method="post">
+                      <% if ( staff.status.confirmMonth.find(cmonth => cmonth === i + 1) ) { %>
+                      <input type="hidden" name="confirmMonth" value="<%= i + 1 %>">
+                      <button type="submit" class="btn btn-secondary"></button>
+                      <% } else { %>
+                      <input type="hidden" name="confirmMonth" value="<%= i + 1 %>">
+                      <button type="submit" class="btn btn-warning"></button>
+                      <% } %>
+                      <!-- end each -->
+                    </form>
+                  </th>
+                  <% } %>
+                  <!-- end for -->
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- end row -->
+        </div>
         <div class="row">
           <!-- Statistics -->
           <div class="col-12">
@@ -22,11 +66,14 @@
                   <th scope="col">Giờ bắt đầu</th>
                   <th scope="col">Giờ kết thúc</th>
                   <th scope="col">Thời gian làm việc</th>
+                  <% if ( user.role === 'ADMIN' ) { %>
                   <th scope="col">Hành vi</th>
+                  <% } %>
                 </tr>
               </thead>
               <tbody>
                 <% statistics.length && statistics.forEach((statistic, index, array)=> { %>
+                <% if ( statistic.type === 'attendance' ) { %>
                 <tr class="border border-1 border-success">
                   <th scope="row" class="col-1">
                     <%= statistic.date %>
@@ -41,14 +88,37 @@
                   <td class="col-2">
                     <%= statistic.timeRecord.timeWorking ? helper.convertSecondsToTimeString(statistic.timeRecord.timeWorking) : 'Chưa kết thúc' %>
                   </td>
+                  <% if ( user.role === 'ADMIN' ) { %>
+                  <% if ( staff.status.confirmMonth.find(cmonth => cmonth === 10) ) { %>
                   <td class="col-3">
-                    <form action="/statisticDelete" method="post">
+                    <form action="/statistic/<%= staff._id %>?action=delete" method="post">
                       <input type="hidden" name="attendanceId" value="<%= statistic.attendanceId %>">
                       <input type="hidden" name="recordTimeIn" value="<%= statistic.timeRecord.timeIn %>">
-                      <button type="submit" class="btn btn-danger">Xóa</button>
+                      <button type="submit" class="btn btn-secondary btn-delete">Xóa</button>
                     </form>
                   </td>
+                  <% } else { %>
+                  <td class="col-3">
+                    <form action="/statistic/<%= staff._id %>?action=delete" method="post">
+                      <input type="hidden" name="attendanceId" value="<%= statistic.attendanceId %>">
+                      <input type="hidden" name="recordTimeIn" value="<%= statistic.timeRecord.timeIn %>">
+                      <button type="submit" class="btn btn-danger btn-delete">Xóa</button>
+                    </form>
+                  </td>
+                  <% } %>
+
+
+
+                  <% } %>
                 </tr>
+                <% } else if (statistic.type==='absence' ) { %>
+                <tr class="table-warning border border-1 border-success">
+                  <th scope="row">
+                    <%= statistic.date %>
+                  </th>
+                  <td colspan="5" class="fw-bold">Nghỉ phép: <%= statistic.hours >= 8 ? `1 ngày (${statistic.hours} giờ) ` : `${statistic.hours} giờ`%></td>
+                </tr>
+                <% } %>
                 <% }) %>
 
               </tbody>

@@ -17,7 +17,10 @@ $(function () {
   $('#datepicker2-covidstatus-positive').datepicker('setDate', new Date());
 
   //! datepicker3-absence-day
-  const multidate = $('input#input-dates-multidate').val() > 0 ? $('input#input-dates-multidate').val() : -1;
+  const multidate =
+    $('input#input-dates-multidate').val() > 0
+      ? $('input#input-dates-multidate').val()
+      : -1;
   const datesDisabled = $('input#input-dates-disabled').val()?.split(',');
   $('#datepicker3-absence-day').datepicker({
     clearBtn: true,
@@ -41,7 +44,6 @@ $(function () {
   });
 
   // $('.alert').alert()
-
 });
 
 //! Bootstrap Validation
@@ -67,5 +69,5 @@ $(function () {
       false
     );
   });
-  
+
 })();

@@ -6,8 +6,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 //! <EnforcedDocType = any, M = Model<EnforcedDocType, any, any, any>, TInstanceMethods = {}>
 const attendanceSchema = new mongoose_1.default.Schema({
-    userId: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'User', required: true },
+    userId: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+    },
     date: { type: String, required: true },
+    dateAt: { type: Date, required: true },
     totalTime: { type: Number },
     timeRecords: [
         {
@@ -17,7 +22,7 @@ const attendanceSchema = new mongoose_1.default.Schema({
             workplace: { type: String },
         },
     ],
-});
+}, { timestamps: true });
 attendanceSchema.methods.calcRecord = function () {
     const currentTimeRecords = [...this.timeRecords];
     let totalTime = 0;

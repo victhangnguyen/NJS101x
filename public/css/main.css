@@ -314,6 +314,10 @@ Button
   transition: all 300ms ease-out;
 }
 
+.btn.btn-delete {
+  padding: 0.1rem 0.5rem !important;
+}
+
 .form-table-main {
   padding: 2rem 1rem;
 }

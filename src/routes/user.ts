@@ -39,10 +39,14 @@ router.post(
 
 //! STATISTIC
 //@ /statistic => GET
-router.get('/statistic', isAuth, statisticController.getStatistic);
+router.get('/statistic', isAdmin, statisticController.getStatistic);
 router.get('/statistic/:userId', isAuth, statisticController.getStatisticDetails);
 //@ //statisticDelete => POST
-router.post('/statisticDelete', isAuth, statisticController.postStatisticDelete)
+// router.post('/statisticDelete', isAuth, statisticController.postStatisticAction)
+
+//! Delele
+router.post('/statistic/:userId', isAuth, statisticController.postStatisticAction)
+
 
 //! STATISTIC-SEARCH
 //@ /statisticsearch => GET

@@ -56,10 +56,12 @@ router.get('/profile/:userId', is_auth_1.isAuth, userController.getProfile);
 router.post('/profile/:userId', mutler_1.default.single('image'), is_auth_1.isAuth, userController.postEditProfile);
 //! STATISTIC
 //@ /statistic => GET
-router.get('/statistic', is_auth_1.isAuth, statisticController.getStatistic);
+router.get('/statistic', is_auth_1.isAdmin, statisticController.getStatistic);
 router.get('/statistic/:userId', is_auth_1.isAuth, statisticController.getStatisticDetails);
 //@ //statisticDelete => POST
-router.post('/statisticDelete', is_auth_1.isAuth, statisticController.postStatisticDelete);
+// router.post('/statisticDelete', isAuth, statisticController.postStatisticAction)
+//! Delele
+router.post('/statistic/:userId', is_auth_1.isAuth, statisticController.postStatisticAction);
 //! STATISTIC-SEARCH
 //@ /statisticsearch => GET
 router.get('/statisticsearch', is_auth_1.isAuth, statisticController.getStatisticSearch); //! temp

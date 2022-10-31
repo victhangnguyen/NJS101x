@@ -10,8 +10,10 @@ export interface IRecord {
 export interface IAttendance {
   userId: mongoose.Types.ObjectId;
   date: string;
+  dateAt: Date;
   timeRecords: Array<IRecord>;
   totalTime: number;
+  createdAt?: any;
 }
 //! interface Methods
 export interface IAttendanceMethods {
@@ -20,22 +22,35 @@ export interface IAttendanceMethods {
 
 //! Methods and Override Methods
 //! <T, TQueryHelpers = {}, TMethodsAndOverrides = {}, TVirtuals = {}, TSchema = any>
-export interface AttendanceModel extends mongoose.Model<IAttendance, {}, IAttendanceMethods> {}
+export interface AttendanceModel
+  extends mongoose.Model<IAttendance, {}, IAttendanceMethods> {}
 
 //! <EnforcedDocType = any, M = Model<EnforcedDocType, any, any, any>, TInstanceMethods = {}>
-const attendanceSchema = new mongoose.Schema<IAttendance, AttendanceModel, IAttendanceMethods>({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  date: { type: String, required: true },
-  totalTime: { type: Number },
-  timeRecords: [
-    {
-      timeIn: { type: Date },
-      timeOut: { type: Date },
-      timeWorking: { type: String },
-      workplace: { type: String },
+const attendanceSchema = new mongoose.Schema<
+  IAttendance,
+  AttendanceModel,
+  IAttendanceMethods
+>(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
     },
-  ],
-});
+    date: { type: String, required: true },
+    dateAt: { type: Date, required: true },
+    totalTime: { type: Number },
+    timeRecords: [
+      {
+        timeIn: { type: Date },
+        timeOut: { type: Date },
+        timeWorking: { type: String },
+        workplace: { type: String },
+      },
+    ],
+  },
+  { timestamps: true }
+);
 
 attendanceSchema.methods.calcRecord = function () {
   const currentTimeRecords = [...this.timeRecords];

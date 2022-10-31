@@ -21,19 +21,13 @@ exports.getAttendance = getAttendance;
 const postAttendance = (req, res, next) => {
     const workplace = req.body.workplace;
     const type = req.query.type;
-    //! addAttendance need a date dd/mm/yyyy
-    const currentDateString = new Date().toLocaleDateString('vi-VN', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-    });
     // console.log('__Debugger__type: ', type)
     //! __warning
     req.user
         .setStatus(type, workplace)
         .then((userDoc) => {
         return userDoc
-            .addAttendance(type, currentDateString)
+            .addAttendance(type)
             .then((attendDoc) => {
             return attendDoc;
         })

@@ -13,22 +13,12 @@ export const getStatistic: RequestHandler = (req, res, next) => {
       path: 'manage.staffs',
     })
     .then((userDoc) => {
-      userDoc
-        ?.getStatistic()
-        .then((statistics: any) => {
-          // console.log(statistics);
-
-          res.render('statistic.ejs', {
-            path: '/statistic',
-            pageTitle: 'Tra cứu thông tin giờ làm - lương',
-            user: userDoc,
-            statistics,
-            helper: utils,
-          });
-        })
-        .catch((err: Error) => {
-          console.log(err);
-        });
+      res.status(200).render('statistic.ejs', {
+        path: '/statistic',
+        pageTitle: 'Tra cứu thông tin giờ làm - lương',
+        user: userDoc, //! user Admin
+        helper: utils,
+      });
     })
     .catch((err) => {
       console.log(err);
@@ -39,20 +29,31 @@ export const getStatisticDetails: RequestHandler = (req, res, next) => {
   const userId = req.params.userId;
   // console.log('__Debugger__ctrls__statstic__req.user: ', userId);
 
+  let message: any = req.flash('error');
+  if (message.length > 0) {
+    message = message[0];
+  } else {
+    message = null;
+  }
+
   User.findById(userId)
     .then((userDoc) => {
       userDoc
-        ?.getStatistic()
+        ?.getStatistic('latestMonth')
         .then((statistics: any) => {
-          // console.log(statistics);
+          console.log(
+            '__Debugger__ctrls__statistic__getStatisticDetails__statistic: ',
+            statistics
+          );
 
           res.render('statisticDetails.ejs', {
             path: '/statistic',
             pageTitle: 'Tra cứu thông tin giờ làm - lương',
-            user: userDoc,
+            user: req.user, //! user Admin
             statistics,
             helper: utils,
-            staffId: userId,
+            staff: userDoc, //! user Staff
+            errorMessage: message,
           });
         })
         .catch((err: Error) => {
@@ -62,79 +63,96 @@ export const getStatisticDetails: RequestHandler = (req, res, next) => {
     .catch((err) => {
       console.log(err);
     });
-
-  // User.findById(req.user._id)
-  //   .populate({
-  //     path: 'manage.staffs',
-  //   })
-  //   .then((userDoc) => {
-  //     userDoc
-  //       ?.getStatistic()
-  //       .then((statistics: any) => {
-  //         console.log(statistics);
-
-  //         res.render('statistic.ejs', {
-  //           path: '/statistic',
-  //           pageTitle: 'Tra cứu thông tin giờ làm - lương',
-  //           user: userDoc,
-  //           statistics,
-  //           helper: utils,
-  //         });
-  //       })
-  //       .catch((err: Error) => {
-  //         console.log(err);
-  //       });
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //   });
 };
 
-export const postStatisticDelete: RequestHandler = (req, res, next) => {
-  const userI = req.params.userId;
-  const attendanceId = req.body.attendanceId;
+export const postStatisticAction: RequestHandler = (req, res, next) => {
+  //! route: /statistic/:userId
+  const userId = req.params.userId;
+  const action = req.query.action;
   console.log(
-    '__Debugger__ctrls__statistic__postStatisticDelete__attendanceId: ',
-    attendanceId
+    '__Debugger__ctrls__statistic__postStatisticAction__action: ',
+    action
   );
 
-  const recordTimeIn = new Date(req.body.recordTimeIn).toLocaleTimeString(
-    'vi-VN',
-    {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-    }
-  );
+  switch (action) {
+    //! ACTION = delete
+    case 'delete':
+      const attendanceId = req.body.attendanceId;
+      const recordTimeIn = req.body.recordTimeIn;
 
-  Attendance.findById(attendanceId)
-    .then((attendanceDoc: any) => {
-      const currentTimeRecords = attendanceDoc?.timeRecords;
+      User.findById(userId)
+        .then((userDoc) => {
+          const selectedMonth = new Date(recordTimeIn).getMonth() + 1;
+          console.log(
+            '__Debugger__ctrls__statistic__postStatistic__selectedMonth: ',
+            selectedMonth
+          );
+          const existingConfirmMonth = userDoc?.status.confirmMonth.find(
+            (cmonth) => {
+              return cmonth === selectedMonth;
+            }
+          );
+          console.log(
+            '__Debugger__ctrls__statistic__postStatistic__existingConfirmMonth: ',
+            existingConfirmMonth
+          );
 
-      const newTimeRecords = currentTimeRecords?.filter((record: any) => {
-        const recordTimeInString = record.timeIn?.toLocaleTimeString('vi-VN', {
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-        });
-
-        return recordTimeInString !== recordTimeIn;
-      });
-
-      attendanceDoc.timeRecords = newTimeRecords;
-      attendanceDoc
-        .save()
-        .then((attendanceDoc: any) => {
-          //! render
-          res.redirect(`/statistic/`);
+          if (!existingConfirmMonth) {
+            userDoc
+              ?.deleteTimeRecord(attendanceId, recordTimeIn)
+              .then((attendanceDoc: any) => {
+                // console.log(
+                //   '__Debugger__ctrls__statistic__postStatistic__attendanceDoc: ',
+                //   attendanceDoc
+                // );
+                res.redirect(`/statistic/${userId}`);
+              })
+              .catch((err: Error) => {
+                console.log(err);
+              });
+          } else {
+            req.flash(
+              'error',
+              `Admin đã khóa Tháng ${selectedMonth}. Bạn không thể thay đổi được!`
+            );
+            res.redirect(`/statistic/${userId}`);
+          }
         })
-        .catch((err: Error) => {
+        .catch((err) => {
           console.log(err);
         });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+
+      break;
+
+    //! ACTION = confirm
+    case 'confirm':
+      const confirmMonth = +req.body.confirmMonth;
+      console.log(
+        '__Debugger__ctrls__statistic__postStatisticAction: ',
+        confirmMonth
+      );
+
+      User.findById(userId)
+        .then((userDoc) => {
+          return userDoc?.addConfirmMonth(confirmMonth);
+        })
+        .then((userDoc) => {
+          console.log(
+            '__Debugger__ctrls__statistic__postStatisticAction__userDoc (after addConfimMonth): ',
+            userDoc
+          );
+
+          res.redirect(`/statistic/${userId}`);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
+      break;
+
+    default:
+      break;
+  }
 };
 
 //@ /statisticsearch => GET

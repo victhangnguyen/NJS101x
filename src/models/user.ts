@@ -27,6 +27,7 @@ export interface IUser {
     attendanceId: mongoose.Types.ObjectId;
     isWorking: boolean;
     workplace: string;
+    confirmMonth: [];
   };
   healthStatus: {
     covidStatusId: mongoose.Types.ObjectId;
@@ -62,7 +63,11 @@ export interface IUserMethods {
     reason: string
   ): any;
   // Promise<mongoose.HydratedDocument<IAbsence, IAbsenceMethods>>;
-  getStatistic(): any;
+  getStatistic(filterKey?: string): any;
+  addConfirmMonth(
+    month: number
+  ): Promise<mongoose.HydratedDocument<IUser, IUserMethods>>;
+  deleteTimeRecord(attendanceId: string, timeRecord: string): any;
 }
 
 //! Methods and Override Methods
@@ -120,6 +125,7 @@ const userSchema = new mongoose.Schema<IUser, UserModel, IUserMethods>({
       type: String,
       required: true,
     },
+    confirmMonth: [],
   },
   healthStatus: {
     covidStatusId: { type: mongoose.Schema.Types.ObjectId, ref: 'CovidStatus' },
@@ -200,11 +206,17 @@ userSchema.methods.addCovidStatus = function (
     });
 };
 
-userSchema.methods.addAttendance = function (type: string, date: string) {
+userSchema.methods.addAttendance = function (type: string) {
   const currentDate = new Date();
   //! initialize the Date to midnight
+  const curDateStringVN = new Date().toLocaleDateString('vi-VN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+
   // console.log('__Debugger__models_Users__addAttendance__date: ', date);
-  return Attendance.findOne({ userId: this._id, date: date }).then(
+  return Attendance.findOne({ userId: this._id, date: curDateStringVN }).then(
     (attendDoc: any) => {
       // console.log('__Debugger__model__user__attendDoc: ', attendDoc);
       //! add timeIn to Record
@@ -220,11 +232,8 @@ userSchema.methods.addAttendance = function (type: string, date: string) {
           Logging.success('Initialize first Attendance');
           return Attendance.create({
             userId: this._id,
-            date: currentDate.toLocaleDateString('vi-VN', {
-              day: '2-digit',
-              month: '2-digit',
-              year: 'numeric',
-            }),
+            date: curDateStringVN,
+            dateAt: new Date(),
             timeRecords: [newRecord],
           });
         } else {
@@ -338,6 +347,7 @@ userSchema.methods.addAbsences = function (
                 return Absence.create({
                   userId: this._id,
                   date: dateStringVN,
+                  dateAt: new Date(date),
                   hours: type === 'dates' ? MAXIMUM_WORKING_HOURS : hours,
                   reason: reason,
                 })
@@ -383,50 +393,199 @@ userSchema.methods.addAbsences = function (
   );
 };
 
-userSchema.methods.getStatistic = function () {
+userSchema.methods.getStatistic = function (filterKey: string = 'latestMonth') {
   const statistics: any[] = [];
 
-  return Attendance.find({ userId: this._id })
-    .then((attendanceDocs) => {
-      attendanceDocs.forEach((attendance) => {
-        attendance.timeRecords.forEach((record) => {
-          statistics.push({
-            attendanceId: attendance._id,
-            preference: 0,
-            type: 'attendance',
-            lines: 1,
-            date: attendance.date,
-            timeRecord: record,
-          });
+  switch (filterKey) {
+    case 'latestMonth':
+      //! Get createdAt latest Month
+      return Attendance.find({ userId: this._id })
+        .sort({ createdAt: -1 })
+        .limit(1)
+        .then((attendanceDoc) => {
+          // console.log(
+          //   '__Debugger__models__user__getStatistic__attendanceDoc: ',
+          //   attendanceDoc
+          // );
+
+          if (attendanceDoc.length < 1) {
+            return statistics;
+          }
+
+          const createdAt = attendanceDoc[0]?.createdAt;
+          // console.log(
+          //   '__Debugger__models__user__getStatistic__createdAt: ',
+          //   createdAt
+          // );
+          // if (!createdAt) {
+          //   return statistics;
+          // }
+
+          let day = createdAt.getUTCDate();
+          let month = createdAt.getUTCMonth(); //months from 1-12 (index: 0 - 11)
+          let year = createdAt.getUTCFullYear();
+
+          // console.log('__Debugger__models__user__getStatistic__day: ', day);
+          // console.log('__Debugger__models__user__getStatistic__month: ', month);
+          // console.log('__Debugger__models__user__getStatistic__year: ', year);
+
+          let startDate = new Date(year, month, 1);
+          // console.log(
+          //   '__Debugger__models__user__getStatistic__startDate: ',
+          //   startDate
+          // );
+
+          let endDate = new Date(year, month, 32);
+          // console.log(
+          //   '__Debugger__models__user__getStatistic__endDate: ',
+          //   endDate
+          // );
+
+          return Attendance.find({
+            userId: this._id,
+            dateAt: { $gte: startDate, $lt: endDate },
+          })
+            .then((attendanceDocs) => {
+              attendanceDocs.forEach((attendance) => {
+                attendance.timeRecords.forEach((record) => {
+                  statistics.push({
+                    attendanceId: attendance._id,
+                    preference: 0,
+                    type: 'attendance',
+                    lines: 1,
+                    date: attendance.date,
+                    timeRecord: record,
+                  });
+                });
+              });
+              return Absence.find({
+                userId: this._id,
+                dateAt: { $gte: startDate, $lt: endDate },
+              });
+            })
+            .then((AbsenceDocs) => {
+              AbsenceDocs.forEach((absence) => {
+                statistics.push({
+                  preference: 1,
+                  type: 'absence',
+                  lines: 2,
+                  date: absence.date,
+                  hours: absence.hours,
+                  reason: absence.reason,
+                });
+              });
+
+              function compare1(a: any, b: any) {
+                if (a.date < b.date) {
+                  return -1;
+                }
+                if (a.date > b.date) {
+                  return 1;
+                }
+                return 0;
+              }
+
+              statistics.sort(compare1);
+
+              function compare2(a: any, b: any) {
+                a = a.date.split('/').reverse().join('');
+                b = b.date.split('/').reverse().join('');
+                return a > b ? 1 : a < b ? -1 : 0;
+              }
+
+              statistics.sort(compare2);
+
+              // statistics.sort((a, b): any => {
+              //   return new Date(b.date).valueOf() > new Date(a.date).valueOf();
+              // });
+
+              // console.log(
+              //   '__Debugger__models__user__getStatistic__statistic: ',
+              //   statistics
+              // );
+
+              return statistics;
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         });
+
+      break;
+
+    default:
+      break;
+  }
+};
+
+userSchema.methods.deleteTimeRecord = function (
+  attendanceId: string,
+  timeRecord: string
+) {
+  const recordTimeIn = new Date(timeRecord).toTimeString();
+  // console.log(
+  //   '__Debugger__models__user__deleteTimeRecord__recordTimeIn: ',
+  //   recordTimeIn
+  // );
+
+  return Attendance.findById(attendanceId)
+    .then((attendanceDoc: any) => {
+      const currentTimeRecords = attendanceDoc?.timeRecords;
+
+      const newTimeRecords = currentTimeRecords?.filter((record: any) => {
+        return recordTimeIn !== record.timeIn.toTimeString();
       });
 
-      return Absence.find({ userId: this._id }).then((absenceDocs) => {
-        absenceDocs.forEach((absence) => {
-          statistics.push({
-            preference: 1,
-            type: 'absence',
-            lines: 2,
-            date: absence.date,
-            hours: absence.hours,
-            reason: absence.reason,
-          });
+      attendanceDoc.timeRecords = newTimeRecords;
+      return attendanceDoc
+        .save()
+        .then((attendanceDoc: any) => {
+          return attendanceDoc;
+        })
+        .catch((err: Error) => {
+          console.log(err);
         });
-
-        statistics.sort((a, b) => {
-          return a.preference - b.preference;
-        });
-
-        statistics.sort((a, b) => {
-          return new Date(a.date).valueOf() - new Date(b.date).valueOf();
-        });
-
-        // console.log('__Debugger__models__user__getStatistic__statistics: ', statistics)
-
-        return statistics;
-      });
     })
     .catch((err) => {
+      console.log(err);
+    });
+};
+
+userSchema.methods.addConfirmMonth = function (month: number) {
+  // console.log(
+  //   '__Debugger__models__user__addConfirmMonth__this.status.confirmMonth: ',
+  //   this.status.confirmMonth
+  // );
+
+  const existingConfirmMonth = this.status.confirmMonth.find(
+    (cmonth: number) => cmonth === month
+  );
+  console.log(
+    '__Debugger__models__user__addConfirmMonth__existingConfirmMonth: ',
+    existingConfirmMonth
+  );
+
+  if (existingConfirmMonth) {
+    //! If exist => delete
+    const newConfirmMonth = this.status.confirmMonth.filter(
+      (cmonth: number) => cmonth !== month
+    );
+
+    console.log(
+      '__Debugger__models__user__addConfirmMonth__newConfirmMonth: ',
+      newConfirmMonth
+    );
+
+    this.status.confirmMonth = newConfirmMonth;
+  } else {
+    this.status.confirmMonth = this.status.confirmMonth.concat(month);
+  }
+
+  return this.save()
+    .then((userDoc: any) => {
+      return userDoc;
+    })
+    .catch((err: Error) => {
       console.log(err);
     });
 };

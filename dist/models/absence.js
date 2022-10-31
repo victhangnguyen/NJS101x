@@ -14,6 +14,10 @@ const absenceSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
+    dateAt: {
+        type: Date,
+        required: true,
+    },
     hours: {
         type: Number,
         required: true,
@@ -22,7 +26,7 @@ const absenceSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
-});
+}, { timestamps: true });
 const Absence = mongoose_1.default.model('Absence', absenceSchema);
 exports.default = Absence;
 //# sourceMappingURL=absence.js.map
