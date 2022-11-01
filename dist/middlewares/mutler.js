@@ -7,7 +7,7 @@ const multer_1 = __importDefault(require("multer"));
 //! Middleware Multer
 const fileStorage = multer_1.default.diskStorage({
     destination: (request, file, callback) => {
-        callback(null, 'src/images');
+        callback(null, 'dist/images');
     },
     filename: (req, file, callback) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);

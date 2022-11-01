@@ -54,7 +54,8 @@ const postEditProfile = (req, res, next) => {
             });
         }
         else {
-            (0, file_1.deleteFile)(userDoc.image);
+            const filePath = 'dist/' + (userDoc === null || userDoc === void 0 ? void 0 : userDoc.image);
+            (0, file_1.deleteFile)(filePath);
             userDoc.image = 'images/' + image.filename;
             userDoc
                 .save()
