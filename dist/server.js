@@ -80,7 +80,7 @@ const startServer = () => {
     const publicDir = path_1.default.join(__dirname, '..', 'public');
     app.use(express_1.default.static(publicDir));
     const imagesDir = path_1.default.join(__dirname, 'images');
-    app.use('/src/images', express_1.default.static(imagesDir));
+    app.use('/images', express_1.default.static(imagesDir));
     //! apply middlewares
     // app.use(express.json());
     app.use(express_1.default.urlencoded({ extended: true }));

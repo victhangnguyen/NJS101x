@@ -55,7 +55,7 @@ const postEditProfile = (req, res, next) => {
         }
         else {
             (0, file_1.deleteFile)(userDoc.image);
-            userDoc.image = image.path;
+            userDoc.image = 'images/' + image.filename;
             userDoc
                 .save()
                 .then((userDoc) => {

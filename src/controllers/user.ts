@@ -58,7 +58,7 @@ export const postEditProfile: RequestHandler = (req, res, next) => {
         });
       } else {
         deleteFile(userDoc!.image);
-        userDoc!.image = image.path;
+        userDoc!.image = 'images/' + image.filename;
 
         userDoc!
           .save()

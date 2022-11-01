@@ -5,7 +5,8 @@ const fs = require('fs');
 const deleteFile = (filePath) => {
     fs.unlink(filePath, (err) => {
         if (err) {
-            throw err;
+            // throw new Error(err.message);
+            console.log('__Error__utils__file__deleteFile__err: ', err);
         }
     });
 };

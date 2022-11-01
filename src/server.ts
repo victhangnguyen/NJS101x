@@ -113,7 +113,7 @@ const startServer = () => {
   app.use(express.static(publicDir));
 
   const imagesDir = path.join(__dirname, 'images');
-  app.use('/src/images', express.static(imagesDir));
+  app.use('/images', express.static(imagesDir));
 
   //! apply middlewares
   // app.use(express.json());
