@@ -29,7 +29,11 @@
                 </select>
               </div>
               <div class="mb-3 d-flex justify-content-center">
+                <% if ( !isLocked ) { %>
                 <button type="submit" class="btn btn-success btn-long-50per">Điểm danh</button>
+                <% } else { %>
+                <button type="button" class="btn btn-secondary btn-long-50per">Điểm danh</button>
+                <% } %>
               </div>
             </form>
           </div>
@@ -41,7 +45,11 @@
             <p>Điều kiện và nội quy đăng ký nghỉ phép.</p>
             <form action="/absence" method="get">
               <div class="mt-3 d-flex justify-content-center">
-                <button class="btn btn-danger btn-long-50per">Đăng ký nghỉ phép</button>
+                <% if ( !isLocked ) { %>
+                <button type="submit" class="btn btn-danger btn-long-50per">Đăng ký nghỉ phép</button>
+                <% } else { %>
+                <button type="button" class="btn btn-secondary btn-long-50per">Đăng ký nghỉ phép</button>
+                <% } %>
               </div>
             </form>
           </div>

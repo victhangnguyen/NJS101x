@@ -27,7 +27,24 @@ export const getStatistic: RequestHandler = (req, res, next) => {
 
 export const getStatisticDetails: RequestHandler = (req, res, next) => {
   const userId = req.params.userId;
-  // console.log('__Debugger__ctrls__statstic__req.user: ', userId);
+  const search = req.query.search as string;
+
+  console.log(
+    '__Debugger__ctrls__statistic__getStatisticDetails__search: ',
+    search
+  );
+  // console.log(
+  //   '__Debugger__ctrls__statistic__getStatisticDetails__userId: ',
+  //   userId
+  // );
+  // console.log(
+  //   '__Debugger__ctrls__statistic__getStatisticDetails__req.user._id.toString(): ',
+  //   req.user._id.toString()
+  // );
+  //! Unauthorized
+  if (req.user._id.toString() !== userId && req.user.role !== 'ADMIN') {
+    return res.redirect('/');
+  }
 
   let message: any = req.flash('error');
   if (message.length > 0) {
@@ -39,12 +56,17 @@ export const getStatisticDetails: RequestHandler = (req, res, next) => {
   User.findById(userId)
     .then((userDoc) => {
       userDoc
-        ?.getStatistic('latestMonth')
+        ?.getStatistic(search)
         .then((statistics: any) => {
-          console.log(
-            '__Debugger__ctrls__statistic__getStatisticDetails__statistic: ',
-            statistics
-          );
+          // console.log(
+          //   '__Debugger__ctrls__statistic__getStatisticDetails__statistic: ',
+          //   statistics
+          // );
+
+          // console.log(
+          //   '__Debugger__ctrls__statistic__getStatisticDetails__dateAt: ',
+          //   // +statistic.dateAt.toLocaleDateString('vi-VN', { month: '2-digit' })
+          // );
 
           res.render('statisticDetails.ejs', {
             path: '/statistic',
@@ -137,12 +159,37 @@ export const postStatisticAction: RequestHandler = (req, res, next) => {
           return userDoc?.addConfirmMonth(confirmMonth);
         })
         .then((userDoc) => {
-          console.log(
-            '__Debugger__ctrls__statistic__postStatisticAction__userDoc (after addConfimMonth): ',
-            userDoc
-          );
+          // console.log(
+          //   '__Debugger__ctrls__statistic__postStatisticAction__userDoc (after addConfimMonth): ',
+          //   userDoc
+          // );
+          const currentMonth = new Date().getMonth() + 1;
 
-          res.redirect(`/statistic/${userId}`);
+          // ! Nếu đang điểm danh nhưng bị khóa => Hoàn tất điểm danh + LOCK
+          if (
+            currentMonth === confirmMonth &&
+            userDoc?.status.isWorking === true
+          ) {
+            userDoc
+              .setStatus('end', 'Chưa xác định')
+              .then((userDoc: any) => {
+                return userDoc.addAttendance('end');
+              })
+              .then((attendanceDoc: any) => {
+                return attendanceDoc.calcRecord();
+                // return res.render('attendance.ejs', {
+                //   path: '/attendance',
+                //   pageTitle: 'Điểm danh',
+                //   user: req.user,
+                //   isLocked: isLocked,
+                // });
+              })
+              .catch((err: Error) => {
+                console.log(err);
+              });
+          }
+
+          res.redirect(`/statistic/${userId}?search=${confirmMonth}`);
         })
         .catch((err) => {
           console.log(err);

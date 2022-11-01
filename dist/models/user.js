@@ -276,113 +276,113 @@ userSchema.methods.addAbsences = function (type, dates, hours, reason) {
         throw new Error(err.message);
     }));
 };
-userSchema.methods.getStatistic = function (filterKey = 'latestMonth') {
+userSchema.methods.getStatistic = function (month) {
     const statistics = [];
-    switch (filterKey) {
-        case 'latestMonth':
-            //! Get createdAt latest Month
-            return attendance_1.default.find({ userId: this._id })
-                .sort({ createdAt: -1 })
-                .limit(1)
-                .then((attendanceDoc) => {
-                // console.log(
-                //   '__Debugger__models__user__getStatistic__attendanceDoc: ',
-                //   attendanceDoc
-                // );
-                var _a;
-                if (attendanceDoc.length < 1) {
-                    return statistics;
-                }
-                const createdAt = (_a = attendanceDoc[0]) === null || _a === void 0 ? void 0 : _a.createdAt;
-                // console.log(
-                //   '__Debugger__models__user__getStatistic__createdAt: ',
-                //   createdAt
-                // );
-                // if (!createdAt) {
-                //   return statistics;
-                // }
-                let day = createdAt.getUTCDate();
-                let month = createdAt.getUTCMonth(); //months from 1-12 (index: 0 - 11)
-                let year = createdAt.getUTCFullYear();
-                // console.log('__Debugger__models__user__getStatistic__day: ', day);
-                // console.log('__Debugger__models__user__getStatistic__month: ', month);
-                // console.log('__Debugger__models__user__getStatistic__year: ', year);
-                let startDate = new Date(year, month, 1);
-                // console.log(
-                //   '__Debugger__models__user__getStatistic__startDate: ',
-                //   startDate
-                // );
-                let endDate = new Date(year, month, 32);
-                // console.log(
-                //   '__Debugger__models__user__getStatistic__endDate: ',
-                //   endDate
-                // );
-                return attendance_1.default.find({
-                    userId: this._id,
-                    dateAt: { $gte: startDate, $lt: endDate },
-                })
-                    .then((attendanceDocs) => {
-                    attendanceDocs.forEach((attendance) => {
-                        attendance.timeRecords.forEach((record) => {
-                            statistics.push({
-                                attendanceId: attendance._id,
-                                preference: 0,
-                                type: 'attendance',
-                                lines: 1,
-                                date: attendance.date,
-                                timeRecord: record,
-                            });
-                        });
+    return attendance_1.default.find({ userId: this._id })
+        .sort({ createdAt: -1 })
+        .limit(1)
+        .then((attendanceDoc) => {
+        // console.log(
+        //   '__Debugger__models__user__getStatistic__attendanceDoc: ',
+        //   attendanceDoc
+        // );
+        var _a;
+        if (attendanceDoc.length < 1) {
+            return statistics;
+        }
+        const dateAt = (_a = attendanceDoc[0]) === null || _a === void 0 ? void 0 : _a.dateAt;
+        // console.log(
+        //   '__Debugger__models__user__getStatistic__createdAt: ',
+        //   createdAt
+        // );
+        // if (!createdAt) {
+        //   return statistics;
+        // }
+        let dayUTC = dateAt.getUTCDate();
+        let monthUTC; //months from 1-12 (index: 0 - 11)
+        if (0 < Number(month) && Number(month) <= 12) {
+            monthUTC = +month - 1;
+            // console.log(
+            //   '__Debugger__models__user__getStatistic__monthUTC: ',
+            //   monthUTC
+            // );
+        }
+        else {
+            monthUTC = dateAt.getUTCMonth() + 1;
+        }
+        let yearUTC = dateAt.getUTCFullYear();
+        // let monthVN = +dateAt.toLocaleDateString('vi-VN', {
+        //   month: '2-digit',
+        // });
+        // console.log('__Debugger__models__user__getStatistic__monthVN: ', monthVN);
+        // console.log('__Debugger__models__user__getStatistic__day: ', day);
+        // console.log('__Debugger__models__user__getStatistic__month: ', month);
+        // console.log('__Debugger__models__user__getStatistic__year: ', year);
+        let startDate = new Date(yearUTC, monthUTC, 1);
+        console.log('__Debugger__models__user__getStatistic__startDate: ', startDate);
+        let endDate = new Date(yearUTC, monthUTC, 32);
+        console.log('__Debugger__models__user__getStatistic__endDate: ', endDate);
+        return attendance_1.default.find({
+            userId: this._id,
+            dateAt: { $gte: startDate, $lt: endDate },
+        })
+            .then((attendanceDocs) => {
+            attendanceDocs.forEach((attendance) => {
+                attendance.timeRecords.forEach((record) => {
+                    statistics.push({
+                        attendanceId: attendance._id,
+                        preference: 0,
+                        type: 'attendance',
+                        lines: 1,
+                        date: attendance.date,
+                        timeRecord: record,
+                        dateAt: attendance.dateAt,
                     });
-                    return absence_1.default.find({
-                        userId: this._id,
-                        dateAt: { $gte: startDate, $lt: endDate },
-                    });
-                })
-                    .then((AbsenceDocs) => {
-                    AbsenceDocs.forEach((absence) => {
-                        statistics.push({
-                            preference: 1,
-                            type: 'absence',
-                            lines: 2,
-                            date: absence.date,
-                            hours: absence.hours,
-                            reason: absence.reason,
-                        });
-                    });
-                    function compare1(a, b) {
-                        if (a.date < b.date) {
-                            return -1;
-                        }
-                        if (a.date > b.date) {
-                            return 1;
-                        }
-                        return 0;
-                    }
-                    statistics.sort(compare1);
-                    function compare2(a, b) {
-                        a = a.date.split('/').reverse().join('');
-                        b = b.date.split('/').reverse().join('');
-                        return a > b ? 1 : a < b ? -1 : 0;
-                    }
-                    statistics.sort(compare2);
-                    // statistics.sort((a, b): any => {
-                    //   return new Date(b.date).valueOf() > new Date(a.date).valueOf();
-                    // });
-                    // console.log(
-                    //   '__Debugger__models__user__getStatistic__statistic: ',
-                    //   statistics
-                    // );
-                    return statistics;
-                })
-                    .catch((err) => {
-                    console.log(err);
                 });
             });
-            break;
-        default:
-            break;
-    }
+            return absence_1.default.find({
+                userId: this._id,
+                dateAt: { $gte: startDate, $lt: endDate },
+            });
+        })
+            .then((AbsenceDocs) => {
+            AbsenceDocs.forEach((absence) => {
+                statistics.push({
+                    preference: 1,
+                    type: 'absence',
+                    lines: 2,
+                    date: absence.date,
+                    dateAt: absence.dateAt,
+                    hours: absence.hours,
+                    reason: absence.reason,
+                });
+            });
+            function compare1(a, b) {
+                if (a.date < b.date) {
+                    return -1;
+                }
+                if (a.date > b.date) {
+                    return 1;
+                }
+                return 0;
+            }
+            statistics.sort(compare1);
+            function compare2(a, b) {
+                a = a.date.split('/').reverse().join('');
+                b = b.date.split('/').reverse().join('');
+                return a > b ? 1 : a < b ? -1 : 0;
+            }
+            statistics.sort(compare2);
+            // statistics.sort((a, b): any => {
+            //   return new Date(b.date).valueOf() > new Date(a.date).valueOf();
+            // });
+            console.log('__Debugger__models__user__getStatistic__statistic: ', statistics);
+            return statistics;
+        })
+            .catch((err) => {
+            console.log(err);
+        });
+    });
 };
 userSchema.methods.deleteTimeRecord = function (attendanceId, timeRecord) {
     const recordTimeIn = new Date(timeRecord).toTimeString();

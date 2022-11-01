@@ -15,13 +15,14 @@
           <p><%= errorMessage %></p>
         </div>
         <% } %>
-
+        <!-- preference: ADMIN -->
+        <% if ( user.role === 'ADMIN' ) { %>
         <div class="row">
           <div class="col">
             <h5 class="fw-bold">
               Khóa theo tháng
             </h5>
-            <table class="table table-bordered border-success border border-2 text-center">
+            <table class="table table-locker table-bordered border-success border border-2 text-center">
               <thead class="table-success border-success">
                 <tr>
                   <% for(let i = 0; i < 12; i++) { %>
@@ -36,10 +37,10 @@
                     <form action="/statistic/<%= staff._id %>?action=confirm" method="post">
                       <% if ( staff.status.confirmMonth.find(cmonth => cmonth === i + 1) ) { %>
                       <input type="hidden" name="confirmMonth" value="<%= i + 1 %>">
-                      <button type="submit" class="btn btn-secondary"></button>
+                      <button type="submit" class="btn btn-secondary btn-locker">Đã khóa</button>
                       <% } else { %>
                       <input type="hidden" name="confirmMonth" value="<%= i + 1 %>">
-                      <button type="submit" class="btn btn-warning"></button>
+                      <button type="submit" class="btn btn-warning btn-locker">Chưa khóa</button>
                       <% } %>
                       <!-- end each -->
                     </form>
@@ -50,22 +51,33 @@
               </tbody>
             </table>
           </div>
-          <!-- end row -->
+          <!-- end col -->
         </div>
+        <!-- end row -->
+        <% } %>
+        <!-- end if -->
+        <!-- TIME WORKING FORM -->
         <div class="row">
           <!-- Statistics -->
           <div class="col-12">
             <h5 class="text-center fw-bold">
               Danh sách giờ đã làm
             </h5>
+            <!-- Search form -->
+            <form class="d-flex mb-3" action="/statistic/<%= staff._id %>">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
+              <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+
+
             <table class="table table-bordered border-success border border-2 text-center">
               <thead class="table-success border-success">
                 <tr>
-                  <th scope="col">Ngày</th>
-                  <th scope="col">Nơi làm việc</th>
-                  <th scope="col">Giờ bắt đầu</th>
-                  <th scope="col">Giờ kết thúc</th>
-                  <th scope="col">Thời gian làm việc</th>
+                  <th scope="col" class="col-2">Ngày</th>
+                  <th scope="col" class="col-3">Nơi làm việc</th>
+                  <th scope="col" class="col-2">Giờ bắt đầu</th>
+                  <th scope="col" class="col-2">Giờ kết thúc</th>
+                  <th scope="col" class="col-3">Thời gian làm việc</th>
                   <% if ( user.role === 'ADMIN' ) { %>
                   <th scope="col">Hành vi</th>
                   <% } %>
@@ -75,21 +87,21 @@
                 <% statistics.length && statistics.forEach((statistic, index, array)=> { %>
                 <% if ( statistic.type === 'attendance' ) { %>
                 <tr class="border border-1 border-success">
-                  <th scope="row" class="col-1">
+                  <th scope="row">
                     <%= statistic.date %>
                   </th>
-                  <td class="col-2">
+                  <td>
                     <%= statistic.timeRecord.workplace==='company' ? 'Công ty' : statistic.timeRecord.workplace==='home' ? 'Tại nhà' : 'Khách hàng' %> </td>
-                  <td class="col-2">
+                  <td>
                     <%= statistic.timeRecord.timeIn.toLocaleTimeString('vi-VN', { hour: '2-digit' , minute:'2-digit', second: '2-digit' }) %>
                   </td>
-                  <td class="col-2">
+                  <td>
                     <%= statistic.timeRecord.timeOut ? statistic.timeRecord.timeOut.toLocaleTimeString('vi-VN', { hour: '2-digit', minute:'2-digit', second: '2-digit' }) : '--' %> </td>
-                  <td class="col-2">
+                  <td>
                     <%= statistic.timeRecord.timeWorking ? helper.convertSecondsToTimeString(statistic.timeRecord.timeWorking) : 'Chưa kết thúc' %>
                   </td>
                   <% if ( user.role === 'ADMIN' ) { %>
-                  <% if ( staff.status.confirmMonth.find(cmonth => cmonth === 10) ) { %>
+                  <% if ( staff.status.confirmMonth.find(cmonth => cmonth === +statistic.dateAt.toLocaleDateString('vi-VN', { month: '2-digit' }))) { %>
                   <td class="col-3">
                     <form action="/statistic/<%= staff._id %>?action=delete" method="post">
                       <input type="hidden" name="attendanceId" value="<%= statistic.attendanceId %>">
@@ -127,6 +139,7 @@
         </div>
         <!-- end row -->
       </div>
+      <!-- container-fuild -->
     </div>
     <!-- container-main -->
   </div>

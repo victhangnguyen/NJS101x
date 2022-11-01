@@ -9,11 +9,27 @@ const utils_1 = __importDefault(require("../utils"));
 //@ /attendance => GET
 const getAttendance = (req, res, next) => {
     //! place that is checked authentication
-    const currentUser = req.user;
+    const currentMonth = new Date().getMonth() + 1;
+    // console.log(
+    //   '__Debugger__ctrls__attendance__getAttendance__currentMonth: ',
+    //   currentMonth
+    // );
+    const isLocked = req.user.status.confirmMonth.some((cmonth) => {
+        // console.log(
+        //   '__Debugger__ctrls__attendance__getAttendance__cmonth: ',
+        //   cmonth
+        // );
+        return cmonth === currentMonth;
+    });
+    // console.log(
+    //   '__Debugger__ctrls__attendance__getAttendance__isLocked: ',
+    //   isLocked
+    // );
     res.render('attendance.ejs', {
         path: '/attendance',
         pageTitle: 'Điểm danh',
-        user: currentUser,
+        user: req.user,
+        isLocked: isLocked,
     });
 };
 exports.getAttendance = getAttendance;
@@ -45,7 +61,10 @@ const postAttendance = (req, res, next) => {
         }
         else {
             //! After have timeOut, we calculate Record that Attendance
-            console.log('__Debugger__ctrls__attendance__postAttendance__attendDoc: ', attendDoc);
+            // console.log(
+            //   '__Debugger__ctrls__attendance__postAttendance__attendDoc: ',
+            //   attendDoc
+            // );
             attendDoc
                 .calcRecord()
                 .then((attendDoc) => {

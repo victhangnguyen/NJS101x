@@ -317,7 +317,52 @@ Button
 .btn.btn-delete {
   padding: 0.1rem 0.5rem !important;
 }
+.btn.btn-locker {
+  padding: 0.1rem !important;
+  font-size: 0.65rem !important;
+}
 
+@media screen and (min-width: 576px) {
+  .btn.btn-delete {
+    padding: 0.1rem 0.5rem !important;
+  }
+  .btn.btn-locker {
+    padding: 0.1rem !important;
+    font-size: 1rem !important;
+  }
+}
+@media screen and (min-width: 768px) {
+  .btn.btn-delete {
+    padding: 0.1rem 0.5rem !important;
+  }
+  .btn.btn-locker {
+    padding: 0.1rem !important;
+    font-size: 1rem !important;
+  }
+}
+@media screen and (min-width: 992px) {
+  .btn.btn-delete {
+    padding: 0.1rem 0.5rem !important;
+  }
+  .btn.btn-locker {
+    padding: 0.1rem !important;
+    font-size: 1rem !important;
+  }
+}
+.table.table-locker th {
+  padding: 0.1rem !important;
+}
+
+@media screen and (min-width: 576px) {
+  .table.table-locker th {
+    padding: 0.25rem !important;
+  }
+}
+@media screen and (min-width: 768px) {
+  .table.table-locker th {
+    padding: 0.35rem !important;
+  }
+}
 .form-table-main {
   padding: 2rem 1rem;
 }
