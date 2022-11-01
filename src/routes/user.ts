@@ -40,20 +40,31 @@ router.post(
 //! STATISTIC
 //@ /statistic => GET
 router.get('/statistic', isAdmin, statisticController.getStatistic);
-router.get('/statistic/:userId', isAuth, statisticController.getStatisticDetails);
+router.get(
+  '/statistic/:userId',
+  isAuth,
+  statisticController.getStatisticDetails
+);
 //@ //statisticDelete => POST
-// router.post('/statisticDelete', isAuth, statisticController.postStatisticAction)
+router.post(
+  '/statistic/:userId',
+  isAuth,
+  statisticController.postStatisticAction
+);
 
-//! Delele
-router.post('/statistic/:userId', isAuth, statisticController.postStatisticAction)
-
-
-//! STATISTIC-SEARCH
-//@ /statisticsearch => GET
-router.get('/statisticsearch', isAuth, statisticController.getStatisticSearch); //! temp
-
-//@ /statisticsearch => POST
-// router.post('/statisticsearch', statisticController.postStatisticSearch);
+//! STATISTIC-ALL
+//@ /statisticall => GET
+router.get('/statisticall', isAuth, statisticController.getStatisticAll); //! temp
+router.get(
+  '/statisticall/:userId',
+  isAuth,
+  statisticController.getStatisticAllDetails
+); //! temp
+//@ /statisticall => POST
+router.post(
+  '/statisticall/:userId',
+  statisticController.postStatisticAllAction
+);
 
 //! COVID-STATUS
 //@ /covidstatus => GET (Register Page)

@@ -1,13 +1,18 @@
+
 <nav aria-label="Page navigation example">
-  <ul class="pagination justify-content-end">
-    <li class="page-item disabled">
-      <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-    </li>
-    <li class="page-item"><a class="page-link" href="#">1</a></li>
-    <li class="page-item"><a class="page-link" href="#">2</a></li>
-    <li class="page-item"><a class="page-link" href="#">3</a></li>
-    <li class="page-item">
-      <a class="page-link" href="#">Next</a>
-    </li>
-  </ul>
+  <ul class="pagination pagination-lg justify-content-center">
+    <% if (currentPage !== 1 && previousPage !== 1) { %>
+    <a class="page-link" href="?page=1">1</a>
+    <% } %>
+    <% if (hasPreviousPage) { %>
+    <a class="page-link" href="?page=<%= previousPage %>"><%= previousPage %></a>
+    <% } %>
+    <a class="page-link active" href="?page=<%= currentPage %>" ><%= currentPage %></a>
+    <% if (hasNextPage) { %>
+    <a class="page-link" href="?page=<%= nextPage %>"><%= nextPage %></a>
+    <% } %>
+    <% if (lastPage !== currentPage && nextPage !== lastPage) { %>
+    <a class="page-link" href="?page=<%= lastPage %>"><%= lastPage %></a>
+    <% } %>
+    </section>
 </nav>

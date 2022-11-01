@@ -36,6 +36,7 @@ declare module 'express-session' {
   export interface SessionData {
     isLoggedIn: any;
     user: any;
+    configLines: any;
   }
 }
 

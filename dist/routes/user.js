@@ -59,14 +59,13 @@ router.post('/profile/:userId', mutler_1.default.single('image'), is_auth_1.isAu
 router.get('/statistic', is_auth_1.isAdmin, statisticController.getStatistic);
 router.get('/statistic/:userId', is_auth_1.isAuth, statisticController.getStatisticDetails);
 //@ //statisticDelete => POST
-// router.post('/statisticDelete', isAuth, statisticController.postStatisticAction)
-//! Delele
 router.post('/statistic/:userId', is_auth_1.isAuth, statisticController.postStatisticAction);
-//! STATISTIC-SEARCH
-//@ /statisticsearch => GET
-router.get('/statisticsearch', is_auth_1.isAuth, statisticController.getStatisticSearch); //! temp
-//@ /statisticsearch => POST
-// router.post('/statisticsearch', statisticController.postStatisticSearch);
+//! STATISTIC-ALL
+//@ /statisticall => GET
+router.get('/statisticall', is_auth_1.isAuth, statisticController.getStatisticAll); //! temp
+router.get('/statisticall/:userId', is_auth_1.isAuth, statisticController.getStatisticAllDetails); //! temp
+//@ /statisticall => POST
+router.post('/statisticall/:userId', statisticController.postStatisticAllAction);
 //! COVID-STATUS
 //@ /covidstatus => GET (Register Page)
 router.get('/covidstatus', is_auth_1.isAuth, covidStatusController.getCovidStatus);

@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { RequestHandler } from 'express';
 import utils from '../utils';
+const util = require('node:util');
 
 //! models
 import User from '../models/user';
@@ -15,6 +16,28 @@ export const getStatistic: RequestHandler = (req, res, next) => {
     .then((userDoc) => {
       res.status(200).render('statistic.ejs', {
         path: '/statistic',
+        pageTitle: 'Tra cứu thông tin giờ làm - lương',
+        user: userDoc, //! user Admin
+        helper: utils,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+export const getStatisticAll: RequestHandler = (req, res, next) => {
+  User.findById(req.user._id)
+    .populate({
+      path: 'manage.staffs',
+      populate: {
+        path: 'manage.userId',
+      },
+    })
+    .then((userDoc) => {
+      console.log(util.inspect(userDoc, { depth: 12 }));
+      res.status(200).render('statistic-all.ejs', {
+        path: '/statisticall',
         pageTitle: 'Tra cứu thông tin giờ làm - lương',
         user: userDoc, //! user Admin
         helper: utils,
@@ -57,11 +80,11 @@ export const getStatisticDetails: RequestHandler = (req, res, next) => {
     .then((userDoc) => {
       userDoc
         ?.getStatistic(search)
-        .then((statistics: any) => {
-          // console.log(
-          //   '__Debugger__ctrls__statistic__getStatisticDetails__statistic: ',
-          //   statistics
-          // );
+        .then((collect: any) => {
+          console.log(
+            '__Debugger__ctrls__statistic__getStatisticDetails__collect.all(): ',
+            collect.all()
+          );
 
           // console.log(
           //   '__Debugger__ctrls__statistic__getStatisticDetails__dateAt: ',
@@ -72,10 +95,99 @@ export const getStatisticDetails: RequestHandler = (req, res, next) => {
             path: '/statistic',
             pageTitle: 'Tra cứu thông tin giờ làm - lương',
             user: req.user, //! user Admin
-            statistics,
+            statistics: collect.all(),
             helper: utils,
             staff: userDoc, //! user Staff
             errorMessage: message,
+            oldInput: {
+              search: search,
+            },
+          });
+        })
+        .catch((err: Error) => {
+          console.log(err);
+        });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+export const getStatisticAllDetails: RequestHandler = (req, res, next) => {
+  const userId = req.params.userId;
+  const page = req.query.page ? +req.query.page : 1;
+  const ITEMS_PER_PAGE = req.session.configLines ? req.session.configLines : 5;
+
+  console.log(
+    '__Debugger__ctrls__statistic__getStatisticAllDetails__page: ',
+    page
+  );
+  // console.log(
+  //   '__Debugger__ctrls__statistic__getStatisticDetails__userId: ',
+  //   userId
+  // );
+  // console.log(
+  //   '__Debugger__ctrls__statistic__getStatisticDetails__req.user._id.toString(): ',
+  //   req.user._id.toString()
+  // );
+  //! Unauthorized
+  if (req.user._id.toString() !== userId && req.user.role !== 'ADMIN') {
+    return res.redirect('/');
+  }
+
+  let message: any = req.flash('error');
+  if (message.length > 0) {
+    message = message[0];
+  } else {
+    message = null;
+  }
+
+  User.findById(userId)
+    .then((userDoc) => {
+      userDoc
+        ?.getStatistic('all')
+        .then((collect: any) => {
+          const totalItems = collect.count();
+          //! Tương đồng:
+          //! skip ~ skip
+          //! limit ~ take
+          const filteredCollect = collect
+            .skip((page - 1) * ITEMS_PER_PAGE)
+            .take(ITEMS_PER_PAGE)
+            .all();
+
+          // console.log(
+          //   '__Debugger__ctrls__statistic__getStatisticDetails__totalItems: ',
+          //   totalItems
+          // );
+          // console.log(
+          //   '__Debugger__ctrls__statistic__getStatisticDetails__filteredCollect: ',
+          //   filteredCollect
+          // );
+          // console.log(
+          //   '__Debugger__ctrls__statistic__getStatisticDetails__collect.all(): ',
+          //   collect.all()
+          // );
+          // console.log(
+          //   '__Debugger__ctrls__statistic__getStatisticDetails__dateAt: ',
+          //   // +statistic.dateAt.toLocaleDateString('vi-VN', { month: '2-digit' })
+          // );
+
+          res.render('statistic-all-details.ejs', {
+            path: '/statisticall',
+            pageTitle: 'Tra cứu thông tin giờ làm - lương',
+            user: req.user, //! user Admin
+            statistics: filteredCollect,
+            helper: utils,
+            staff: userDoc, //! user Staff
+            errorMessage: message,
+
+            currentPage: page,
+            hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+            hasPreviousPage: page > 1,
+            nextPage: page + 1,
+            previousPage: page - 1,
+            lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
           });
         })
         .catch((err: Error) => {
@@ -105,19 +217,19 @@ export const postStatisticAction: RequestHandler = (req, res, next) => {
       User.findById(userId)
         .then((userDoc) => {
           const selectedMonth = new Date(recordTimeIn).getMonth() + 1;
-          console.log(
-            '__Debugger__ctrls__statistic__postStatistic__selectedMonth: ',
-            selectedMonth
-          );
+          // console.log(
+          //   '__Debugger__ctrls__statistic__postStatistic__selectedMonth: ',
+          //   selectedMonth
+          // );
           const existingConfirmMonth = userDoc?.status.confirmMonth.find(
             (cmonth) => {
               return cmonth === selectedMonth;
             }
           );
-          console.log(
-            '__Debugger__ctrls__statistic__postStatistic__existingConfirmMonth: ',
-            existingConfirmMonth
-          );
+          // console.log(
+          //   '__Debugger__ctrls__statistic__postStatistic__existingConfirmMonth: ',
+          //   existingConfirmMonth
+          // );
 
           if (!existingConfirmMonth) {
             userDoc
@@ -202,105 +314,77 @@ export const postStatisticAction: RequestHandler = (req, res, next) => {
   }
 };
 
-//@ /statisticsearch => GET
-export const getStatisticSearch: RequestHandler = (req, res, next) => {
-  //! initial keyword: All
-  const search = req.query.search
-    ? (req.query as { search: string }).search
-    : '*';
+export const postStatisticAllAction: RequestHandler = (req, res, next) => {
+  //! route: /statistic/:userId
+  const userId = req.params.userId;
+  const action = req.query.action;
   console.log(
-    '__Debugger__ctrls__statistic__getStatisticSearch__search: ',
-    search
+    '__Debugger__ctrls__statistic__postStatisticAllAction__action: ',
+    action
   );
 
-  const lines = +req.query.lines!;
-  console.log(
-    '__Debugger__ctrls__statistic__getStatisticSearch__lines: ',
-    lines
-  );
+  switch (action) {
+    //! ACTION = delete
+    case 'config':
+      const configLines = +req.body.configLines;
+      console.log(
+        '__Debugger__ctrls__statistic__postStatisticAllAction__configLines: ',
+        configLines
+      );
+      req.session.configLines = configLines;
+      req.session.save((err) => {
+        res.redirect(`/statisticall/${userId}`);
+      });
 
-  req.user
-    .getStatistic()
-    .then((statistics: any) => {
-      const filteredStatistics: Array<any> = statistics
-        .filter((statistic: any) =>
-          utils.matchRuleShort(statistic.date, search)
-        )
-        .filter((statistic: any) => {});
+      break;
 
-      // console.log('__Debugger__ctrls__statistic__getStatisticSearch__filteredStatistics: ', filteredStatistics)
-
-      //! guard clause
-      if (filteredStatistics.length > 0) {
-        let salaryTimeTotal: number = 0;
-
-        filteredStatistics.forEach((statistic) => {
-          if (statistic.type === 'attendance') {
-            //! only handling 'attendance'
-
-            statistic.salaryTime = statistic.totalTime / 3600 - 8;
-            const existingAbsence = statistics.find(
-              (sta: any) =>
-                sta.type === 'absence' && sta.date === statistic.date
-            );
-
-            if (existingAbsence) {
-              // console.log(
-              //   '__Debugger__ctrls__Statistic__getStatisticSearch__existingAbsence: ',
-              //   existingAbsence
-              // );
-              //! Số giờ làm còn thiếu là khi chưa đủ 8h/ngày kể cả đã cộng annualLeave của ngày đó.
-              if (statistic.salaryTime < 8) {
-                statistic.salaryTime =
-                  statistic.totalTime / 3600 + existingAbsence.hours < 8
-                    ? statistic.totalTime / 3600 + existingAbsence.hours - 8
-                    : 8;
-              }
-            }
-
-            salaryTimeTotal += statistic.salaryTime;
-          }
-
-          // console.log(
-          //   '__Debugger__ctrls__Statistic__getStatisticSearch__attendance: ',
-          //   statistic
-          // );
-        });
-
-        const salary = Math.floor(
-          req.user.salaryScale * 3000000 + salaryTimeTotal * 200000
-        );
-        // console.log(
-        //   '__Debugger__ctrls__Statistic__getStatisticSearch__salaryTimeTotal: ',
-        //   salaryTimeTotal
-        // );
-        // console.log(
-        //   '__Debugger__ctrls__Statistic__getStatisticSearch__salary: ',
-        //   salary
-        // );
-
-        res.render('statistic-search.ejs', {
-          path: '/statisticsearch',
-          pageTitle: 'Tra cứu thông tin giờ làm - lương',
-          user: req.user,
-          statistics: filteredStatistics,
-          salary: salary,
-          salaryTimeTotal,
-          helper: utils,
-        });
-      } else {
-        res.render('statistic-search.ejs', {
-          path: '/statisticsearch',
-          pageTitle: 'Tra cứu thông tin giờ làm - lương',
-          user: req.user,
-          statistics: [],
-          salary: 0,
-          salaryTimeTotal: 0,
-          helper: utils,
-        });
-      }
-    })
-    .catch((err: Error) => {
-      console.log(err);
-    });
+    default:
+      break;
+  }
 };
+
+// //@ /StatisticAll => GET
+// export const getStatisticAllDetails: RequestHandler = (req, res, next) => {
+//   const userId = req.params.userId;
+
+//   console.log(
+//     '__Debugger__ctrls__statistic__getStatisticDetails__search: ',
+//     search
+//   );
+
+//   //! Unauthorized
+//   if (req.user._id.toString() !== userId && req.user.role !== 'ADMIN') {
+//     return res.redirect('/');
+//   }
+
+//   let message: any = req.flash('error');
+//   if (message.length > 0) {
+//     message = message[0];
+//   } else {
+//     message = null;
+//   }
+
+//   User.findById(userId)
+//     .then((userDoc) => {
+//       userDoc
+//         ?.getStatistic('all')
+//         .then((collect: any) => {
+
+//           res.render('statisticDetails.ejs', {
+//             path: '/statistic',
+//             pageTitle: 'Tra cứu thông tin giờ làm - lương',
+//             user: req.user, //! user Admin
+//             statistics: collect.all(),
+//             helper: utils,
+//             staff: userDoc, //! user Staff
+//             errorMessage: message,
+//           });
+//         })
+//         .catch((err: Error) => {
+//           console.log(err);
+//         });
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// };

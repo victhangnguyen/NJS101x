@@ -4,6 +4,12 @@ form {
   }
 }
 
+.form-select {
+  &.form-select-sm {
+    padding: 0.5rem !important;
+  }
+}
+
 //! Mobile Avatar
 .container-main {
   .avatar {
@@ -34,4 +40,3 @@ form {
 }
 @media screen and (min-width: 1400px) {
 }
-

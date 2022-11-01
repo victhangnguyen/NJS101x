@@ -321,6 +321,9 @@ Button
   padding: 0.1rem !important;
   font-size: 0.65rem !important;
 }
+.btn.btn-congig {
+  padding: 0.5rem !important;
+}
 
 @media screen and (min-width: 576px) {
   .btn.btn-delete {
@@ -522,6 +525,10 @@ a {
 
 form .input-invalid {
   border: 1px red !important;
+}
+
+.form-select.form-select-sm {
+  padding: 0.5rem !important;
 }
 
 .container-main .avatar {
