@@ -493,16 +493,16 @@ userSchema.methods.getStatistic = function (month: string) {
         let monthUTC; //months from 1-12 (index: 0 - 11)
         if (0 < Number(month) && Number(month) <= 12) {
           monthUTC = +month - 1;
-          console.log(
-            '__Debugger__models__user__getStatistic__monthUTC: ',
-            monthUTC
-          );
+          // console.log(
+          //   '__Debugger__models__user__getStatistic__monthUTC: ',
+          //   monthUTC
+          // );
         } else {
           monthUTC = dateAt.getUTCMonth();
-          console.log(
-            '__Debugger__models__user__getStatistic__monthUTC: ',
-            monthUTC
-          );
+          // console.log(
+          //   '__Debugger__models__user__getStatistic__monthUTC: ',
+          //   monthUTC
+          // );
         }
 
         let yearUTC = dateAt.getUTCFullYear();
@@ -518,16 +518,16 @@ userSchema.methods.getStatistic = function (month: string) {
         // console.log('__Debugger__models__user__getStatistic__year: ', year);
 
         let startDate = new Date(yearUTC, monthUTC, 1);
-        console.log(
-          '__Debugger__models__user__getStatistic__startDate: ',
-          startDate
-        );
+        // console.log(
+        //   '__Debugger__models__user__getStatistic__startDate: ',
+        //   startDate
+        // );
 
-        let endDate = new Date(yearUTC, monthUTC, 32);
-        console.log(
-          '__Debugger__models__user__getStatistic__endDate: ',
-          endDate
-        );
+        let endDate = new Date(yearUTC, monthUTC, 31);
+        // console.log(
+        //   '__Debugger__models__user__getStatistic__endDate: ',
+        //   endDate
+        // );
 
         let numberAttendance: any;
         let numberAbsence: any;
