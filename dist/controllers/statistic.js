@@ -75,7 +75,10 @@ const getStatisticDetails = (req, res, next) => {
     user_1.default.findById(userId)
         .then((userDoc) => {
         userDoc === null || userDoc === void 0 ? void 0 : userDoc.getStatistic(search).then((collect) => {
-            console.log('__Debugger__ctrls__statistic__getStatisticDetails__collect.all(): ', collect.all());
+            // console.log(
+            //   '__Debugger__ctrls__statistic__getStatisticDetails__collect.all(): ',
+            //   collect.all()
+            // );
             // console.log(
             //   '__Debugger__ctrls__statistic__getStatisticDetails__dateAt: ',
             //   // +statistic.dateAt.toLocaleDateString('vi-VN', { month: '2-digit' })

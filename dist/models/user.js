@@ -139,7 +139,7 @@ userSchema.methods.addAttendance = function (type) {
         month: '2-digit',
         day: '2-digit',
     });
-    // console.log('__Debugger__models_Users__addAttendance__date: ', date);
+    console.log('__Debugger__models_Users__addAttendance__curDateStringVN: ', curDateStringVN);
     return attendance_1.default.findOne({ userId: this._id, date: curDateStringVN }).then((attendDoc) => {
         // console.log('__Debugger__model__user__attendDoc: ', attendDoc);
         //! add timeIn to Record
@@ -279,7 +279,7 @@ userSchema.methods.addAbsences = function (type, dates, hours, reason) {
 };
 userSchema.methods.getStatistic = function (month) {
     const statistics = [];
-    if ((month === 'all')) {
+    if (month === 'all') {
         return attendance_1.default.find({ userId: this._id }).then((attendanceDoc) => {
             if (attendanceDoc.length < 1) {
                 return (0, collect_js_1.default)(statistics);
@@ -365,13 +365,11 @@ userSchema.methods.getStatistic = function (month) {
             let monthUTC; //months from 1-12 (index: 0 - 11)
             if (0 < Number(month) && Number(month) <= 12) {
                 monthUTC = +month - 1;
-                // console.log(
-                //   '__Debugger__models__user__getStatistic__monthUTC: ',
-                //   monthUTC
-                // );
+                console.log('__Debugger__models__user__getStatistic__monthUTC: ', monthUTC);
             }
             else {
-                monthUTC = dateAt.getUTCMonth() + 1;
+                monthUTC = dateAt.getUTCMonth();
+                console.log('__Debugger__models__user__getStatistic__monthUTC: ', monthUTC);
             }
             let yearUTC = dateAt.getUTCFullYear();
             // let monthVN = +dateAt.toLocaleDateString('vi-VN', {
@@ -385,9 +383,19 @@ userSchema.methods.getStatistic = function (month) {
             console.log('__Debugger__models__user__getStatistic__startDate: ', startDate);
             let endDate = new Date(yearUTC, monthUTC, 32);
             console.log('__Debugger__models__user__getStatistic__endDate: ', endDate);
+            let numberAttendance;
+            let numberAbsence;
             return attendance_1.default.find({
                 userId: this._id,
                 dateAt: { $gte: startDate, $lt: endDate },
+            })
+                .countDocuments()
+                .then((numberAttendanceDocs) => {
+                numberAttendance = numberAttendanceDocs;
+                return attendance_1.default.find({
+                    userId: this._id,
+                    dateAt: { $gte: startDate, $lt: endDate },
+                });
             })
                 .then((attendanceDocs) => {
                 attendanceDocs.forEach((attendance) => {
@@ -405,6 +413,17 @@ userSchema.methods.getStatistic = function (month) {
                 return absence_1.default.find({
                     userId: this._id,
                     dateAt: { $gte: startDate, $lt: endDate },
+                })
+                    .countDocuments()
+                    .then((numberAbsenceDocs) => {
+                    numberAbsence = numberAbsenceDocs;
+                    return absence_1.default.find({
+                        userId: this._id,
+                        dateAt: { $gte: startDate, $lt: endDate },
+                    });
+                })
+                    .catch((err) => {
+                    console.log(err);
                 });
             })
                 .then((AbsenceDocs) => {
@@ -434,13 +453,59 @@ userSchema.methods.getStatistic = function (month) {
                     return a > b ? 1 : a < b ? -1 : 0;
                 }
                 statistics.sort(compare2);
+                let totalTime = statistics.reduce((acc, cur) => {
+                    // console.log('__Debugger__models__user__getStatistic__i: ', i);
+                    // console.log('__Debugger__models__user__getStatistic__arr: ', arr);
+                    if (cur.type === 'attendance') {
+                        // console.log(
+                        //   '__Debugger__models__user__getStatistic__cur.timeRecord.timeWorking: ',
+                        //   +cur.timeRecord.timeWorking
+                        // );
+                        // console.log(
+                        //   '__Debugger__models__user__getStatistic__acc: ',
+                        //   acc
+                        // );
+                        return acc + +cur.timeRecord.timeWorking / 3600;
+                    }
+                    else if (cur.type === 'absence') {
+                        return acc + cur.hours;
+                    }
+                    else {
+                        return acc;
+                    }
+                }, 0);
+                const salary = (totalTime - 8 * numberAttendance) * 200000;
+                const totalSalary = this.salaryScale * 3000000 + salary;
+                // console.log(
+                //   '__Debugger__models__user__getStatistic__totalTime: ',
+                //   totalTime
+                // );
+                // console.log(
+                //   '__Debugger__models__user__getStatistic__salary: ',
+                //   salary
+                // );
+                // console.log(
+                //   '__Debugger__models__user__getStatistic__totalSalary: ',
+                //   totalSalary
+                // );
+                // console.log(
+                //   '__Debugger__models__user__getStatistic__numberAttendance: ',
+                //   numberAttendance
+                // );
+                // console.log(
+                //   '__Debugger__models__user__getStatistic__numberAbsence: ',
+                //   numberAbsence
+                // );
+                // Thành tiền
+                statistics.push({
+                    preference: 3,
+                    type: 'result',
+                    totalSalary: totalSalary,
+                });
                 // statistics.sort((a, b): any => {
                 //   return new Date(b.date).valueOf() > new Date(a.date).valueOf();
                 // });
-                // console.log(
-                //   '__Debugger__models__user__getStatistic__statistic: ',
-                //   statistics
-                // );
+                console.log('__Debugger__models__user__getStatistic__statistic: ', statistics);
                 return (0, collect_js_1.default)(statistics);
             })
                 .catch((err) => {

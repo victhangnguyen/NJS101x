@@ -62,7 +62,7 @@ router.get('/statistic/:userId', is_auth_1.isAuth, statisticController.getStatis
 router.post('/statistic/:userId', is_auth_1.isAuth, statisticController.postStatisticAction);
 //! STATISTIC-ALL
 //@ /statisticall => GET
-router.get('/statisticall', is_auth_1.isAuth, statisticController.getStatisticAll); //! temp
+router.get('/statisticall', is_auth_1.isAdmin, statisticController.getStatisticAll); //! temp
 router.get('/statisticall/:userId', is_auth_1.isAuth, statisticController.getStatisticAllDetails); //! temp
 //@ /statisticall => POST
 router.post('/statisticall/:userId', statisticController.postStatisticAllAction);

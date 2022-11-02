@@ -81,10 +81,10 @@ export const getStatisticDetails: RequestHandler = (req, res, next) => {
       userDoc
         ?.getStatistic(search)
         .then((collect: any) => {
-          console.log(
-            '__Debugger__ctrls__statistic__getStatisticDetails__collect.all(): ',
-            collect.all()
-          );
+          // console.log(
+          //   '__Debugger__ctrls__statistic__getStatisticDetails__collect.all(): ',
+          //   collect.all()
+          // );
 
           // console.log(
           //   '__Debugger__ctrls__statistic__getStatisticDetails__dateAt: ',

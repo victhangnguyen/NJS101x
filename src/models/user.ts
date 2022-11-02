@@ -216,7 +216,11 @@ userSchema.methods.addAttendance = function (type: string) {
     day: '2-digit',
   });
 
-  // console.log('__Debugger__models_Users__addAttendance__date: ', date);
+  console.log(
+    '__Debugger__models_Users__addAttendance__curDateStringVN: ',
+    curDateStringVN
+  );
+
   return Attendance.findOne({ userId: this._id, date: curDateStringVN }).then(
     (attendDoc: any) => {
       // console.log('__Debugger__model__user__attendDoc: ', attendDoc);
@@ -397,7 +401,7 @@ userSchema.methods.addAbsences = function (
 userSchema.methods.getStatistic = function (month: string) {
   const statistics: any[] = [];
 
-  if ((month === 'all')) {
+  if (month === 'all') {
     return Attendance.find({ userId: this._id }).then((attendanceDoc: any) => {
       if (attendanceDoc.length < 1) {
         return collect(statistics);
@@ -489,12 +493,16 @@ userSchema.methods.getStatistic = function (month: string) {
         let monthUTC; //months from 1-12 (index: 0 - 11)
         if (0 < Number(month) && Number(month) <= 12) {
           monthUTC = +month - 1;
-          // console.log(
-          //   '__Debugger__models__user__getStatistic__monthUTC: ',
-          //   monthUTC
-          // );
+          console.log(
+            '__Debugger__models__user__getStatistic__monthUTC: ',
+            monthUTC
+          );
         } else {
-          monthUTC = dateAt.getUTCMonth() + 1;
+          monthUTC = dateAt.getUTCMonth();
+          console.log(
+            '__Debugger__models__user__getStatistic__monthUTC: ',
+            monthUTC
+          );
         }
 
         let yearUTC = dateAt.getUTCFullYear();
@@ -521,10 +529,22 @@ userSchema.methods.getStatistic = function (month: string) {
           endDate
         );
 
+        let numberAttendance: any;
+        let numberAbsence: any;
+
         return Attendance.find({
           userId: this._id,
           dateAt: { $gte: startDate, $lt: endDate },
         })
+          .countDocuments()
+          .then((numberAttendanceDocs) => {
+            numberAttendance = numberAttendanceDocs;
+
+            return Attendance.find({
+              userId: this._id,
+              dateAt: { $gte: startDate, $lt: endDate },
+            });
+          })
           .then((attendanceDocs) => {
             attendanceDocs.forEach((attendance) => {
               attendance.timeRecords.forEach((record) => {
@@ -541,10 +561,22 @@ userSchema.methods.getStatistic = function (month: string) {
             return Absence.find({
               userId: this._id,
               dateAt: { $gte: startDate, $lt: endDate },
-            });
+            })
+              .countDocuments()
+              .then((numberAbsenceDocs) => {
+                numberAbsence = numberAbsenceDocs;
+
+                return Absence.find({
+                  userId: this._id,
+                  dateAt: { $gte: startDate, $lt: endDate },
+                });
+              })
+              .catch((err) => {
+                console.log(err);
+              });
           })
-          .then((AbsenceDocs) => {
-            AbsenceDocs.forEach((absence) => {
+          .then((AbsenceDocs: any) => {
+            AbsenceDocs.forEach((absence: any) => {
               statistics.push({
                 preference: 1,
                 type: 'absence',
@@ -574,15 +606,67 @@ userSchema.methods.getStatistic = function (month: string) {
             }
 
             statistics.sort(compare2);
+            let totalTime = statistics.reduce((acc, cur) => {
+              // console.log('__Debugger__models__user__getStatistic__i: ', i);
+              // console.log('__Debugger__models__user__getStatistic__arr: ', arr);
+
+              if (cur.type === 'attendance') {
+                // console.log(
+                //   '__Debugger__models__user__getStatistic__cur.timeRecord.timeWorking: ',
+                //   +cur.timeRecord.timeWorking
+                // );
+                // console.log(
+                //   '__Debugger__models__user__getStatistic__acc: ',
+                //   acc
+                // );
+                return acc + +cur.timeRecord.timeWorking / 3600;
+              } else if (cur.type === 'absence') {
+                return acc + cur.hours;
+              } else {
+                return acc;
+              }
+            }, 0);
+
+            const salary = (totalTime - 8 * numberAttendance) * 200000;
+
+            const totalSalary = this.salaryScale * 3000000 + salary;
+
+            // console.log(
+            //   '__Debugger__models__user__getStatistic__totalTime: ',
+            //   totalTime
+            // );
+            // console.log(
+            //   '__Debugger__models__user__getStatistic__salary: ',
+            //   salary
+            // );
+            // console.log(
+            //   '__Debugger__models__user__getStatistic__totalSalary: ',
+            //   totalSalary
+            // );
+            // console.log(
+            //   '__Debugger__models__user__getStatistic__numberAttendance: ',
+            //   numberAttendance
+            // );
+            // console.log(
+            //   '__Debugger__models__user__getStatistic__numberAbsence: ',
+            //   numberAbsence
+            // );
+
+            // Thành tiền
+            statistics.push({
+              preference: 3,
+              type: 'result',
+              totalSalary: totalSalary,
+            });
 
             // statistics.sort((a, b): any => {
             //   return new Date(b.date).valueOf() > new Date(a.date).valueOf();
             // });
 
-            // console.log(
-            //   '__Debugger__models__user__getStatistic__statistic: ',
-            //   statistics
-            // );
+            console.log(
+              '__Debugger__models__user__getStatistic__statistic: ',
+              statistics
+            );
 
             return collect(statistics);
           })

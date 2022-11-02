@@ -119,10 +119,9 @@
                   </td>
                   <% } %>
 
-
-
                   <% } %>
                 </tr>
+
                 <% } else if (statistic.type==='absence' ) { %>
                 <tr class="table-warning border border-1 border-success">
                   <th scope="row">
@@ -130,7 +129,18 @@
                   </th>
                   <td colspan="5" class="fw-bold">Nghỉ phép: <%= statistic.hours >= 8 ? `1 ngày (${statistic.hours} giờ) ` : `${statistic.hours} giờ`%></td>
                 </tr>
+                <!-- path: Result -->
+                <% } else if (statistic.type==='result' ) { %>
+                <tr class="table-success border border-1 border-success">
+                  <th colspan="4" scope="row">
+                    TỔNG THU NHẬP
+                  </th>
+                  <td colspan="2" class="fw-bold">
+                    <%= Math.ceil(statistic.totalSalary).toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,") %>
+                  </td>
+                </tr>
                 <% } %>
+
                 <% }) %>
 
               </tbody>

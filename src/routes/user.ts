@@ -54,7 +54,7 @@ router.post(
 
 //! STATISTIC-ALL
 //@ /statisticall => GET
-router.get('/statisticall', isAuth, statisticController.getStatisticAll); //! temp
+router.get('/statisticall', isAdmin, statisticController.getStatisticAll); //! temp
 router.get(
   '/statisticall/:userId',
   isAuth,
