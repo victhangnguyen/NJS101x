@@ -1,0 +1,164 @@
+<%- include('./includes/header.ejs') %>
+
+<body>
+  <%- include('./includes/navigation.ejs') %>
+
+  <div class="layout">
+    <div class="sidebar"></div>
+    <div class="container-main">
+      <!-- /covidstatus/:covidStatusId -->
+      <div class="container-fluid">
+        <% if ( user.role === 'ADMIN' ) { %>
+        <div class="row">
+          <% user.manage.staffs.forEach((staff, index) => { %>
+          <div class="col-6 col-md-4 col-lg-4">
+            <div class="card">
+              <div class="card-header">
+                #<%= index + 1 %>
+              </div>
+              <div class="avatar">
+                <img src="/<%= staff.image %>" class="card-img-top avatar-img" alt="...">
+              </div>
+              <div class="card-body">
+                <h5 class="card-title fw-bold"><%= staff.name %></h5>
+                <p class="card-text fw-bold">department:
+                  <span class="fw-normal"><%= staff.department %></span>
+                </p>
+                <div class="d-flex justify-content-between">
+                  <!-- Seen Details -->
+                  <% if ( staff.healthStatus.covidStatusId?._id ) { %>
+                  <a href="/covidstatus/<%= staff.healthStatus.covidStatusId?._id %>" class="btn btn-primary">Xem chi tiết</a>
+                  <% } else { %>
+                  <a class="btn btn-secondary">Xem chi tiết</a>
+                  <% } %>
+                  <!-- Button PDF -->
+                  <% if ( staff.healthStatus.covidStatusId?._id ) { %>
+                  <a href="/covidreport/<%= staff.healthStatus.covidStatusId?._id %>" class="btn btn-warning">Tải PDF</a>
+                  <% } else { %>
+                  <a class="btn btn-secondary">Tải PDF</a>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          </div>
+          <% }) %>
+        </div>
+
+        <% } else { %>
+        <!-- <div class="wrap-form-control">
+          <form action="/covidstatus/<%= covidStatus._id %>" method="get" class="form-control-main form-control border border-warning border-2 needs-validation">
+            <div class="row">
+              <div class="col-12 col-sm-8 col-md-7">
+                <p class="fw-bold">Số lần Đăng ký thông tin thân nhiệt: <span class="font-weight-bold"><%= covidStatus.bodyTemperatures.length %></span></p>
+                <p class="fw-bold">Số lần Đăng ký thông tin tiêm Vaccine: <span class="font-weight-bold"><%= covidStatus.vaccines.length %></span></p>
+                <p class="fw-bold">Số lần Đăng ký thông tin thân nhiệt: <span class="font-weight-bold"><%= covidStatus.positive.length %></span></p>
+              </div>
+              <div class="col-12 col-sm-4 col-md-5">
+                <button class="btn btn-warning">Xem thông tin chi tiết</button>
+              </div>
+            </div>
+          </form>
+        </div> -->
+
+        <!-- body temperature information -->
+        <div class="wrap-form-control">
+          <form action="/covidstatus?type=bodytemp" method="post" class="form-control-main form-control border border-success border-2 needs-validation" novalidate>
+            <h1 class="text-center mb-3">Đăng ký thông tin thân nhiệt</h1>
+            <div class="row mb-4">
+              <label for="input-body-temperature" class="col-sm-4 col-md-3 col-form-label fw-bold">Nhiệt độ cơ thể:</label>
+              <div class="col-sm-8 col-md-9 mb-2">
+                <input type="number" class="form-control" id="input-body-temperature" placeholder="Nhập nhiệt độ của cơ thể" name="bodyTemperature" required>
+                <div class="valid-feedback">
+                  Thông tin hợp lệ!
+                </div>
+                <div class="invalid-feedback">
+                  Xin vui lòng nhập Nhiệt độ cơ thể của bạn!
+                </div>
+              </div>
+            </div>
+            <div class="mt-3 d-flex justify-content-center">
+              <button type="submit" class="btn btn-success btn-long-50per">Đăng ký</button>
+            </div>
+          </form>
+        </div>
+        <!--Register for vaccination information -->
+        <div class="wrap-form-control">
+          <form action="/covidstatus?type=vaccination" method="post" class="form-control-main form-control border border-success border-2 needs-validation" novalidate>
+            <h1 class="text-center mb-3">Đăng ký thông tin tiêm Vaccine</h1>
+            <div class="row mb-4">
+              <label class="col-sm-4 col-md-3 col-form-label fw-bold">Mũi vaccine số: <%= covidStatus.vaccines.length + 1%></label>
+              <div class="col-sm-8 col-md-9 mb-2">
+                <div class="valid-feedback">
+                  Thông tin hợp lệ!
+                </div>
+                <div class="invalid-feedback">
+                  Xin vui lòng nhập Tên vaccine!
+                </div>
+              </div>
+              <label for="input-vaccine-name" class="col-sm-4 col-md-3 col-form-label fw-bold">Tên vaccine:</label>
+              <div class="col-sm-8 col-md-9 mb-2">
+                <input type="text" class="form-control" id="input-vaccine-name" placeholder="Nhập tên vaccine" name="name" required>
+                <div class="valid-feedback">
+                  Thông tin hợp lệ!
+                </div>
+                <div class="invalid-feedback">
+                  Xin vui lòng nhập Tên vaccine!
+                </div>
+              </div>
+              <label for="input-date-vaccine" class="col-sm-4 col-md-3 col-form-label fw-bold">Ngày tiêm vaccine:</label>
+              <div class="col-sm-8 col-md-9 mb-2">
+                <div class="input-group date" data-date-format="dd/mm/yyyy" id="datepicker1-covidstatus-vaccine">
+                  <input id="input-date-vaccine" type="text" class="form-control" placeholder="dd/mm/yyyy" name="date" autocomplete="off" required>
+                  <span class="input-group-append">
+                    <span class="input-group-text bg-white d-block">
+                      <i class="fa fa-calendar"></i>
+                    </span>
+                  </span>
+                  <div class="valid-feedback">
+                    Thông tin hợp lệ!
+                  </div>
+                  <div class="invalid-feedback">
+                    Xin vui lòng nhập Ngày tiêm vaccine!
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-3 d-flex justify-content-center">
+              <button type="submit" class="btn btn-success btn-long-50per">Đăng ký</button>
+            </div>
+          </form>
+        </div>
+        <!--Register for Positive -->
+        <div class="wrap-form-control">
+          <form action="/covidstatus?type=positive" method="post" class="form-control-main form-control border border-success border-2 needs-validation" novalidate>
+            <h1 class="text-center mb-3">Đăng ký thông tin dương tính với covid</h1>
+            <div class="row mb-4">
+              <label for="input-date-positive" class="col-sm-4 col-md-3 col-form-label fw-bold">Ngày phát hiện dương tính:</label>
+              <div class="col-sm-8 col-md-9 mb-2">
+                <div class="input-group date" data-date-format="dd/mm/yyyy" id="datepicker2-covidstatus-positive">
+                  <input id="input-date-positive" type="text" class="form-control" placeholder="dd/mm/yyyy" name="date" autocomplete="off" required>
+                  <span class="input-group-append">
+                    <span class="input-group-text bg-white d-block">
+                      <i class="fa fa-calendar"></i>
+                    </span>
+                  </span>
+                  <div class="valid-feedback">
+                    Thông tin hợp lệ!
+                  </div>
+                  <div class="invalid-feedback">
+                    Xin vui lòng nhập Ngày phát hiện dương tính!
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-3 d-flex justify-content-center">
+              <button type="submit" class="btn btn-success btn-long-50per">Đăng ký</button>
+            </div>
+          </form>
+        </div>
+        <% } %>
+      </div> <!-- container-fluid -->
+    </div> <!-- container-main -->
+  </div> <!-- layout -->
+  <%- include('./includes/footer.ejs') %>
+</body>

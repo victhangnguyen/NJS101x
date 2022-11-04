@@ -1,0 +1,22 @@
+
+
+//! __responsieve__attendance?type=end
+//!mobile-first-defaut
+.form-table-main {
+  padding: 2rem 1rem;
+}
+@media screen and (min-width: 576px) {
+  .form-table-main {
+    padding: 2rem 4rem;
+  }
+}
+@media screen and (min-width: 768px) {
+  .form-table-main {
+    padding: 3rem 10rem;
+  }
+}
+@media screen and (min-width: 992px) {
+  .form-table-main {
+    padding: 4rem 8rem;
+  }
+}

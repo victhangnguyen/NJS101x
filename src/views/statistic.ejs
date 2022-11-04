@@ -1,0 +1,57 @@
+<%- include('./includes/header.ejs') %>
+<!--  -->
+
+<body>
+  <%- include('./includes/navigation.ejs') %>
+
+  <div class="layout">
+    <div class="sidebar"></div>
+    <div class="container-main">
+      <div class="container-fuild">
+        <% if ( user.role === 'ADMIN' ) { %>
+        <!-- Thống kê giờ làm của Admin -->
+        <div class="row mb-4">
+          <div class="col">
+            <h4>Thống kê giờ làm của Admin</h4>
+            <a href="/statistic/<%= user._id %>" class="btn btn-success">Thông tin giờ làm của ADMIN</a>
+          </div>
+        </div>
+        <!-- Thống kê giờ làm của Nhân viên -->
+        <h4>Thống kê giờ làm của Nhân viên</h4>
+        <div class="row">
+          <% user.manage.staffs.forEach((staff, index) => { %>
+          <div class="col-6 col-md-4 col-lg-4">
+            <div class="card">
+              <div class="card-header">
+                #<%= index + 1 %>
+              </div>
+              <div class="avatar">
+                <img src="/<%= staff.image %>" class="card-img-top avatar-img" alt="...">
+              </div>
+              <div class="card-body">
+                <h5 class="card-title fw-bold"><%= staff.name %></h5>
+                <p class="card-text fw-bold">department:
+                  <span class="fw-normal"><%= staff.department %></span>
+                </p>
+                <div class="d-flex justify-content-between">
+                  <!-- Seen Details -->
+                  <a href="/statistic/<%= staff._id %>" class="btn btn-primary">Xem chi tiết</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <% }) %>
+        </div>
+
+        <% } else { %>
+        <div class="row">
+        </div>
+        <!-- end row -->
+        <% } %>
+      </div>
+    </div>
+    <!-- container-main -->
+  </div>
+  <!-- layout -->
+  <%- include('./includes/footer.ejs') %>
+</body>

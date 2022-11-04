@@ -1,0 +1,103 @@
+<%- include('./includes/header.ejs') %>
+<!--  -->
+
+<body>
+  <%- include('./includes/navigation.ejs') %>
+
+  <div class="layout">
+    <div class="sidebar"></div>
+    <div class="container-main">
+      <div class="container-fuild">
+        <div class="row wrap-form-control">
+          <form action="/StatisticAll" method="get">
+            <div class="d-flex">
+              <input class="form-control me-2" type="search" name="search" placeholder="Tìm kiếm thông tin" />
+              <button class="btn btn-outline-success" type="submit">Tìm</button>
+            </div>
+            <div class="row  my-2">
+              <div class="col-12 col-md-6">
+                <h5>Hướng dẫn tra cứu lương:</h5>
+                <p>Toàn bộ tháng: *</p>
+                <p>Toàn bộ tháng 1: */01/*</p>
+                <p>Tra cứu ngày cụ thể: 01/01/2022</p>
+              </div>
+              <div class="col-12 col-md-6">
+                <label for="pages">Chọn số dòng muốn hiển thị:</label>
+                <select id="pages" class="form-select form-select-sm my-2" aria-label=".form-select-sm example" name="lines">
+                  <option value="5">5</option>
+                  <option value="10" selected>10</option>
+                  <option value="20">20</option>
+                  <option value="40">40</option>
+                </select>
+              </div>
+            </div>
+            <%- include('./includes/pagination.ejs') %>
+
+          </form>
+        </div> <!-- /row -->
+
+        <div class="row">
+          <!-- Statistics -->
+          <div class="col-12">
+            <h5 class="text-center fw-bold">
+              Wildcard - Tra cứu thông tin giờ làm
+            </h5>
+            <table class="table table-bordered border-success border border-2 text-center">
+              <thead class="table-success border-success">
+                <tr>
+                  <th scope="col">Ngày</th>
+                  <th scope="col">Nơi làm việc</th>
+                  <th scope="col">Giờ bắt đầu</th>
+                  <th scope="col">Giờ kết thúc</th>
+                  <th scope="col">Thời gian làm việc</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% statistics.length && statistics.forEach(statistic=> { %>
+                <!-- main loop -->
+                <% if ( statistic.type==='attendance' ) { %>
+
+
+                <% } else if (statistic.type==='absence' ) { %>
+                <tr class="table-warning border border-1 border-success">
+                  <th scope="row">
+                    <%= statistic.date %>
+                  </th>
+                  <td colspan="4" class="fw-bold">Nghỉ phép: <%= statistic.hours %> giờ</td>
+                </tr>
+                <% } %>
+                <!-- /ifel -->
+                <% }) %>
+                <!-- /forEach -->
+              </tbody>
+            </table> <!-- /table Statistics -->
+            <!-- Table Salary -->
+            <div class="row">
+              <div class="col-12 col-md-6">
+                <table class="table table-bordered border-success border border-2 text-center">
+                  <thead class="table-success border-success">
+                    <tr>
+                      <th scope="col">Tổng lương</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="fw-bold"><%= salary.toLocaleString('en') %> đồng</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <!-- end row -->
+          </div>
+          <!-- end col-12 -->
+        </div>
+        <!-- end row -->
+      </div>
+      <!-- end container-fuild -->
+    </div>
+    <!-- end container-main -->
+  </div>
+  <!-- layout -->
+  <%- include('./includes/footer.ejs') %>
+</body>

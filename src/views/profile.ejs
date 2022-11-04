@@ -1,0 +1,101 @@
+<%- include('./includes/header.ejs') %>
+
+<body>
+  <%- include('./includes/navigation.ejs') %>
+
+  <div class="layout">
+    <div class="sidebar"></div>
+    <div class="container-main">
+      <div class="container-fuild">
+        <div class="wrap-form-control">
+          <h1 class="mb-3 fw-bold">Thông tin cá nhân</h1>
+          <div class="form-control border border-2 border-success">
+            <div class="row form-control-main">
+              <div class="col-12 col-sm-6 col-md-5">
+                <div class="avatar-form-control">
+                  <div class="avatar-image">
+                    <img src="/<%= user.image %>" alt="/<%= user.image %>">
+                  </div>
+                  <!-- button change image -->
+                  <div class="avatar-button">
+                    <form action="/profile/<%= user._id %>" method="post" enctype="multipart/form-data">
+                      <div class="my-3 d-flex justify-content-center flex-column">
+                        <div class="mb-3">
+                          <input class="form-control" type="file" id="formFile" name="image">
+                        </div>
+                        <% if ( errorMessage ) { %>
+                        <div class="feedback"><%= errorMessage %></div>
+                        <% } %>
+                        <button class="btn btn-success" type="submit">Upload hình</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6 col-md-7 pl-1">
+                <!-- id -->
+                <div class="mb-1 row">
+                  <label for="input-id" class="col-4 col-form-label fw-bold">ID: </label>
+                  <div class="col-8">
+                    <input type="text" readonly class="form-control-plaintext" id="input-id" value="<%= user._id %>">
+                  </div>
+                </div>
+                <!-- name -->
+                <div class="mb-1 row">
+                  <label for="input-name" class="col-4 col-form-label fw-bold">Họ và tên: </label>
+                  <div class="col-8">
+                    <input type="text" readonly class="form-control-plaintext" id="input-name" value="<%= user.name %>">
+                  </div>
+                </div>
+                <!-- doB -->
+                <div class="mb-1 row">
+                  <label for="input-dob" class="col-4 col-form-label fw-bold">Ngày sinh: </label>
+                  <div class="col-8">
+                    <input type="text" readonly class="form-control-plaintext" id="input-dob" value="<%= user.dob.toLocaleDateString('vi-VN', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            }) %>">
+                  </div>
+                </div>
+                <!-- salaryScale -->
+                <div class="mb-1 row">
+                  <label for="input-salary-scale" class="col-4 col-form-label fw-bold">Hệ số lương: </label>
+                  <div class="col-8">
+                    <input type="text" readonly class="form-control-plaintext" id="input-salary-scale" value="<%= user.salaryScale %>">
+                  </div>
+                </div>
+                <!-- startDate  -->
+                <div class="mb-1 row">
+                  <label for="input-start-date" class="col-4 col-form-label fw-bold">Ngày vào: </label>
+                  <div class="col-8">
+                    <input type="text" readonly class="form-control-plaintext" id="input-start-date" value="<%= user.startDate.toLocaleDateString('vi-VN', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                              }) %>">
+                  </div>
+                </div>
+                <!-- department   -->
+                <div class="mb-1 row">
+                  <label for="input-department" class="col-4 col-form-label fw-bold">Phòng ban: </label>
+                  <div class="col-8">
+                    <input type="text" readonly class="form-control-plaintext" id="input-department" value="<%= user.department %>">
+                  </div>
+                </div>
+                <!-- annualLeave    -->
+                <div class="mb-1 row">
+                  <label for="input-annual-leave" class="col-4 col-form-label fw-bold">Ngày phép: </label>
+                  <div class="col-8">
+                    <input type="text" readonly class="form-control-plaintext" id="input-annual-leave" value="<%= user.annualLeave  %>">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> <!-- container-main -->
+  </div> <!-- layout -->
+  <%- include('./includes/footer.ejs') %>
+</body>

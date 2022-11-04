@@ -1,0 +1,14 @@
+.avatar-form-control {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .avatar-image {
+    overflow: hidden;
+    img {
+      object-fit: cover;
+      max-height: 200px;
+      width: 200px;
+    }
+  }
+}

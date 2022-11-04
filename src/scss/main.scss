@@ -1,0 +1,16 @@
+//! init ui app
+@import 'base/base';
+//! components
+@import 'components/button';
+@import 'components/table';
+//! pages
+@import 'pages/attendance';
+@import 'pages/profile';
+@import 'pages/covidStatus';
+//! layout
+@import 'layout/layout.scss';
+@import 'layout/navigation';
+@import 'vendors/bootstrap';
+@import 'layout/form';
+//! utils
+@import 'sass-utils/datePicker';
